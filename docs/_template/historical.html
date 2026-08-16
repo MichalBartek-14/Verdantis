@@ -29,8 +29,8 @@
   <p>Up to five years of monthly Sentinel-2 median composites over the plot, reduced
     to three spectral indices server-side, then analysed locally: plot-average time
     series, a two-panel dryness map (frequency + magnitude) for both NDWI and NDMI,
-    and an ERA5 temperature overlay to sanity-check whether moisture drops track
-    warm spells.</p>
+    and ERA5 temperature + precipitation overlays to sanity-check whether moisture
+    drops track warm, dry spells.</p>
 </div>
 
 <section class="section">
@@ -76,9 +76,9 @@
 </section>
 
 <section class="section">
-  <h2>Moisture vs. temperature</h2>
+  <h2>Moisture vs. weather</h2>
   <p class="lede">NDWI merged against ERA5-based (Open-Meteo archive, no API key needed)
-    monthly mean air temperature for the same window and location.</p>
+    monthly mean air temperature and total precipitation, for the same window and location.</p>
   <div class="figure-grid" style="grid-template-columns: 1fr;">
     <figure class="card">
       <img src="assets/img/ndwi_temperature_combo.png" alt="NDWI and ERA5 temperature combo chart" loading="lazy">
@@ -87,6 +87,16 @@
         <p>Pearson r &asymp; 0.47 (NDWI) and &asymp; 0.52 (NDMI) vs. temperature over the full
           history, printed by the script on every run - a sanity check, not a calibrated
           relationship.</p>
+      </figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/ndwi_precipitation_combo.png" alt="NDWI and ERA5 precipitation combo chart" loading="lazy">
+      <figcaption>
+        <h3>NDWI &amp; ERA5 precipitation, monthly</h3>
+        <p>Pearson r &asymp; 0.32 (NDWI) and &asymp; 0.33 (NDMI) vs. total monthly precipitation
+          over the full history - positive as expected (wetter months, higher NDWI), weaker
+          than the temperature correlation above since a single month's rain total is a
+          noisier proxy for canopy/soil moisture than temperature is.</p>
       </figcaption>
     </figure>
   </div>

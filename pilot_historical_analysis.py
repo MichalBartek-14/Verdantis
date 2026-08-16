@@ -13,10 +13,11 @@ Backbone script for the pilot deliverable shown to the client:
        - a two-panel "which sections run dry most often, and how badly"
          map (frequency + magnitude) for both NDWI and NDMI
        - ERA5-based (Open-Meteo archive, no API key needed) monthly
-         temperature for the same window, merged against both moisture
-         series for a printed correlation coefficient each (combo chart
-         for NDWI, since NDWI/NDMI track each other closely enough that
-         a second near-identical chart wouldn't add much)
+         temperature AND total precipitation for the same window, each
+         merged against both moisture series for a printed correlation
+         coefficient (combo charts for NDWI, since NDWI/NDMI track each
+         other closely enough that a second near-identical chart
+         wouldn't add much)
 
 Run:    python pilot_historical_analysis.py
 Setup:  edit config.py first (shapefile path, date range, thresholds).
@@ -38,9 +39,10 @@ from utils.raster_analysis import (
 from utils.plotting import (
     plot_ndvi_timeseries, plot_dryness_heatmap, plot_ndwi_timeseries,
     plot_ndmi_timeseries, plot_water_loss_map, plot_ndwi_temperature_combo,
+    plot_ndwi_precipitation_combo,
 )
 from utils.downloads import download_to_path
-from utils.weather import fetch_era5_monthly_temperature
+from utils.weather import fetch_era5_monthly_temperature, fetch_era5_monthly_precipitation
 
 
 def build_monthly_index_cube(connection, bbox, temporal_extent):
@@ -166,44 +168,68 @@ def run_pilot():
     era5_end = (end - relativedelta(days=1)).isoformat()  # `end` is exclusive (1st of current month)
 
     print("Fetching ERA5-based monthly temperature (Open-Meteo archive) ...")
-    era5_monthly = fetch_era5_monthly_temperature(
+    era5_temp_monthly = fetch_era5_monthly_temperature(
         lat=lat, lon=lon, start_date=era5_start, end_date=era5_end,
         cache_path=config.OUTPUT_DIR / "era5_daily_cache.csv",
     )
-    era5_csv = config.OUTPUT_DIR / "era5_temperature_monthly.csv"
-    era5_monthly.to_csv(era5_csv, index=False)
-    print(f"ERA5 monthly temperature saved: {era5_csv}")
+    era5_temp_csv = config.OUTPUT_DIR / "era5_temperature_monthly.csv"
+    era5_temp_monthly.to_csv(era5_temp_csv, index=False)
+    print(f"ERA5 monthly temperature saved: {era5_temp_csv}")
 
-    def merge_and_report_correlation(index_dates, index_values, index_name):
-        """Merge one moisture index's monthly series against the ERA5
-        series already fetched above, save the merged CSV, and print the
-        Pearson correlation - same logic for NDWI and NDMI, just fed a
-        different series each time."""
+    print("Fetching ERA5-based monthly precipitation (Open-Meteo archive) ...")
+    era5_precip_monthly = fetch_era5_monthly_precipitation(
+        lat=lat, lon=lon, start_date=era5_start, end_date=era5_end,
+        cache_path=config.OUTPUT_DIR / "era5_precip_daily_cache.csv",
+    )
+    era5_precip_csv = config.OUTPUT_DIR / "era5_precipitation_monthly.csv"
+    era5_precip_monthly.to_csv(era5_precip_csv, index=False)
+    print(f"ERA5 monthly precipitation saved: {era5_precip_csv}")
+
+    def merge_and_report_correlation(index_dates, index_values, index_name, weather_df, weather_col, weather_label, out_suffix):
+        """Merge one moisture index's monthly series against one ERA5
+        weather series already fetched above, save the merged CSV, and
+        print the Pearson correlation - same logic for NDWI/NDMI x
+        temperature/precipitation, just fed a different pair each time.
+        `out_suffix` picks the output filename ("temperature" keeps the
+        original ndwi/ndmi_temperature_monthly.csv names other scripts
+        already read; "precipitation" is the new sibling file)."""
         col = f"mean_{index_name.lower()}"
         merged_df = pd.merge(
             pd.DataFrame({"month": index_dates, col: index_values}),
-            era5_monthly, on="month", how="inner",
+            weather_df, on="month", how="inner",
         )
-        merged_df.to_csv(config.OUTPUT_DIR / f"{index_name.lower()}_temperature_monthly.csv", index=False)
+        merged_df.to_csv(config.OUTPUT_DIR / f"{index_name.lower()}_{out_suffix}_monthly.csv", index=False)
         if len(merged_df) >= 2:
-            correlation = merged_df[col].corr(merged_df["mean_temp_c"])
-            print(f"{index_name} vs. temperature correlation (Pearson r, {len(merged_df)} months): {correlation:.3f}")
+            correlation = merged_df[col].corr(merged_df[weather_col])
+            print(f"{index_name} vs. {weather_label} correlation (Pearson r, {len(merged_df)} months): {correlation:.3f}")
         else:
-            print(f"Only {len(merged_df)} overlapping month(s) between {index_name} and ERA5 data - skipping correlation.")
+            print(f"Only {len(merged_df)} overlapping month(s) between {index_name} and {weather_label} data - skipping correlation.")
         return merged_df
 
-    merged_ndwi = merge_and_report_correlation(ndwi_dates, ndwi_values, "NDWI")
-    combo_png = config.OUTPUT_DIR / "ndwi_temperature_combo.png"
-    plot_ndwi_temperature_combo(
-        merged_ndwi["month"], merged_ndwi["mean_ndwi"], merged_ndwi["mean_temp_c"], combo_png,
+    merged_ndwi_temp = merge_and_report_correlation(
+        ndwi_dates, ndwi_values, "NDWI", era5_temp_monthly, "mean_temp_c", "temperature", "temperature",
     )
-    print(f"NDWI/temperature combo chart saved: {combo_png}")
+    temp_combo_png = config.OUTPUT_DIR / "ndwi_temperature_combo.png"
+    plot_ndwi_temperature_combo(
+        merged_ndwi_temp["month"], merged_ndwi_temp["mean_ndwi"], merged_ndwi_temp["mean_temp_c"], temp_combo_png,
+    )
+    print(f"NDWI/temperature combo chart saved: {temp_combo_png}")
 
-    # NDMI gets the same correlation + CSV as NDWI, but not its own combo
-    # chart - the two indices track each other closely enough (same
+    merged_ndwi_precip = merge_and_report_correlation(
+        ndwi_dates, ndwi_values, "NDWI", era5_precip_monthly, "total_precip_mm", "precipitation", "precipitation",
+    )
+    precip_combo_png = config.OUTPUT_DIR / "ndwi_precipitation_combo.png"
+    plot_ndwi_precipitation_combo(
+        merged_ndwi_precip["month"], merged_ndwi_precip["mean_ndwi"], merged_ndwi_precip["total_precip_mm"], precip_combo_png,
+    )
+    print(f"NDWI/precipitation combo chart saved: {precip_combo_png}")
+
+    # NDMI gets the same correlations + CSVs as NDWI, but not its own combo
+    # charts - the two indices track each other closely enough (same
     # family, narrow- vs broad-NIR) that a second near-identical chart
-    # wouldn't add much over the NDWI one above.
-    merge_and_report_correlation(ndmi_dates, ndmi_values, "NDMI")
+    # wouldn't add much over the NDWI ones above.
+    merge_and_report_correlation(ndmi_dates, ndmi_values, "NDMI", era5_temp_monthly, "mean_temp_c", "temperature", "temperature")
+    merge_and_report_correlation(ndmi_dates, ndmi_values, "NDMI", era5_precip_monthly, "total_precip_mm", "precipitation", "precipitation")
 
     print("\nPilot run complete. Outputs in:", config.OUTPUT_DIR.resolve())
 

@@ -118,6 +118,36 @@ def plot_ndwi_temperature_combo(months, ndwi_values, temp_values, out_path,
     plt.close(fig)
 
 
+def plot_ndwi_precipitation_combo(months, ndwi_values, precip_values, out_path,
+                                   title="Monthly NDWI vs. ERA5 total precipitation"):
+    """Dual-axis chart: plot-average NDWI (left axis, line) against ERA5
+    monthly total precipitation (right axis, bars - a sum-over-the-month
+    quantity reads more naturally as bars than as a line) over the same
+    months, to visually check whether moisture drops track dry spells."""
+    fig, ax1 = plt.subplots(figsize=(11, 4.5))
+
+    ax2 = ax1.twinx()
+    ax2.bar(months, precip_values, width=20, color="#3a6ea5", alpha=0.55, label="Total precipitation (ERA5)")
+    ax2.set_ylabel("Total precipitation (mm, ERA5)", color="#3a6ea5")
+    ax2.tick_params(axis="y", labelcolor="#3a6ea5")
+    ax2.set_ylim(bottom=0)
+
+    # Line drawn after (and via ax1, on top in z-order) the bars so it isn't obscured.
+    ax1.plot(months, ndwi_values, marker="o", linewidth=1.5, color="#1f7a8c", label="Mean NDWI", zorder=3)
+    ax1.set_ylabel("Mean NDWI", color="#1f7a8c")
+    ax1.tick_params(axis="y", labelcolor="#1f7a8c")
+    ax1.set_xlabel("Month")
+    ax1.set_zorder(ax2.get_zorder() + 1)
+    ax1.patch.set_visible(False)  # let the bars on ax2 show through ax1's now-frontmost axes
+    ax1.grid(alpha=0.3)
+
+    ax1.set_title(title)
+    fig.autofmt_xdate()
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
+
+
 def plot_bfast_breaks(raw_series, trend_index, trend_values, break_dates, out_path,
                        title="NDVI - every available scene, with detected structural breaks"):
     """Raw per-scene NDVI (every available Sentinel-2 acquisition over the

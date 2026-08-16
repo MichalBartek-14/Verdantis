@@ -50,6 +50,7 @@ HISTORICAL_IMAGES = [
     "water_loss_map.png",
     "water_loss_map_ndmi.png",
     "ndwi_temperature_combo.png",
+    "ndwi_precipitation_combo.png",
 ]
 
 # Alert charts referenced by _template/monitoring.html - one per history
