@@ -10,5 +10,6 @@
   "alert_bbox": [0.0, 0.0, 0.0, 0.0],
   "ndwi_dry_threshold": null,
   "ndmi_dry_threshold": null,
-  "accent_color": "#2c7a3c"
+  "accent_color": "#2c7a3c",
+  "true_color_tif": null
 }

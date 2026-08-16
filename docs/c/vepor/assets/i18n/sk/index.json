@@ -8,7 +8,9 @@
     "cta_primary": "Zobraziť historický prehľad",
     "cta_ghost": "Otvoriť prieskumník sektorov",
     "plot_tag_prefix": "Aktívna pilotná parcela:",
-    "plot_tag_suffix": "5-ročný záznam Sentinel-2"
+    "plot_tag_suffix": "5-ročný záznam Sentinel-2",
+    "photo_alt": "Pravdivo farebný satelitný pohľad na parcelu",
+    "photo_pending": "Pravdivo farebný satelitný pohľad - čoskoro"
   },
   "stats": {
     "history_value": "5 rokov",

@@ -110,13 +110,22 @@ def publish_client_site(slug: str) -> None:
         json.dump(meta, f, indent=2)
     print("  wrote: data/client_meta.json")
 
-    # 3. Historical pilot images.
+    # 3. Title-page hero photo - optional, from render_true_color.py. Its
+    #    source GeoTIFF is produced by a separate process and may not exist
+    #    yet, so this is copy-if-present, not required; the hero has its own
+    #    placeholder state (index.html/.hero-image) for when it's missing.
+    if _copy(outputs_dir, "true_color.png", img):
+        print("  true-color hero photo: copied")
+    else:
+        print("  true-color hero photo: none yet (run render_true_color.py once the GeoTIFF exists)")
+
+    # 4. Historical pilot images.
     print("  historical pilot images:")
     for name in HISTORICAL_IMAGES:
         ok = _copy(outputs_dir, name, img)
         print(f"    {'copied' if ok else 'MISSING (run pilot_historical_analysis.py --client ' + slug + ')'}: {name}")
 
-    # 4. Alert charts + breaks.
+    # 5. Alert charts + breaks.
     print("  alert charts + breaks:")
     for name in ALERT_IMAGES:
         ok = _copy(outputs_dir, name, img)
@@ -126,7 +135,7 @@ def publish_client_site(slug: str) -> None:
     else:
         print(f"    MISSING (run bfast_alert.py --client {slug}): alert_breaks.json")
 
-    # 5. Recent drought monitor: newest drought_summary_*.json (filename is
+    # 6. Recent drought monitor: newest drought_summary_*.json (filename is
     #    date-stamped) copied to a fixed name so monitoring.html's fetch()
     #    doesn't need to know today's date, plus its matching quicklook trio.
     print("  recent drought monitor:")
@@ -148,7 +157,7 @@ def publish_client_site(slug: str) -> None:
         )
         print(f"    copied {copied}/3 latest quicklook(s) for {latest_date}")
 
-    # 6. Sector explorer + monthly imagery data - imagery split off since
+    # 7. Sector explorer + monthly imagery data - imagery split off since
     #    it's ~80% of the payload's size and the sector map itself never
     #    reads it (see docs/_template/monitoring.html for the slider that does).
     print("  sector explorer + monthly imagery data:")

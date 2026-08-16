@@ -41,6 +41,14 @@
       </div>
       <div class="plot-tag"><span class="dot"></span> <span data-i18n="hero.plot_tag_prefix">Live pilot plot:</span> <span data-client-location>Valice, Slovakia</span> &middot; <span data-i18n="hero.plot_tag_suffix">5-year Sentinel-2 record</span></div>
     </div>
+
+    <div class="hero-image" id="hero-image">
+      <img id="hero-photo" alt="">
+      <div class="hero-image-placeholder">
+        <span class="icon">🛰️</span>
+        <span data-i18n="hero.photo_pending">True-color satellite view - coming soon</span>
+      </div>
+    </div>
   </section>
 
   <div class="stat-strip">
@@ -89,6 +97,30 @@
   Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
   <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
 </footer>
+
+<script>
+window.VerdantisReady.then(function (ready) {
+  var wrap = document.getElementById('hero-image');
+  var img = document.getElementById('hero-photo');
+  img.alt = ready.t('hero.photo_alt');
+
+  // Plain probe-then-swap rather than just setting img.src directly: an
+  // <img> with a broken src still occupies its box (or shows a broken-image
+  // icon) even with display:none swapped later, so load into a throwaway
+  // Image() first and only touch the real <img>/placeholder once we know
+  // whether assets/img/true_color.png actually exists for this client.
+  var probe = new Image();
+  probe.onload = function () {
+    img.src = 'assets/img/true_color.png';
+    wrap.classList.add('has-photo');
+  };
+  probe.onerror = function () {
+    // No GeoTIFF rendered for this client yet - the placeholder set in the
+    // HTML above stays visible. Not an error state, just "not published yet".
+  };
+  probe.src = 'assets/img/true_color.png';
+});
+</script>
 
 </body>
 </html>

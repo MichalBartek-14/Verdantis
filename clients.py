@@ -56,6 +56,12 @@ def load_client(slug: str) -> dict:
     # publish_site.py (writes this into client_meta.json) and
     # docs/_template/assets/client.js (reads it from there at page load).
     data.setdefault("language", "en")
+    # Optional true-color satellite GeoTIFF for the title page hero - see
+    # render_true_color.py. Leave null/omitted to auto-discover the first
+    # *.tif/*.tiff next to the shapefile (data/<slug>/) - only set this
+    # explicitly if a client's folder ever holds more than one GeoTIFF and
+    # auto-discovery would be ambiguous.
+    data.setdefault("true_color_tif", None)
     return data
 
 

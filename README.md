@@ -11,6 +11,7 @@ static, multi-client site (`docs/`) published from their output:
 | `drought_monitor_recent.py` | Last ~2 months at weekly cadence -> current NDVI/NDWI/NDMI rasters + a JSON summary, meant as the data feed a future alert product would poll |
 | `build_sector_explorer_data.py` | Post-processing step (no new download - reuses `pilot_historical_analysis.py`'s output): aggregates the plot into 5x5-pixel sectors and writes `outputs/<client>/sector_explorer_data.json` for the site's interactive Sector Explorer page (toggle NDWI/NDMI, click a sector for its own moisture-vs-ERA5-temperature history), plus a year of monthly NDVI/NDWI/NDMI quicklooks for the site's Monitoring page |
 | `bfast_alert.py` | A separate branch: pulls every available raw Sentinel-2 scene (no compositing) over a client's `alert_bbox` (any area, not just the plot itself), plots the raw NDVI series, and flags likely structural breaks (harvest, dieback, land-use change) with a BFAST-style trend decomposition + changepoint search - over both the full history and a "last year" zoom into the same fit |
+| `render_true_color.py` | Independent of the other four - turns a true-color satellite GeoTIFF (produced outside this pipeline, dropped into `data/<client>/` next to the shapefile) into the PNG shown on the title page hero, next to the title. Safe to run before that GeoTIFF exists - see **Title page photo** below |
 
 Every script takes a required `--client <slug>` argument - see **Multiple clients** below.
 
@@ -25,6 +26,7 @@ forestry_pilot/
 ├── drought_monitor_recent.py      # entry point 2
 ├── build_sector_explorer_data.py  # entry point 3 (run after entry point 1)
 ├── bfast_alert.py                 # entry point 4 (independent - own bbox, own download)
+├── render_true_color.py           # entry point 5 (independent - GeoTIFF -> hero photo PNG)
 ├── publish_site.py                # outputs/<client>/ -> docs/c/<client>/ (the only backend<->site link)
 ├── check_translations.py          # fails if any docs/_template i18n key is missing for any language
 ├── requirements.txt
@@ -170,6 +172,34 @@ future additions in sync across languages - not just a convention to remember.
 starting point), run `check_translations.py` to confirm nothing's missing, then set
 `"language": "<code>"` in any client's JSON. `publish_site.py` refuses to publish a
 client whose configured language has no matching dictionary folder.
+
+### Title page photo
+
+The Overview page's hero reserves a frame next to the title for a true-color satellite
+photo of the plot (`docs/_template/index.html`'s `.hero-image`, see
+`docs/_template/assets/style.css` for its CSS). That frame always exists, even for a
+client with no photo yet - it just shows a dashed placeholder ("coming soon") until one
+is published, so nothing shifts or looks broken either way.
+
+The source GeoTIFF is produced by a separate process outside this pipeline (not by any
+script here), and is expected to already be cropped/composited to the client's plot in
+the **same CRS as that client's shapefile**. Workflow once it exists:
+
+1. Drop it into `data/<client>/` (the same folder as the shapefile) - any filename, as
+   long as it's the only `.tif`/`.tiff` there. `render_true_color.py` auto-discovers it;
+   set `"true_color_tif"` in `clients/<slug>.json` only if that folder ever holds more
+   than one GeoTIFF and auto-discovery would be ambiguous.
+2. `python render_true_color.py --client <slug>` (or `--all`) - percentile-stretches
+   each band for a natural-looking quicklook (works regardless of the source's dtype/
+   scale - 0-1 float, 0-10000 Sentinel-2 DN, already-uint8, ...) and caps the long edge
+   at 1600px so the hero photo stays a light web asset regardless of the source
+   resolution. Safe to run before the GeoTIFF exists - it reports that and exits 0.
+3. `python publish_site.py --client <slug>` picks up `outputs/<client>/true_color.png`
+   if `render_true_color.py` produced one.
+
+No reprojection or polygon clipping happens here - the script assumes the source is
+already prepared for direct display. Re-run `render_true_color.py` any time the source
+GeoTIFF is replaced with a newer one.
 
 Publish (after running the pipeline for a client):
 

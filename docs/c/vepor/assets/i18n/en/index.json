@@ -8,7 +8,9 @@
     "cta_primary": "View the historical pilot",
     "cta_ghost": "Open the sector explorer",
     "plot_tag_prefix": "Live pilot plot:",
-    "plot_tag_suffix": "5-year Sentinel-2 record"
+    "plot_tag_suffix": "5-year Sentinel-2 record",
+    "photo_alt": "True-color satellite view of the plot",
+    "photo_pending": "True-color satellite view - coming soon"
   },
   "stats": {
     "history_value": "5 yrs",
