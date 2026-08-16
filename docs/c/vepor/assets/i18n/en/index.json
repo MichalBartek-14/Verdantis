@@ -1,0 +1,42 @@
+{
+  "title": "Verdantis - Satellite Moisture & Vegetation Monitoring",
+  "description": "Verdantis - a Sentinel-2 based pilot for monitoring forestry/agriculture plot moisture, vegetation vigour, and structural vegetation breaks.",
+  "hero": {
+    "eyebrow": "Sentinel-2 &middot; openEO &middot; ERA5",
+    "title_html": "Moisture &amp; vegetation<br>monitoring, from <span>orbit</span>.",
+    "tagline": "Verdantis turns free Copernicus Sentinel-2 imagery into a plot-level view of vegetation vigour (NDVI), canopy/soil moisture (NDWI &amp; NDMI), and structural change - built as a client-facing pilot for a single forestry plot, reusable for any shapefile.",
+    "cta_primary": "View the historical pilot",
+    "cta_ghost": "Open the sector explorer",
+    "plot_tag_prefix": "Live pilot plot:",
+    "plot_tag_suffix": "5-year Sentinel-2 record"
+  },
+  "stats": {
+    "history_value": "5 yrs",
+    "history_label": "Monthly history",
+    "indices_value": "3",
+    "indices_label": "Spectral indices tracked",
+    "cadence_value": "weekly",
+    "cadence_label": "Recent-conditions cadence",
+    "cost_value": "0",
+    "cost_label": "Cost - free CDSE + Open-Meteo data"
+  },
+  "features": {
+    "title": "Four views into the same plot",
+    "lede": "Each product below is generated locally from the same Sentinel-2 pipeline and openly documented - none of the thresholds are calibrated operational alerts yet, they're pilot starting points meant to be checked against field observations before driving real decisions.",
+    "historical": {
+      "title": "Historical Pilot",
+      "desc": "Up to 5 years of monthly NDVI/NDWI/NDMI time series, a frequency + magnitude \"where does the plot lose water most\" map, and ERA5 temperature + precipitation overlays.",
+      "cta": "Explore the deliverable &rarr;"
+    },
+    "explorer": {
+      "title": "Sector Explorer",
+      "desc": "Interactive map - the plot split into 5&times;5-pixel sectors, toggle NDWI/NDMI, click any sector for its own moisture-vs-temperature history.",
+      "cta": "Open the interactive map &rarr;"
+    },
+    "monitoring": {
+      "title": "Monitoring &amp; Alerts",
+      "desc": "Current weekly NDVI/NDWI/NDMI conditions, a scrubbable monthly imagery view of the last year, and BFAST-style structural break detection - harvest, dieback, or land-use change flagged in the raw NDVI series.",
+      "cta": "See conditions &amp; alerts &rarr;"
+    }
+  }
+}

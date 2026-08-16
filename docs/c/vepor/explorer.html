@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title data-i18n="title">Sector Explorer - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  /* Sector explorer - functional styling only; palette below is pinned to
+     the site's light theme (docs/assets/style.css) rather than following
+     prefers-color-scheme, so this page always matches the rest of Verdantis
+     regardless of the visitor's OS theme. Data comes from data/sector_explorer_data.json
+     (published by publish_site.py, imagery-free - see docs/monitoring.html
+     for the monthly imagery slider, which used to live in this file). */
+  :root {
+    --surface-1:    #ffffff;
+    --surface-2:    #f6f4ee;
+    --text-primary: #182420;
+    --text-secondary: #57655c;
+    --text-muted:   #7c8a80;
+    --gridline:     #dde3d6;
+    --baseline:     #c7cfc2;
+    --border:       #dde3d6;
+    --series-index: #1f7a8c;
+    --series-temp:  #c07a20;
+    --seq-low:      #e8f0e6;
+    --seq-high:     #1c4d27;
+    --accent:       #2c7a3c;
+    --card-shadow:  0 6px 24px rgba(20, 35, 26, 0.08);
+  }
+
+  .app { max-width: 1180px; margin: 0 auto; padding: 6px clamp(20px, 5vw, 56px) 60px; }
+
+  main {
+    display: grid;
+    grid-template-columns: minmax(320px, 460px) 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  @media (max-width: 800px) {
+    main { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    position: relative;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    padding: 18px;
+  }
+
+  .grid-pane { position: sticky; top: 76px; }
+  @media (max-width: 800px) { .grid-pane { position: static; } }
+
+  .pane-title { font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); margin: 0 0 12px; }
+
+  .control-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+
+  .segmented {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+  }
+  .segmented button {
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 550;
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  .segmented button + button { border-left: 1px solid var(--border); }
+  .segmented button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .segmented button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  #gridWrap { position: relative; width: 100%; }
+  #sectorCanvas { width: 100%; height: auto; display: block; border-radius: 6px; cursor: pointer; }
+
+  .legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 11.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .legend .ramp { flex: 1; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--seq-low), var(--seq-high)); }
+
+  .cell-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: var(--card-shadow);
+    padding: 7px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translate(-50%, -100%);
+    transition: opacity 80ms ease;
+    z-index: 5;
+  }
+  .cell-tooltip.visible { opacity: 1; }
+  .cell-tooltip .val { font-weight: 650; font-variant-numeric: tabular-nums; }
+  .cell-tooltip .lab { color: var(--text-secondary); }
+
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; margin-top: 14px; }
+  .stat-tile { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .stat-tile .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 3px; }
+  .stat-tile .v { font-size: 18px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .stat-tile .v small { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+  .detail-pane .head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; }
+  .detail-pane .head h2 { font-size: 17px; font-weight: 650; margin: 0; }
+  .detail-pane .head .hint { font-size: 12px; color: var(--text-muted); }
+
+  .chart-card { margin-top: 14px; }
+  .chart-card h3 { font-size: 12.5px; font-weight: 650; margin: 0 0 8px; color: var(--text-secondary); }
+  .chart-card svg { width: 100%; height: 140px; display: block; overflow: visible; }
+  .chart-line { fill: none; stroke-width: 2px; }
+  .chart-dot { r: 2.4px; }
+  .chart-gap { stroke-dasharray: 2 3; }
+
+  .crosshair { stroke: var(--baseline); stroke-width: 1px; pointer-events: none; }
+  .chart-tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: var(--card-shadow);
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 80ms ease;
+    z-index: 5;
+  }
+  .chart-tooltip.visible { opacity: 1; }
+  .chart-tooltip .val { font-weight: 650; font-variant-numeric: tabular-nums; }
+
+  .empty-state { color: var(--text-secondary); font-size: 13.5px; line-height: 1.6; padding: 6px 0 2px; }
+
+  .app footer.notes { margin-top: 26px; font-size: 12px; color: var(--text-muted); line-height: 1.6; max-width: 78ch; }
+  .app footer.notes code { background: var(--surface-1); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11.5px; }
+</style>
+</head>
+<body data-page="explorer">
+<script src="assets/client.js"></script>
+
+<header class="site-header">
+  <div class="brand-group">
+    <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+    <span class="client-badge" data-client-display-name data-i18n="badge.default">Pilot</span>
+  </div>
+  <nav class="site-nav">
+    <a href="index.html" data-i18n="nav.overview">Overview</a>
+    <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
+    <a href="explorer.html" aria-current="page" data-i18n="nav.explorer">Sector Explorer</a>
+    <a href="monitoring.html" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <span class="eyebrow">build_sector_explorer_data.py</span>
+  <h1 data-i18n="hero.h1">Sector Moisture Explorer</h1>
+  <p data-i18n-html="hero.intro">The plot's bounding box split into 5&times;5-pixel sectors (partial at the edges).
+    Choose NDWI or NDMI, then click a sector to see its own moisture history against ERA5
+    temperature for the same months - the whole-plot average, on the right, is the default view.</p>
+</div>
+
+<div class="app">
+  <main id="tabSector">
+    <section class="card grid-pane">
+      <p class="pane-title" data-i18n="controls.pane_title">Sector map</p>
+      <div class="control-row">
+        <div class="segmented" role="group" aria-label="Moisture index">
+          <button type="button" data-moisture-index="ndwi" aria-pressed="true">NDWI</button>
+          <button type="button" data-moisture-index="ndmi" aria-pressed="false">NDMI</button>
+        </div>
+        <div class="segmented" role="group" aria-label="Grid color metric">
+          <button type="button" data-metric="freq_pct" aria-pressed="true" data-i18n="controls.metric_freq">Dry frequency</button>
+          <button type="button" data-metric="magnitude" aria-pressed="false" data-i18n="controls.metric_magnitude">Dry magnitude</button>
+        </div>
+        <div class="segmented" role="group" aria-label="Time window">
+          <button type="button" data-range="full" aria-pressed="true" data-i18n="controls.range_full">Full history</button>
+          <button type="button" data-range="1y" aria-pressed="false" data-i18n="controls.range_1y">Last year</button>
+        </div>
+      </div>
+      <div id="gridWrap">
+        <canvas id="sectorCanvas"></canvas>
+        <div class="cell-tooltip" id="cellTooltip"></div>
+      </div>
+      <div class="legend">
+        <span id="legendLow">0%</span>
+        <span class="ramp"></span>
+        <span id="legendHigh">100%</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-tile"><div class="k" data-i18n="controls.stat_sectors">Sectors with data</div><div class="v" id="statSectors">&ndash;</div></div>
+        <div class="stat-tile"><div class="k" data-i18n="controls.stat_months">Months covered</div><div class="v" id="statMonths">&ndash;</div></div>
+        <div class="stat-tile"><div class="k" id="statMeanLabel">Plot mean NDWI</div><div class="v" id="statMean">&ndash;</div></div>
+        <div class="stat-tile"><div class="k" id="statCorrLabel">NDWI&ndash;temp r</div><div class="v" id="statCorr">&ndash;</div></div>
+      </div>
+    </section>
+
+    <section class="detail-pane">
+      <div class="card">
+        <div class="head">
+          <h2 id="selectionLabel" data-i18n="detail.selection_default">Whole plot (average)</h2>
+          <span class="hint" id="selectionHint" data-i18n="detail.selection_hint_default">click any sector to inspect it</span>
+        </div>
+        <div class="stat-row" id="detailStats"></div>
+
+        <div class="chart-card">
+          <h3 id="indexChartLabel" data-i18n="detail.index_chart_default">Monthly NDWI</h3>
+          <svg id="indexChart" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="chart-card">
+          <h3 data-i18n-html="detail.temp_chart_title">ERA5 monthly mean temperature (&deg;C)</h3>
+          <svg id="tempChart" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="chart-tooltip" id="chartTooltip"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="notes" data-i18n-html="footer_html">
+    Data: Sentinel-2 L2A monthly median composites via Copernicus Data Space Ecosystem (openEO), clipped to the
+    client plot; NDWI = (B08-B11)/(B08+B11) (broad NIR); NDMI = (B8A-B11)/(B8A+B11) (narrow NIR) - same family,
+    highly correlated but not identical. Temperature: ERA5 reanalysis via Open-Meteo's archive API. "Dry
+    frequency" is the % of valid months the selected index fell below the <code id="thresholdNote">threshold</code>
+    dryness threshold; "dry magnitude" is how far below threshold it typically fell on those months. Generated
+    from <code>outputs/monthly_ndvi_ndwi_ndmi.nc</code> and <code>outputs/era5_temperature_monthly.csv</code>,
+    published via <code>publish_site.py</code> - no live data connection. Looking for the monthly NDVI/NDWI/NDMI
+    imagery slider that used to live here? It's now on the
+    <a href="monitoring.html">Monitoring &amp; Alerts</a> page, alongside current conditions and vegetation-break alerts.
+  </footer>
+</div>
+
+<footer class="site-footer" data-i18n-html="footer.html">
+  Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
+  <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
+</footer>
+
+<script>
+window.VerdantisReady.then(function (ready) {
+  "use strict";
+  var t = ready.t;
+  fetch("data/sector_explorer_data.json").then(function (r) { return r.json(); }).then(function (DATA) {
+  var grid = DATA.grid;
+
+  // ---------- shared state ----------
+  var currentMetric = "freq_pct";
+  var currentRange = "full"; // "full" | "1y"
+  var currentIndex = "ndwi"; // "ndwi" | "ndmi"
+  var sectorByKey = {};
+  var metricRange = {};
+
+  function activeData() { return DATA.indices[currentIndex]; }
+
+  function fieldKey(base) {
+    return currentRange === "1y" ? base + "_1y" : base;
+  }
+
+  function rebuildSectorIndex() {
+    sectorByKey = {};
+    activeData().sectors.forEach(function (s) { sectorByKey[s.row + "," + s.col] = s; });
+  }
+
+  function maxOf(field) {
+    return Math.max.apply(null, activeData().sectors.map(function (s) { return s[field] || 0; })) || 0.01;
+  }
+  function rebuildMetricRange() {
+    metricRange = {
+      freq_pct: [0, 100],
+      freq_pct_1y: [0, 100],
+      magnitude: [0, maxOf("magnitude")],
+      magnitude_1y: [0, maxOf("magnitude_1y")]
+    };
+  }
+
+  var VALID_COUNT_FIELD = { full: "n_valid_months", "1y": "n_valid_months_1y" };
+
+  function updateSummaryStats() {
+    var n1y = currentRange === "1y";
+    var countField = VALID_COUNT_FIELD[currentRange];
+    var withData = activeData().sectors.filter(function (s) { return (s[countField] || 0) > 0; }).length;
+    document.getElementById("statSectors").textContent = withData + " / " + (grid.rows * grid.cols);
+    document.getElementById("statMonths").textContent = n1y ? DATA.last_year_months : DATA.months.length;
+    document.getElementById("statMeanLabel").textContent = t("js.plot_mean_prefix") + " " + currentIndex.toUpperCase();
+    document.getElementById("statMean").textContent = fmt(activeData().plot_summary[fieldKey("mean")], 3);
+    document.getElementById("statCorrLabel").textContent = currentIndex.toUpperCase() + t("js.corr_suffix");
+    document.getElementById("statCorr").textContent = fmtCorr(activeData().plot_summary[fieldKey("corr")]);
+    document.getElementById("thresholdNote").textContent = activeData().threshold;
+  }
+
+  function fmt(v, digits) {
+    if (v === null || v === undefined || Number.isNaN(v)) return "–";
+    return v.toFixed(digits === undefined ? 2 : digits);
+  }
+  function fmtCorr(v) {
+    if (v === null || v === undefined) return "–";
+    return (v >= 0 ? "+" : "") + v.toFixed(3);
+  }
+  var MONTH_NAMES = t("js.month_names");
+  function monthLabel(m) {
+    var parts = m.split("-");
+    return MONTH_NAMES[parseInt(parts[1], 10) - 1] + " " + parts[0];
+  }
+
+  // ---------- tokens (re-read from CSS so canvas/SVG stay in sync with the palette above) ----------
+  function tokens() {
+    var cs = getComputedStyle(document.documentElement);
+    var g = function (name) { return cs.getPropertyValue(name).trim(); };
+    return {
+      surface1: g("--surface-1"), gridline: g("--gridline"), border: g("--border"),
+      textMuted: g("--text-muted"), textSecondary: g("--text-secondary"), textPrimary: g("--text-primary"),
+      seqLow: g("--seq-low"), seqHigh: g("--seq-high"),
+      index: g("--series-index"), temp: g("--series-temp"), baseline: g("--baseline")
+    };
+  }
+
+  function hexToRgb(hex) {
+    hex = hex.replace("#", "");
+    return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2, 4), 16), parseInt(hex.slice(4, 6), 16)];
+  }
+  function lerpColor(hexA, hexB, t) {
+    var a = hexToRgb(hexA), b = hexToRgb(hexB);
+    var r = Math.round(a[0] + (b[0] - a[0]) * t);
+    var g = Math.round(a[1] + (b[1] - a[1]) * t);
+    var bl = Math.round(a[2] + (b[2] - a[2]) * t);
+    return "rgb(" + r + "," + g + "," + bl + ")";
+  }
+
+  // ---------- sector grid (canvas) ----------
+  var canvas = document.getElementById("sectorCanvas");
+  var ctx = canvas.getContext("2d");
+  var wrap = document.getElementById("gridWrap");
+  var tooltipEl = document.getElementById("cellTooltip");
+  var selected = null; // {row, col} or null = whole plot
+  var CELL = 20; // logical px per sector cell
+
+  function metricLabel(metric) {
+    return metric === "freq_pct" ? t("js.metric_freq_unit") : t("js.metric_deficit", { index: currentIndex.toUpperCase() });
+  }
+  function metricFmt(metric, v) {
+    return metric === "freq_pct" ? fmt(v, 1) + "%" : fmt(v, 3);
+  }
+
+  function layout() {
+    var dpr = window.devicePixelRatio || 1;
+    var w = grid.cols * CELL, h = grid.rows * CELL;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = "100%";
+    canvas.style.aspectRatio = w + " / " + h;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function drawGrid() {
+    var t = tokens();
+    var key = fieldKey(currentMetric);
+    var range = metricRange[key];
+    ctx.clearRect(0, 0, grid.cols * CELL, grid.rows * CELL);
+
+    for (var row = 0; row < grid.rows; row++) {
+      for (var col = 0; col < grid.cols; col++) {
+        var s = sectorByKey[row + "," + col];
+        var x = col * CELL, y = row * CELL;
+        // null covers both "no sector here at all" and "sector exists but has
+        // no valid pixel in the currently-selected time window" - both render
+        // the same (blank) way, since neither has a value to color by.
+        var v = s ? s[key] : null;
+        if (v === null || v === undefined) {
+          ctx.fillStyle = t.surface1;
+          ctx.fillRect(x, y, CELL, CELL);
+          continue;
+        }
+        var norm = range[1] > range[0] ? (v - range[0]) / (range[1] - range[0]) : 0;
+        norm = Math.max(0, Math.min(1, norm));
+        ctx.fillStyle = lerpColor(t.seqLow, t.seqHigh, norm);
+        ctx.fillRect(x, y, CELL, CELL);
+      }
+    }
+
+    // gridlines
+    ctx.strokeStyle = t.surface1;
+    ctx.lineWidth = 1;
+    for (var r2 = 0; r2 <= grid.rows; r2++) {
+      ctx.beginPath(); ctx.moveTo(0, r2 * CELL); ctx.lineTo(grid.cols * CELL, r2 * CELL); ctx.stroke();
+    }
+    for (var c2 = 0; c2 <= grid.cols; c2++) {
+      ctx.beginPath(); ctx.moveTo(c2 * CELL, 0); ctx.lineTo(c2 * CELL, grid.rows * CELL); ctx.stroke();
+    }
+
+    // selection ring
+    if (selected) {
+      ctx.strokeStyle = t.textPrimary;
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(selected.col * CELL + 1.25, selected.row * CELL + 1.25, CELL - 2.5, CELL - 2.5);
+    }
+  }
+
+  function updateLegend() {
+    var key = fieldKey(currentMetric);
+    document.getElementById("legendLow").textContent = currentMetric === "freq_pct" ? "0%" : "0";
+    document.getElementById("legendHigh").textContent =
+      currentMetric === "freq_pct" ? "100%" : fmt(metricRange[key][1], 2);
+  }
+
+  function cellFromEvent(evt) {
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = (grid.cols * CELL) / rect.width;
+    var scaleY = (grid.rows * CELL) / rect.height;
+    var x = (evt.clientX - rect.left) * scaleX;
+    var y = (evt.clientY - rect.top) * scaleY;
+    var col = Math.floor(x / CELL), row = Math.floor(y / CELL);
+    if (row < 0 || row >= grid.rows || col < 0 || col >= grid.cols) return null;
+    return { row: row, col: col };
+  }
+
+  canvas.addEventListener("mousemove", function (evt) {
+    var c = cellFromEvent(evt);
+    var s = c && sectorByKey[c.row + "," + c.col];
+    if (!s) { tooltipEl.classList.remove("visible"); return; }
+    var val = s[fieldKey(currentMetric)];
+    var rect = wrap.getBoundingClientRect();
+    tooltipEl.style.left = (evt.clientX - rect.left) + "px";
+    tooltipEl.style.top = (evt.clientY - rect.top - 10) + "px";
+    var sectorLabel = t("js.sector_label", { row: c.row, col: c.col });
+    if (val === null || val === undefined) {
+      tooltipEl.innerHTML =
+        '<span class="lab">' + sectorLabel + '</span><br>' +
+        '<span class="lab">' + t("js.no_data_window") + '</span>';
+    } else {
+      tooltipEl.innerHTML =
+        '<span class="lab">' + sectorLabel + '</span><br>' +
+        '<span class="val">' + metricFmt(currentMetric, val) + '</span> <span class="lab">' + metricLabel(currentMetric) + '</span><br>' +
+        '<span class="lab">' + t("js.mean_prefix") + ' ' + currentIndex.toUpperCase() + ' ' + fmt(s[fieldKey("mean")], 3) + ' · ' + s.n_pixels + ' ' + t("js.px_suffix") + '</span>';
+    }
+    tooltipEl.classList.add("visible");
+  });
+  canvas.addEventListener("mouseleave", function () { tooltipEl.classList.remove("visible"); });
+  canvas.addEventListener("click", function (evt) {
+    var c = cellFromEvent(evt);
+    var s = c && sectorByKey[c.row + "," + c.col];
+    if (!s) return;
+    selected = c;
+    drawGrid();
+    renderDetail(s);
+  });
+
+  function wireSegmented(selector, onSelect) {
+    document.querySelectorAll(selector).forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var group = btn.closest(".segmented");
+        group.querySelectorAll("button").forEach(function (b) { b.setAttribute("aria-pressed", "false"); });
+        btn.setAttribute("aria-pressed", "true");
+        onSelect(btn);
+        refresh();
+      });
+    });
+  }
+  wireSegmented('.segmented[aria-label="Moisture index"] button', function (btn) {
+    currentIndex = btn.getAttribute("data-moisture-index");
+    rebuildSectorIndex();
+    rebuildMetricRange();
+  });
+  wireSegmented('.segmented[aria-label="Grid color metric"] button', function (btn) {
+    currentMetric = btn.getAttribute("data-metric");
+  });
+  wireSegmented('.segmented[aria-label="Time window"] button', function (btn) {
+    currentRange = btn.getAttribute("data-range");
+  });
+
+  function refresh() {
+    updateLegend();
+    updateSummaryStats();
+    drawGrid();
+    renderDetail(selected ? sectorByKey[selected.row + "," + selected.col] : null);
+  }
+
+  // ---------- detail panel: two stacked single-series charts ----------
+  var chartTooltip = document.getElementById("chartTooltip");
+
+  function renderLineChart(svgEl, months, values, colorVar, yMin, yMax, unit, decimals) {
+    var t = tokens();
+    var color = colorVar === "index" ? t.index : t.temp;
+    var W = 640, H = 140, padL = 34, padR = 8, padT = 10, padB = 20;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var n = months.length;
+
+    function xAt(i) { return padL + (n > 1 ? (i / (n - 1)) * plotW : plotW / 2); }
+    function yAt(v) { return padT + (1 - (v - yMin) / (yMax - yMin)) * plotH; }
+
+    var svg = ['<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'];
+
+    // gridlines (3 horizontal)
+    for (var gtick = 0; gtick <= 2; gtick++) {
+      var gv = yMin + (gtick / 2) * (yMax - yMin);
+      var gy = yAt(gv);
+      svg.push('<line x1="' + padL + '" y1="' + gy + '" x2="' + (W - padR) + '" y2="' + gy + '" stroke="' + t.gridline + '" stroke-width="1"/>');
+      svg.push('<text x="' + (padL - 6) + '" y="' + (gy + 3) + '" text-anchor="end" font-size="9.5" fill="' + t.textMuted + '">' + gv.toFixed(decimals) + '</text>');
+    }
+
+    // line, split into segments across gaps (null values)
+    var seg = [];
+    var segs = [];
+    for (var i = 0; i < n; i++) {
+      if (values[i] === null || values[i] === undefined) {
+        if (seg.length) { segs.push(seg); seg = []; }
+        continue;
+      }
+      seg.push([xAt(i), yAt(values[i])]);
+    }
+    if (seg.length) segs.push(seg);
+    segs.forEach(function (s) {
+      var d = s.map(function (p, idx) { return (idx === 0 ? "M" : "L") + p[0].toFixed(2) + "," + p[1].toFixed(2); }).join(" ");
+      svg.push('<path d="' + d + '" class="chart-line" stroke="' + color + '"/>');
+    });
+
+    // x-axis year ticks (first month of each year present)
+    var lastYear = null;
+    for (var j = 0; j < n; j++) {
+      var yr = months[j].slice(0, 4);
+      if (yr !== lastYear) {
+        lastYear = yr;
+        svg.push('<text x="' + xAt(j) + '" y="' + (H - 4) + '" text-anchor="start" font-size="9.5" fill="' + t.textMuted + '">' + yr + '</text>');
+      }
+    }
+
+    // invisible hit rects per point + crosshair group
+    svg.push('<g id="hit-' + svgEl.id + '">');
+    for (var k = 0; k < n; k++) {
+      if (values[k] === null || values[k] === undefined) continue;
+      svg.push('<circle cx="' + xAt(k) + '" cy="' + yAt(values[k]) + '" r="10" fill="transparent" data-i="' + k + '"/>');
+    }
+    svg.push('</g>');
+    svg.push('<line id="cross-' + svgEl.id + '" class="crosshair" x1="0" y1="' + padT + '" x2="0" y2="' + (H - padB) + '" style="display:none" stroke="' + t.baseline + '"/>');
+    svg.push('<circle id="dot-' + svgEl.id + '" r="3.4" fill="' + color + '" stroke="' + t.surface1 + '" stroke-width="1.5" style="display:none"/>');
+
+    svg.push('</svg>');
+    svgEl.innerHTML = svg.join("");
+    svgEl.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+    var cross = svgEl.querySelector("#cross-" + svgEl.id);
+    var dot = svgEl.querySelector("#dot-" + svgEl.id);
+
+    function showAt(i, evt) {
+      var v = values[i];
+      if (v === null || v === undefined) { hide(); return; }
+      var px = xAt(i), py = yAt(v);
+      cross.setAttribute("x1", px); cross.setAttribute("x2", px);
+      cross.style.display = "block";
+      dot.setAttribute("cx", px); dot.setAttribute("cy", py);
+      dot.style.display = "block";
+      var rect = svgEl.getBoundingClientRect();
+      var wrapRect = svgEl.closest(".card").getBoundingClientRect();
+      chartTooltip.style.left = (rect.left - wrapRect.left + (px / W) * rect.width) + "px";
+      chartTooltip.style.top = (rect.top - wrapRect.top + (py / H) * rect.height - 10) + "px";
+      chartTooltip.innerHTML = '<span class="val">' + v.toFixed(decimals) + unit + '</span> &nbsp;<span>' + monthLabel(months[i]) + '</span>';
+      chartTooltip.classList.add("visible");
+    }
+    function hide() {
+      cross.style.display = "none";
+      dot.style.display = "none";
+      chartTooltip.classList.remove("visible");
+    }
+    svgEl.addEventListener("pointermove", function (evt) {
+      var rect = svgEl.getBoundingClientRect();
+      var relX = (evt.clientX - rect.left) / rect.width * W;
+      var i = Math.round((relX - padL) / (n > 1 ? plotW / (n - 1) : plotW));
+      i = Math.max(0, Math.min(n - 1, i));
+      showAt(i, evt);
+    });
+    svgEl.addEventListener("pointerleave", hide);
+  }
+
+  function renderDetail(sector) {
+    var n1y = currentRange === "1y";
+    var data = activeData();
+    var summarySource = sector || data.plot_summary;
+    var months, indexValues, tempValues, title, hint;
+
+    months = DATA.months;
+    tempValues = DATA.temp;
+    if (!sector) {
+      indexValues = data.plot_summary.series;
+      title = t("js.whole_plot");
+      hint = t("js.click_hint");
+    } else {
+      indexValues = sector.series;
+      title = t("js.sector_label", { row: sector.row, col: sector.col });
+      hint = sector.n_pixels + " " + t("js.px_suffix") + " · " + sector[fieldKey("n_valid_months")] + " " + t("js.valid_months") + (n1y ? " " + t("js.last_year_suffix") : "");
+    }
+
+    var stats = [
+      [t("js.stat_mean", { index: currentIndex.toUpperCase() }), fmt(summarySource[fieldKey("mean")], 3)],
+      [t("js.stat_freq"), fmt(summarySource[fieldKey("freq_pct")], 1) + "%"],
+      [t("js.stat_magnitude"), fmt(summarySource[fieldKey("magnitude")], 3)],
+      [currentIndex.toUpperCase() + t("js.corr_suffix"), fmtCorr(summarySource[fieldKey("corr")])]
+    ];
+
+    if (n1y) {
+      var w = DATA.last_year_months;
+      months = months.slice(-w);
+      indexValues = indexValues.slice(-w);
+      tempValues = tempValues.slice(-w);
+    }
+
+    document.getElementById("selectionLabel").textContent = title;
+    document.getElementById("selectionHint").textContent = hint;
+    document.getElementById("indexChartLabel").textContent = t("js.monthly_prefix", { index: currentIndex.toUpperCase() });
+    document.getElementById("detailStats").innerHTML = stats.map(function (s) {
+      return '<div class="stat-tile"><div class="k">' + s[0] + '</div><div class="v">' + s[1] + '</div></div>';
+    }).join("");
+
+    renderLineChart(document.getElementById("indexChart"), months, indexValues, "index", -0.3, 0.3, "", 3);
+
+    var validTemps = tempValues.filter(function (v) { return v !== null && v !== undefined; });
+    var tMin = Math.min.apply(null, validTemps), tMax = Math.max.apply(null, validTemps);
+    var pad = (tMax - tMin) * 0.12 || 1;
+    renderLineChart(document.getElementById("tempChart"), months, tempValues, "temp", tMin - pad, tMax + pad, "°C", 1);
+  }
+
+  function redrawAll() {
+    drawGrid();
+    renderDetail(selected ? sectorByKey[selected.row + "," + selected.col] : null);
+  }
+
+  rebuildSectorIndex();
+  rebuildMetricRange();
+  layout();
+  updateLegend();
+  updateSummaryStats();
+  drawGrid();
+  renderDetail(null);
+
+  window.addEventListener("resize", function () { layout(); drawGrid(); });
+  }).catch(function (err) {
+    document.getElementById("tabSector").innerHTML =
+      '<p class="empty-state">' + t("js.load_error") + '</p>';
+    console.error(err);
+  });
+});
+</script>
+
+</body>
+</html>

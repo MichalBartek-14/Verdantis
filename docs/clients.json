@@ -1,7 +1,12 @@
 [
   {
     "slug": "valice",
-    "display_name": "Valice Forestry Plot",
+    "display_name": "Valice Fruit tree Plot",
     "location": "Valice, Slovakia"
+  },
+  {
+    "slug": "vepor",
+    "display_name": "Vepor Forest Plot",
+    "location": "Vepor, Slovakia"
   }
 ]

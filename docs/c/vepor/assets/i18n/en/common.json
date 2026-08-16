@@ -1,0 +1,14 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "historical": "Historical Pilot",
+    "explorer": "Sector Explorer",
+    "monitoring": "Monitoring & Alerts"
+  },
+  "badge": {
+    "default": "Pilot"
+  },
+  "footer": {
+    "html": "Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot; <a href=\"https://github.com/MichalBartek-14/Verdantis\" target=\"_blank\" rel=\"noopener\">source on GitHub</a>"
+  }
+}

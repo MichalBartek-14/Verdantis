@@ -1,0 +1,13 @@
+{
+  "slug": "vepor",
+  "display_name": "Vepor Forest Plot",
+  "client_name": "Vepor Forest Plot",
+  "location": "Vepor, Slovakia",
+  "plot_shapefile": "data/vepor/Client_Vepor.shp",
+  "plot_area_ha": 1810.26,
+  "language": "sk",
+  "alert_bbox": [19.724877, 48.653452, 19.792704, 48.694045],
+  "ndwi_dry_threshold": null,
+  "ndmi_dry_threshold": null,
+  "accent_color": "#1f5c33"
+}

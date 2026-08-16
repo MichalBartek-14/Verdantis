@@ -1,0 +1,11 @@
+{
+  "plot_shapefile": "data\\vepor\\Client_Vepor.shp",
+  "composite_date": "2026-08-09",
+  "compositing_period": "week",
+  "mean_ndvi": 0.84,
+  "mean_ndwi": 0.328,
+  "mean_ndmi": 0.354,
+  "pct_pixels_below_dry_threshold": 4.8,
+  "ndwi_dry_threshold": 0.1,
+  "note": "Pilot/precursor output - thresholds not yet calibrated against field data."
+}
