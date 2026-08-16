@@ -3,7 +3,10 @@
     "allow": [
       "PowerShell(Stop-Process *)",
       "Bash(python -u -c ' *)",
-      "Bash(python -u \"C:\\\\Users\\\\misko\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-misko-Documents-Michal-MyWork-FiguliJanko-forestry-pilot\\\\184fa294-48db-40f1-8a6c-9bf2b8495782\\\\scratchpad\\\\test_crs_fix.py\")"
+      "Bash(python -u \"C:\\\\Users\\\\misko\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-misko-Documents-Michal-MyWork-FiguliJanko-forestry-pilot\\\\184fa294-48db-40f1-8a6c-9bf2b8495782\\\\scratchpad\\\\test_crs_fix.py\")",
+      "Bash(python -c \"print\\('ok'\\)\")",
+      "Bash(.venv/Scripts/python.exe -c \"import openeo,geopandas,rioxarray,ruptures,statsmodels; print\\('deps import fine'\\)\")",
+      "Bash(.venv/Scripts/python.exe -c ' *)"
     ]
   }
 }

@@ -1,7 +1,7 @@
 {
   "slug": "valice",
-  "display_name": "Valice Forestry Plot",
-  "client_name": "Figuli & Janko",
+  "display_name": "Valice Fruit tree Plot",
+  "client_name": "Ferko Toth",
   "location": "Valice, Slovakia",
   "plot_shapefile": "data/valice/Client_Valice_Plot.shp",
   "plot_area_ha": 59.71,
