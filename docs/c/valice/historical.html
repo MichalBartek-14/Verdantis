@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Historical Pilot - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/client.js" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand-group">
+    <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+    <span class="client-badge" data-client-display-name>Pilot</span>
+  </div>
+  <nav class="site-nav">
+    <a href="index.html">Overview</a>
+    <a href="historical.html" aria-current="page">Historical Pilot</a>
+    <a href="explorer.html">Sector Explorer</a>
+    <a href="monitoring.html">Monitoring &amp; Alerts</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <span class="eyebrow">pilot_historical_analysis.py</span>
+  <h1>The client-facing pilot deliverable</h1>
+  <p>Up to five years of monthly Sentinel-2 median composites over the plot, reduced
+    to three spectral indices server-side, then analysed locally: plot-average time
+    series, a two-panel dryness map (frequency + magnitude) for both NDWI and NDMI,
+    and an ERA5 temperature overlay to sanity-check whether moisture drops track
+    warm spells.</p>
+</div>
+
+<section class="section">
+  <h2>Time series (plot-average, monthly)</h2>
+  <p class="lede">NDVI tracks vegetation vigour; NDWI and NDMI are two moisture-proxy
+    formulations of the same underlying signal (broad vs. narrow NIR band) - shown
+    side by side rather than picked between, since they're correlated but not identical.</p>
+  <div class="figure-grid">
+    <figure class="card">
+      <img src="assets/img/ndvi_timeseries.png" alt="Plot-average NDVI monthly time series" loading="lazy">
+      <figcaption><h3>NDVI</h3><p>Vegetation vigour, (NIR&minus;Red)/(NIR+Red).</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/ndwi_timeseries.png" alt="Plot-average NDWI monthly time series" loading="lazy">
+      <figcaption><h3>NDWI</h3><p>Canopy/soil moisture, broad-NIR (Gao-family) formulation.</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/ndmi_timeseries.png" alt="Plot-average NDMI monthly time series" loading="lazy">
+      <figcaption><h3>NDMI</h3><p>Moisture proxy, narrow-NIR (Sentinel Hub standard) formulation.</p></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Where the plot loses water most</h2>
+  <p class="lede">Per-pixel dryness frequency (% of months below threshold) and deficit
+    magnitude (how badly, on the months it was dry) - the frequency map complements the
+    magnitude map: a sector can be dry often but mildly, or rarely but severely.</p>
+  <div class="figure-grid">
+    <figure class="card">
+      <img src="assets/img/dryness_heatmap.png" alt="Dryness frequency heatmap, NDWI-based" loading="lazy">
+      <figcaption><h3>Dryness frequency (NDWI)</h3><p>% of valid months each pixel was classified "dry".</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/water_loss_map.png" alt="Water loss map, NDWI frequency and magnitude" loading="lazy">
+      <figcaption><h3>Water-loss map (NDWI)</h3><p>Frequency + average deficit magnitude, side by side.</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/water_loss_map_ndmi.png" alt="Water loss map, NDMI frequency and magnitude" loading="lazy">
+      <figcaption><h3>Water-loss map (NDMI)</h3><p>Same analysis, narrow-NIR index - compare against the NDWI version.</p></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="section">
+  <h2>Moisture vs. temperature</h2>
+  <p class="lede">NDWI merged against ERA5-based (Open-Meteo archive, no API key needed)
+    monthly mean air temperature for the same window and location.</p>
+  <div class="figure-grid" style="grid-template-columns: 1fr;">
+    <figure class="card">
+      <img src="assets/img/ndwi_temperature_combo.png" alt="NDWI and ERA5 temperature combo chart" loading="lazy">
+      <figcaption>
+        <h3>NDWI &amp; ERA5 temperature, monthly</h3>
+        <p>Pearson r &asymp; 0.47 (NDWI) and &asymp; 0.52 (NDMI) vs. temperature over the full
+          history, printed by the script on every run - a sanity check, not a calibrated
+          relationship.</p>
+      </figcaption>
+    </figure>
+  </div>
+  <div class="note">
+    Every threshold and correlation on this page is a pilot starting point.
+    NDWI/NDMI "dry" thresholds (0.10 here) and the cloud-mask kernel sizes are
+    copied from documented defaults, not independently tuned for this plot's species
+    or soil - see the project README before using any number to drive a real decision.
+  </div>
+</section>
+
+<footer class="site-footer">
+  Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
+  <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
+</footer>
+
+</body>
+</html>

@@ -218,4 +218,12 @@ def run_alert():
 
 
 if __name__ == "__main__":
+    import argparse
+    import clients
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    clients.add_client_arg(parser)
+    args = parser.parse_args()
+    clients.apply_client_overrides(config, clients.load_client(args.client))
+
     run_alert()

@@ -1,10 +1,18 @@
 """
 Central configuration for the forestry monitoring pilot.
 
-Edit these values per client / per site before running either script.
-Nothing in the two entry-point scripts (pilot_historical_analysis.py,
-drought_monitor_recent.py) should need to change between clients - only
-this file.
+Settings that are the SAME for every client (backend URL, collection id,
+cloud-mask kernel sizes, monthly reducer, history window length, BFAST
+seasonal period/penalty scale, ...) live here and don't change between
+clients or runs.
+
+Settings that DIFFER per client/plot (shapefile path, alert bbox, dryness
+thresholds) live in clients/<slug>.json instead and are patched onto this
+module at the top of every entry-point script's __main__ block via
+clients.apply_client_overrides() - see clients.py. PLOT_SHAPEFILE /
+ALERT_BBOX / OUTPUT_DIR below are therefore just fallback placeholders,
+never the values an actual run uses; every entry point requires
+--client <slug> and will always override them before config is read.
 """
 from pathlib import Path
 
@@ -17,11 +25,12 @@ from pathlib import Path
 OPENEO_BACKEND_URL = "https://openeo.dataspace.copernicus.eu"
 COLLECTION_ID = "SENTINEL2_L2A"
 
-# --- Client plot -------------------------------------------------------------
-# Point this at the client-supplied shapefile (.shp + .dbf/.shx/.prj sidecars
-# must all be present in the same folder). Any CRS is fine - it's reprojected
-# to EPSG:4326 automatically.1
-PLOT_SHAPEFILE = Path("data/Client_Valice_Plot.shp")
+# --- Client plot ---------------------------------------------------------
+# Fallback only - see the module docstring. Real value comes from
+# clients/<slug>.json's "plot_shapefile" (.shp + .dbf/.shx/.prj sidecars
+# must all be present in the same folder). Any CRS is fine - it's
+# reprojected to EPSG:4326 automatically.
+PLOT_SHAPEFILE = Path("data/PLACEHOLDER_SET_VIA_CLIENT_JSON.shp")
 
 # Small buffer (metres) requested around the plot boundary so the raster
 # grid has a pixel or two of margin before we clip back to the exact
@@ -81,10 +90,12 @@ SCL_MASK_KWARGS = dict(
 # A separate, parallel product from the plot/sector moisture monitoring above:
 # point it at ANY bounding box (not necessarily the client plot) and it pulls
 # every available raw Sentinel-2 scene there (no monthly/weekly compositing),
-# then flags likely structural breaks in the NDVI trend. Defaults to the
-# client plot's own bbox so `bfast_alert.py` runs out of the box - edit to any
-# area of interest. [west, south, east, north] in EPSG:4326.
-ALERT_BBOX = [20.197525, 48.444518, 20.210338, 48.452160]
+# then flags likely structural breaks in the NDVI trend. [west, south, east,
+# north] in EPSG:4326. Fallback only (see module docstring) - real value
+# comes from clients/<slug>.json's "alert_bbox", which defaults to that
+# client's own plot bbox so `bfast_alert.py --client <slug>` runs out of the
+# box - edit the client's JSON to point it at any other area of interest.
+ALERT_BBOX = [0.0, 0.0, 0.0, 0.0]
 ALERT_YEARS = 5                 # how far back to pull every available scene from
 
 # After pulling the irregular per-scene series, it's regularised onto a
@@ -102,5 +113,7 @@ BFAST_SEASONAL_PERIOD = 12      # months per seasonal cycle for STL decompositio
 # confident breaks.
 BFAST_PENALTY_SCALE = 1.0
 
-# --- Output --------------------------------------------------------------------
+# --- Output ----------------------------------------------------------------
+# Fallback only - clients.apply_client_overrides() always repoints this at
+# outputs/<slug>/ so different clients' downloads/results never collide.
 OUTPUT_DIR = Path("outputs")

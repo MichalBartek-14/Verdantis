@@ -1,5 +1,5 @@
 {
-  "plot_shapefile": "data\\Client_Valice_Plot.shp",
+  "plot_shapefile": "data\\valice\\Client_Valice_Plot.shp",
   "composite_date": "2026-08-09",
   "compositing_period": "week",
   "mean_ndvi": 0.459,

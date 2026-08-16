@@ -50,6 +50,12 @@ img { max-width: 100%; display: block; }
   border-bottom: 1px solid var(--border);
 }
 
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -58,6 +64,18 @@ img { max-width: 100%; display: block; }
   color: var(--text);
   font-weight: 700;
   font-size: 1.15rem;
+}
+
+.client-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .brand .mark {

@@ -2,32 +2,45 @@
 Publish step for the Verdantis static site (docs/).
 
 This is the ONLY link between the local backend and the public site: run
-it by hand whenever you want the site to reflect a fresh pipeline run
-(after pilot_historical_analysis.py / drought_monitor_recent.py /
-build_sector_explorer_data.py / bfast_alert.py), then commit + push
-docs/. The published pages never call openEO or talk to this machine -
-they only read the already-computed files this script writes into
-docs/assets and docs/data, so the site stays a plain static deploy
-(GitHub Pages, Netlify, ...) with no backend to host or secure.
+it by hand whenever you want a client's dashboard to reflect a fresh
+pipeline run (after pilot_historical_analysis.py / drought_monitor_recent.py
+/ build_sector_explorer_data.py / bfast_alert.py --client <slug>), then
+commit + push docs/. The published pages never call openEO or talk to
+this machine - they only read the already-computed files this script
+writes into each client's docs/c/<slug>/assets and docs/c/<slug>/data, so
+the site stays a plain static deploy (GitHub Pages, Netlify, ...) with no
+backend to host or secure.
 
-The HTML pages themselves (index.html, historical.html, explorer.html,
-monitoring.html) are hand-maintained templates committed to docs/ - this
-script never overwrites them, only the data/images they fetch or embed.
+The site's HTML/CSS/JS (docs/_template/) is ONE hand-maintained template,
+shared byte-for-byte across every client - this script copies it into
+each docs/c/<slug>/ verbatim and never edits it. Only data + a handful of
+images differ per client; see clients/README (clients.py's module
+docstring) for the registry format and docs/_template/assets/client.js
+for how the site personalizes itself from data/client_meta.json at
+runtime (name, location, plot area, accent color).
 
-Run:    python publish_site.py
+Data isolation note: this repo is a SHARED codebase for every client (per
+clients/*.json), but each client's docs/c/<slug>/ is meant to be deployed
+- and access-controlled - independently (e.g. one Cloudflare Access rule
+per /c/<slug>/* path, or one subdomain per client). Nothing here enforces
+that at hosting time; it's a deploy/DNS/access-control decision, not code.
+
+Run:
+    python publish_site.py --client valice     # one client
+    python publish_site.py --all                # every client in clients/
 """
 import json
 import shutil
 from pathlib import Path
 
-import config
+import clients
 
 DOCS = Path("docs")
-IMG = DOCS / "assets" / "img"
-DATA = DOCS / "data"
-RECENT_IMG = IMG / "recent"
+TEMPLATE = DOCS / "_template"
+CLIENTS_ROOT = DOCS / "c"
+CLIENTS_MANIFEST = DOCS / "clients.json"
 
-# Historical pilot charts/maps referenced by docs/historical.html -
+# Historical pilot charts/maps referenced by _template/historical.html -
 # copied as-is, they're already client-ready PNGs.
 HISTORICAL_IMAGES = [
     "ndvi_timeseries.png",
@@ -39,14 +52,15 @@ HISTORICAL_IMAGES = [
     "ndwi_temperature_combo.png",
 ]
 
-# Alert charts referenced by docs/monitoring.html - one per history window
-# (bfast_alert.py writes a full-history chart plus a "last year" zoom into
-# the same fit; see its window_view() for why 1y isn't a separate model).
+# Alert charts referenced by _template/monitoring.html - one per history
+# window (bfast_alert.py writes a full-history chart plus a "last year"
+# zoom into the same fit; see its window_view() for why 1y isn't a
+# separate model).
 ALERT_IMAGES = ["alert_ndvi_breaks.png", "alert_ndvi_breaks_1y.png"]
 
 
-def _copy(name, dest_dir):
-    src = config.OUTPUT_DIR / name
+def _copy(src_dir: Path, name: str, dest_dir: Path) -> bool:
+    src = src_dir / name
     if not src.exists():
         return False
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -54,88 +68,133 @@ def _copy(name, dest_dir):
     return True
 
 
-def publish_historical():
-    print("Historical pilot images:")
+def publish_client_site(slug: str) -> None:
+    client = clients.load_client(slug)
+    out = CLIENTS_ROOT / slug
+    img = out / "assets" / "img"
+    data = out / "data"
+    outputs_dir = Path("outputs") / slug
+
+    print(f"=== {slug} ({client['display_name']}) ===")
+
+    # 1. Site shell - byte-identical template, re-copied every run so a
+    #    template edit reaches every client on their next publish without
+    #    needing per-client changes.
+    if out.exists():
+        shutil.rmtree(out)
+    shutil.copytree(TEMPLATE, out)
+    print(f"  template -> {out}/")
+
+    # 2. Personalization metadata - the one file client.js reads.
+    data.mkdir(parents=True, exist_ok=True)
+    meta = {
+        "slug": client["slug"],
+        "display_name": client["display_name"],
+        "client_name": client["client_name"],
+        "location": client["location"],
+        "plot_area_ha": client.get("plot_area_ha"),
+        "accent_color": client.get("accent_color", "#2c7a3c"),
+    }
+    with open(data / "client_meta.json", "w") as f:
+        json.dump(meta, f, indent=2)
+    print("  wrote: data/client_meta.json")
+
+    # 3. Historical pilot images.
+    print("  historical pilot images:")
     for name in HISTORICAL_IMAGES:
-        ok = _copy(name, IMG)
-        print(f"  {'copied' if ok else 'MISSING (run pilot_historical_analysis.py)'}: {name}")
+        ok = _copy(outputs_dir, name, img)
+        print(f"    {'copied' if ok else 'MISSING (run pilot_historical_analysis.py --client ' + slug + ')'}: {name}")
 
-
-def publish_alerts():
-    print("Alert chart + breaks:")
+    # 4. Alert charts + breaks.
+    print("  alert charts + breaks:")
     for name in ALERT_IMAGES:
-        ok = _copy(name, IMG)
-        print(f"  {'copied' if ok else 'MISSING (run bfast_alert.py)'}: {name}")
-
-    breaks_src = config.OUTPUT_DIR / "alert_breaks.json"
-    if breaks_src.exists():
-        DATA.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(breaks_src, DATA / "alert_breaks.json")
-        print("  copied: alert_breaks.json")
+        ok = _copy(outputs_dir, name, img)
+        print(f"    {'copied' if ok else 'MISSING (run bfast_alert.py --client ' + slug + ')'}: {name}")
+    if _copy(outputs_dir, "alert_breaks.json", data):
+        print("    copied: alert_breaks.json")
     else:
-        print("  MISSING (run bfast_alert.py): alert_breaks.json")
+        print(f"    MISSING (run bfast_alert.py --client {slug}): alert_breaks.json")
 
-
-def publish_recent():
-    """Copies the newest drought_summary_*.json (by filename, which is
-    date-stamped) to a fixed data/drought_summary_latest.json name so
-    docs/monitoring.html's fetch() doesn't need to know today's date, plus
-    its matching NDVI/NDWI/NDMI quicklook triple from recent_composites/."""
-    print("Recent drought monitor:")
-    summaries = sorted(config.OUTPUT_DIR.glob("drought_summary_*.json"))
+    # 5. Recent drought monitor: newest drought_summary_*.json (filename is
+    #    date-stamped) copied to a fixed name so monitoring.html's fetch()
+    #    doesn't need to know today's date, plus its matching quicklook trio.
+    print("  recent drought monitor:")
+    summaries = sorted(outputs_dir.glob("drought_summary_*.json"))
     if not summaries:
-        print("  MISSING (run drought_monitor_recent.py): no drought_summary_*.json")
-        return
-    latest = summaries[-1]
-    DATA.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(latest, DATA / "drought_summary_latest.json")
-    print(f"  copied: {latest.name} -> data/drought_summary_latest.json")
-
-    latest_date = latest.stem.replace("drought_summary_", "")
-    recent_dir = config.OUTPUT_DIR / "recent_composites"
-    RECENT_IMG.mkdir(parents=True, exist_ok=True)
-    copied = 0
-    for index_name in ("ndvi", "ndwi", "ndmi"):
-        src = recent_dir / f"{index_name}_quicklook_{latest_date}.png"
-        if src.exists():
-            shutil.copy2(src, RECENT_IMG / src.name)
-            copied += 1
-    print(f"  copied {copied}/3 latest quicklook(s) for {latest_date}")
-
-
-def publish_sector_explorer():
-    """docs/explorer.html (hand-maintained template) fetches
-    data/sector_explorer_data.json at runtime - this just refreshes that
-    JSON from build_sector_explorer_data.py's output, with the "imagery"
-    key split off into its own file (data/monthly_imagery.json, used by
-    the slider on docs/monitoring.html instead) since it's ~80% of the
-    payload's size and the sector map itself never reads it."""
-    print("Sector explorer + monthly imagery data:")
-    src = config.OUTPUT_DIR / "sector_explorer_data.json"
-    if not src.exists():
-        print("  MISSING (run build_sector_explorer_data.py): sector_explorer_data.json")
-        return
-
-    with open(src) as f:
-        payload = json.load(f)
-    imagery = payload.pop("imagery", None)
-
-    DATA.mkdir(parents=True, exist_ok=True)
-    with open(DATA / "sector_explorer_data.json", "w") as f:
-        json.dump(payload, f, allow_nan=False)
-    print(f"  wrote: data/sector_explorer_data.json ({(DATA / 'sector_explorer_data.json').stat().st_size / 1024:.0f} KB, imagery-free)")
-
-    if imagery is not None:
-        with open(DATA / "monthly_imagery.json", "w") as f:
-            json.dump(imagery, f, allow_nan=False)
-        print(f"  wrote: data/monthly_imagery.json ({(DATA / 'monthly_imagery.json').stat().st_size / 1024:.0f} KB)")
+        print(f"    MISSING (run drought_monitor_recent.py --client {slug}): no drought_summary_*.json")
     else:
-        print("  no 'imagery' key in sector_explorer_data.json - monthly_imagery.json left untouched")
+        latest = summaries[-1]
+        shutil.copy2(latest, data / "drought_summary_latest.json")
+        print(f"    copied: {latest.name} -> data/drought_summary_latest.json")
+
+        latest_date = latest.stem.replace("drought_summary_", "")
+        recent_dir = outputs_dir / "recent_composites"
+        recent_img = img / "recent"
+        recent_img.mkdir(parents=True, exist_ok=True)
+        copied = sum(
+            _copy(recent_dir, f"{idx}_quicklook_{latest_date}.png", recent_img)
+            for idx in ("ndvi", "ndwi", "ndmi")
+        )
+        print(f"    copied {copied}/3 latest quicklook(s) for {latest_date}")
+
+    # 6. Sector explorer + monthly imagery data - imagery split off since
+    #    it's ~80% of the payload's size and the sector map itself never
+    #    reads it (see docs/_template/monitoring.html for the slider that does).
+    print("  sector explorer + monthly imagery data:")
+    src = outputs_dir / "sector_explorer_data.json"
+    if not src.exists():
+        print(f"    MISSING (run build_sector_explorer_data.py --client {slug}): sector_explorer_data.json")
+    else:
+        with open(src) as f:
+            payload = json.load(f)
+        imagery = payload.pop("imagery", None)
+        with open(data / "sector_explorer_data.json", "w") as f:
+            json.dump(payload, f, allow_nan=False)
+        print(f"    wrote: data/sector_explorer_data.json ({(data / 'sector_explorer_data.json').stat().st_size / 1024:.0f} KB, imagery-free)")
+        if imagery is not None:
+            with open(data / "monthly_imagery.json", "w") as f:
+                json.dump(imagery, f, allow_nan=False)
+            print(f"    wrote: data/monthly_imagery.json ({(data / 'monthly_imagery.json').stat().st_size / 1024:.0f} KB)")
+
+    print(f"  done -> {out}/index.html\n")
+
+
+def update_manifest() -> None:
+    """docs/clients.json - the root picker page's (docs/index.html) only
+    data source. Rebuilt from the client registry filtered to whoever has
+    actually been published (has a docs/c/<slug>/ folder), not just
+    whoever's configured - so a client added to clients/ but never
+    published doesn't show up as a dead link."""
+    manifest = []
+    for slug in clients.list_clients():
+        if not (CLIENTS_ROOT / slug).exists():
+            continue
+        client = clients.load_client(slug)
+        manifest.append({
+            "slug": slug,
+            "display_name": client["display_name"],
+            "location": client["location"],
+        })
+    with open(CLIENTS_MANIFEST, "w") as f:
+        json.dump(manifest, f, indent=2)
+    print(f"Updated {CLIENTS_MANIFEST} ({len(manifest)} published client(s))")
 
 
 if __name__ == "__main__":
-    publish_historical()
-    publish_alerts()
-    publish_recent()
-    publish_sector_explorer()
-    print("\nDone. Review docs/ locally, then `git add docs/` + commit + push to publish.")
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--client", help="Publish a single client slug.")
+    group.add_argument("--all", action="store_true", help="Publish every client in clients/.")
+    args = parser.parse_args()
+
+    slugs = clients.list_clients() if args.all else [args.client]
+    if not slugs:
+        raise SystemExit("No clients configured under clients/ - see clients/_example.json.template.")
+
+    for slug in slugs:
+        publish_client_site(slug)
+    update_manifest()
+
+    print("Review docs/ locally, then `git add docs/` + commit + push to publish.")

@@ -2,89 +2,70 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Verdantis - Satellite Moisture &amp; Vegetation Monitoring</title>
+<title>Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Verdantis - a Sentinel-2 based pilot for monitoring forestry/agriculture plot moisture, vegetation vigour, and structural vegetation breaks.">
+<meta name="description" content="Verdantis - satellite moisture and vegetation monitoring, client dashboards.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="_template/assets/style.css">
+<style>
+  /* This picker page isn't itself a client dashboard - it's the one place
+     in the site that's genuinely shared, so it lives at docs/ root rather
+     than inside _template/ (which publish_site.py copies byte-identical
+     into every docs/c/<slug>/). Reuses the template's stylesheet directly
+     rather than a forked copy, so both stay visually in sync for free. */
+  body { background: var(--bg); }
+  .picker-wrap { max-width: 720px; margin: 0 auto; padding: 70px clamp(20px, 5vw, 56px) 90px; }
+  .picker-wrap h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 10px; }
+  .picker-wrap > p { color: var(--text-muted); margin: 0 0 34px; max-width: 60ch; }
+  .client-list { display: flex; flex-direction: column; gap: 14px; }
+  .client-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 18px 22px; text-decoration: none; color: var(--text);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .client-row:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(20,35,26,0.14); }
+  .client-row .name { font-weight: 700; font-size: 1.05rem; }
+  .client-row .loc { font-size: 0.88rem; color: var(--text-muted); margin-top: 2px; }
+  .client-row .go { font-size: 0.85rem; font-weight: 700; color: var(--green-dark); white-space: nowrap; }
+  .empty-note, .error-note { color: var(--text-muted); font-size: 0.92rem; }
+</style>
 </head>
 <body>
 
-<header class="site-header">
-  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
-  <nav class="site-nav">
-    <a href="index.html" aria-current="page">Overview</a>
-    <a href="historical.html">Historical Pilot</a>
-    <a href="explorer.html">Sector Explorer</a>
-    <a href="monitoring.html">Monitoring &amp; Alerts</a>
-  </nav>
-</header>
+<div class="picker-wrap">
+  <span class="eyebrow" style="display:block;margin-bottom:10px;">Verdantis</span>
+  <h1>Client dashboards</h1>
+  <p>Satellite-based moisture &amp; vegetation monitoring, one dashboard per plot. Each
+    client's data is published independently - pick a client below.</p>
 
-<main>
-  <section class="hero">
-    <div class="hero-inner">
-      <span class="eyebrow">Sentinel-2 &middot; openEO &middot; ERA5</span>
-      <h1>Moisture &amp; vegetation<br>monitoring, from <span>orbit</span>.</h1>
-      <p class="tagline">
-        Verdantis turns free Copernicus Sentinel-2 imagery into a plot-level view of
-        vegetation vigour (NDVI), canopy/soil moisture (NDWI &amp; NDMI), and
-        structural change - built as a client-facing pilot for a single forestry
-        plot, reusable for any shapefile.
-      </p>
-      <div class="actions">
-        <a class="btn btn-primary" href="historical.html">View the historical pilot</a>
-        <a class="btn btn-ghost" href="explorer.html">Open the sector explorer</a>
-      </div>
-      <div class="plot-tag"><span class="dot"></span> Live pilot plot: Valice, Slovakia &middot; 5-year Sentinel-2 record</div>
-    </div>
-  </section>
-
-  <div class="stat-strip">
-    <div class="stat"><div class="value">5 yrs</div><div class="label">Monthly history</div></div>
-    <div class="stat"><div class="value">3</div><div class="label">Spectral indices tracked</div></div>
-    <div class="stat"><div class="value">weekly</div><div class="label">Recent-conditions cadence</div></div>
-    <div class="stat"><div class="value">0</div><div class="label">Cost - free CDSE + Open-Meteo data</div></div>
+  <div class="client-list" id="client-list">
+    <p class="empty-note">Loading&hellip;</p>
   </div>
+</div>
 
-  <section class="section">
-    <h2>Four views into the same plot</h2>
-    <p class="lede">
-      Each product below is generated locally from the same Sentinel-2 pipeline
-      and openly documented - none of the thresholds are calibrated operational
-      alerts yet, they're pilot starting points meant to be checked against field
-      observations before driving real decisions.
-    </p>
-    <div class="feature-grid">
-      <a class="feature-card" href="historical.html">
-        <span class="icon">📈</span>
-        <h3>Historical Pilot</h3>
-        <p>Up to 5 years of monthly NDVI/NDWI/NDMI time series, a frequency + magnitude
-          "where does the plot lose water most" map, and an ERA5 temperature overlay.</p>
-        <span class="go">Explore the deliverable &rarr;</span>
-      </a>
-      <a class="feature-card" href="explorer.html">
-        <span class="icon">🗺️</span>
-        <h3>Sector Explorer</h3>
-        <p>Interactive map - the plot split into 5&times;5-pixel sectors, toggle NDWI/NDMI,
-          click any sector for its own moisture-vs-temperature history.</p>
-        <span class="go">Open the interactive map &rarr;</span>
-      </a>
-      <a class="feature-card" href="monitoring.html">
-        <span class="icon">🌦️</span>
-        <h3>Monitoring &amp; Alerts</h3>
-        <p>Current weekly NDVI/NDWI/NDMI conditions, a scrubbable monthly imagery view of the
-          last year, and BFAST-style structural break detection - harvest, dieback, or
-          land-use change flagged in the raw NDVI series.</p>
-        <span class="go">See conditions &amp; alerts &rarr;</span>
-      </a>
-    </div>
-  </section>
-</main>
-
-<footer class="site-footer">
-  Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
-  <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
-</footer>
+<script>
+fetch('clients.json', { cache: 'no-store' })
+  .then(function (r) { return r.json(); })
+  .then(function (list) {
+    var el = document.getElementById('client-list');
+    if (!list.length) {
+      el.innerHTML = '<p class="empty-note">No clients published yet - run publish_site.py --client &lt;slug&gt;.</p>';
+      return;
+    }
+    el.innerHTML = list.map(function (c) {
+      return '<a class="client-row" href="c/' + c.slug + '/index.html">' +
+        '<span><span class="name">' + c.display_name + '</span>' +
+        '<div class="loc">' + c.location + '</div></span>' +
+        '<span class="go">Open dashboard &rarr;</span></a>';
+    }).join('');
+  })
+  .catch(function (err) {
+    document.getElementById('client-list').innerHTML =
+      '<p class="error-note">Could not load clients.json.</p>';
+    console.error(err);
+  });
+</script>
 
 </body>
 </html>

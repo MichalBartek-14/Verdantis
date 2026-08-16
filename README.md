@@ -2,24 +2,34 @@
 
 ## Forestry Monitoring Pilot - Backbone
 
-Two entry-point scripts, sharing a common `utils/` package and `config.py`:
+Four entry-point scripts, sharing a common `utils/` package and `config.py`, plus a
+static, multi-client site (`docs/`) published from their output:
 
 | Script | Purpose |
 |---|---|
 | `pilot_historical_analysis.py` | Client-facing pilot: up to 5 years of monthly Sentinel-2 composites -> NDVI + NDWI + NDMI time series charts, a frequency+magnitude "where does the plot lose water most" map for both NDWI and NDMI, and an ERA5 temperature overlay |
 | `drought_monitor_recent.py` | Last ~2 months at weekly cadence -> current NDVI/NDWI/NDMI rasters + a JSON summary, meant as the data feed a future alert product would poll |
-| `build_sector_explorer_data.py` | Post-processing step (no new download - reuses `pilot_historical_analysis.py`'s output): aggregates the plot into 5x5-pixel sectors and writes `outputs/ndwi_era5_sector_explorer.html`, a clickable map (toggle NDWI/NDMI) where each sector opens its own moisture-vs-ERA5-temperature history |
-| `bfast_alert.py` | A separate branch: pulls every available raw Sentinel-2 scene (no compositing) over a user-set `ALERT_BBOX` (any area, not just the client plot), plots the raw NDVI series, and flags likely structural breaks (harvest, dieback, land-use change) with a BFAST-style trend decomposition + changepoint search |
+| `build_sector_explorer_data.py` | Post-processing step (no new download - reuses `pilot_historical_analysis.py`'s output): aggregates the plot into 5x5-pixel sectors and writes `outputs/<client>/sector_explorer_data.json` for the site's interactive Sector Explorer page (toggle NDWI/NDMI, click a sector for its own moisture-vs-ERA5-temperature history), plus a year of monthly NDVI/NDWI/NDMI quicklooks for the site's Monitoring page |
+| `bfast_alert.py` | A separate branch: pulls every available raw Sentinel-2 scene (no compositing) over a client's `alert_bbox` (any area, not just the plot itself), plots the raw NDVI series, and flags likely structural breaks (harvest, dieback, land-use change) with a BFAST-style trend decomposition + changepoint search - over both the full history and a "last year" zoom into the same fit |
+
+Every script takes a required `--client <slug>` argument - see **Multiple clients** below.
 
 ```
 forestry_pilot/
-├── config.py                      # all client/site-specific settings live here
+├── config.py                      # settings shared by every client (backend, cloud mask, ...)
+├── clients.py                     # per-client registry loader + config-override wiring
+├── clients/
+│   ├── valice.json                # one JSON per client - shapefile, bbox, thresholds, branding
+│   └── _example.json.template     # schema reference for onboarding a new client
 ├── pilot_historical_analysis.py   # entry point 1
 ├── drought_monitor_recent.py      # entry point 2
 ├── build_sector_explorer_data.py  # entry point 3 (run after entry point 1)
 ├── bfast_alert.py                 # entry point 4 (independent - own bbox, own download)
+├── publish_site.py                # outputs/<client>/ -> docs/c/<client>/ (the only backend<->site link)
 ├── requirements.txt
-├── data/                          # put the client's shapefile here
+├── data/<client>/                 # each client's shapefile lives in its own subfolder (gitignored)
+├── outputs/<client>/              # each client's downloaded rasters + generated charts (gitignored)
+├── docs/                          # the published static site (see "The site" below)
 └── utils/
     ├── plot_geometry.py           # shapefile loading, bbox/buffer
     ├── openeo_client.py           # connection + OIDC auth
@@ -34,7 +44,7 @@ forestry_pilot/
 `bfast_alert.py` is intentionally separate from the sector explorer above (a genuinely
 interactive "draw a bbox on a satellite basemap" picker can't run inside a published
 Claude Artifact - the CSP blocks all external tile/CDN requests - so the bbox is instead
-set once in `config.py`).
+set once per client in `clients/<slug>.json`).
 
 ## Setup
 
@@ -45,21 +55,37 @@ pip install -r requirements.txt
 You need a free [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/) account.
 On first run, `authenticate_oidc()` opens an interactive device-code login
 (browser popup, or a URL+code printed to the console if headless). The
-openEO client caches the token locally afterwards.
+openEO client caches the token locally afterwards - shared across every
+client, since it's one machine/account, not one login per client.
 
-Drop the client's shapefile (`.shp` + `.dbf`/`.shx`/`.prj`) into `data/`
-and point `PLOT_SHAPEFILE` in `config.py` at it.
+## Multiple clients
+
+Everything that varies plot-to-plot lives in `clients/<slug>.json`, not in code -
+see `clients/valice.json` for a real one and `clients/_example.json.template` for
+the schema. To onboard a new client:
+
+1. Drop their shapefile (`.shp` + `.dbf`/`.shx`/`.prj`) into `data/<slug>/`.
+2. Copy `clients/_example.json.template` to `clients/<slug>.json` and fill it in
+   (shapefile path, `alert_bbox`, display name/location for the site, optional
+   per-client NDWI/NDMI threshold overrides, optional accent color).
+3. Run the pipeline and publish - see **Run** and **The site** below.
+
+`config.py` still holds everything that's the *same* for every client (backend URL,
+cloud-mask kernel sizes, monthly reducer, BFAST seasonal period, ...); `clients.py`
+patches only the per-client attributes onto it at the start of each script's
+`__main__`, and namespaces `OUTPUT_DIR` under `outputs/<slug>/` so clients' runs
+never collide.
 
 ## Run
 
 ```bash
-python pilot_historical_analysis.py   # multi-year pilot deliverable
-python drought_monitor_recent.py      # recent-conditions snapshot
-python build_sector_explorer_data.py  # run after the historical pilot - builds the sector explorer
-python bfast_alert.py                 # independent - set ALERT_BBOX in config.py first
+python pilot_historical_analysis.py --client valice   # multi-year pilot deliverable
+python drought_monitor_recent.py --client valice       # recent-conditions snapshot
+python build_sector_explorer_data.py --client valice   # run after the historical pilot
+python bfast_alert.py --client valice                  # independent - alert_bbox from clients/valice.json
 ```
 
-Outputs land in `outputs/`:
+Outputs land in `outputs/<client>/`:
 
 - `ndvi_timeseries.png` / `.csv` - plot-average NDVI per month
 - `ndwi_timeseries.png` / `.csv`, `ndmi_timeseries.png` / `.csv` - plot-average NDWI
@@ -78,10 +104,11 @@ Outputs land in `outputs/`:
 - `ndmi_temperature_monthly.csv` - the same merge for NDMI (correlation printed, no
   separate combo chart - NDWI and NDMI track each other closely enough that a second
   near-identical chart wouldn't add much)
-- `sector_explorer_data.json` / `ndwi_era5_sector_explorer.html` - interactive version of
-  the above: the plot split into 5x5-pixel sectors (partial at the edges), toggle NDWI/NDMI
-  and dry frequency/dry magnitude, click any sector for its own moisture + ERA5 temperature
-  history and stats. Self-contained HTML - open it directly in a browser, no server needed.
+- `sector_explorer_data.json` - the plot split into 5x5-pixel sectors (partial at the
+  edges), dry frequency/dry magnitude for both NDWI and NDMI, full-history and
+  last-year windows, plus a year of whole-plot NDVI/NDWI/NDMI quicklook images -
+  everything the site's Sector Explorer and Monitoring pages need. Not meant to be
+  opened directly; `publish_site.py` splits it into `docs/c/<client>/data/`.
 - `ndvi_latest_<date>.tif`, `ndwi_latest_<date>.tif`, `ndmi_latest_<date>.tif`,
   `drought_summary_<date>.json` from the recent-monitoring script - the "current
   conditions" machine-readable feed
@@ -89,11 +116,45 @@ Outputs land in `outputs/`:
   `ndmi_quicklook_<date>.png` - one triple per weekly composite over the RECENT_MONTHS
   window, for browsing how conditions changed week to week (set
   `EXPORT_RECENT_GEOTIFF = True` in config.py to also get matching `.tif` files for GIS use)
-- `alert_ndvi_raw.csv` - every usable raw Sentinel-2 scene's NDVI over `ALERT_BBOX`
-  (irregular dates, no compositing)
-- `alert_breaks.json` / `alert_ndvi_breaks.png` - detected structural breaks (date,
-  trend before/after, magnitude) and the chart showing the raw scatter, fitted trend,
-  and each break as a vertical line - from `bfast_alert.py`
+- `alert_ndvi_raw.csv` - every usable raw Sentinel-2 scene's NDVI over the client's
+  `alert_bbox` (irregular dates, no compositing)
+- `alert_breaks.json` / `alert_ndvi_breaks.png` / `alert_ndvi_breaks_1y.png` - detected
+  structural breaks (date, trend before/after, magnitude), nested under both a full-history
+  and a "last year" window (same STL/PELT fit, windowed for display - see `bfast_alert.py`'s
+  `window_view()`), and the matching chart for each window - from `bfast_alert.py`
+
+## The site
+
+`docs/` is a static site, deployed as-is (GitHub Pages, Netlify, ...) with **no backend** -
+the browser never talks to this machine or to openEO. It has three parts:
+
+- `docs/index.html` - a client picker, reading `docs/clients.json` (a manifest of every
+  published client's slug/name/location).
+- `docs/_template/` - the ONE hand-maintained site template (4 pages: Overview, Historical
+  Pilot, Sector Explorer, Monitoring & Alerts), byte-identical across every client. Personalizes
+  itself at runtime from `data/client_meta.json` (name, location, plot area, accent color)
+  via `assets/client.js` - see there for exactly what it touches. Edit pages here; never
+  edit inside `docs/c/<slug>/` directly, since the next publish overwrites it.
+- `docs/c/<slug>/` - one folder per published client, generated by `publish_site.py`:
+  the template copied verbatim, plus that client's own `assets/img/` and `data/*.json`.
+
+Publish (after running the pipeline for a client):
+
+```bash
+python publish_site.py --client valice   # one client
+python publish_site.py --all             # every client in clients/
+```
+
+then review `docs/` locally and `git add docs/` + commit + push.
+
+**Data isolation / access control**: this repository is one shared codebase for every
+client, but `docs/c/<slug>/` folders are meant to be deployed - and gated - independently.
+Static hosting has no per-file ACL: anyone with a `docs/c/<slug>/...` URL can read that
+client's data, full stop. For a real multi-client rollout, put each client's path (or
+subdomain) behind an access-control layer at the hosting/edge level - e.g. one
+[Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/)
+policy per `/c/<slug>/*` path or per client subdomain, restricted to that client's email
+domain. That's a hosting/DNS decision, not something this codebase can enforce itself.
 
 ## Key assumptions this pilot makes (check before showing to a client)
 
@@ -103,12 +164,13 @@ Outputs land in `outputs/`:
   band, using the kernel sizes from CDSE's own example notebooks - not
   independently tuned for this project.
 - **Dryness definition**: NDWI = (B08-B11)/(B08+B11) (broad NIR), flagged "dry"
-  below `NDWI_DRY_THRESHOLD` (default 0.10). NDMI = (B8A-B11)/(B8A+B11) (narrow
-  NIR - Sentinel Hub's standard NDMI definition) uses the same threshold
-  convention via `NDMI_DRY_THRESHOLD`. Same family, highly correlated, not
-  identical - both are generic pilot starting points, not calibrated
-  operational thresholds - they should be checked against field observations
-  and the client's species/soil conditions before being used to drive real alerts.
+  below `NDWI_DRY_THRESHOLD` (default 0.10, overridable per client). NDMI =
+  (B8A-B11)/(B8A+B11) (narrow NIR - Sentinel Hub's standard NDMI definition) uses
+  the same threshold convention via `NDMI_DRY_THRESHOLD`. Same family, highly
+  correlated, not identical - both are generic pilot starting points, not
+  calibrated operational thresholds - they should be checked against field
+  observations and each client's species/soil conditions before being used to
+  drive real alerts.
 - **Compositing**: monthly median composites for the historical pilot,
   weekly for the recent script. Sparse cloud-free coverage in a given
   month/week will leave gaps (NaN) rather than an interpolated value -
@@ -130,8 +192,8 @@ Outputs land in `outputs/`:
   from a previous run, that's this - retry, or reboot if it persists (Windows can hold
   the lock indefinitely on some machines).
 - **`pilot_historical_analysis.py` and `bfast_alert.py` skip re-downloading** if their
-  main `.nc` output already exists in `outputs/` - delete it to force a fresh pull
-  (e.g. once new months/scenes are available). `drought_monitor_recent.py` and
+  main `.nc` output already exists in `outputs/<client>/` - delete it to force a fresh
+  pull (e.g. once new months/scenes are available). `drought_monitor_recent.py` and
   `build_sector_explorer_data.py` don't cache this way since they're meant to reflect
   the *latest* available data on every run.
 - **`bfast_alert.py`'s break detection is BFAST-*style*, not literally BFAST**: the
@@ -143,15 +205,21 @@ Outputs land in `outputs/`:
   in the trend - the same conceptual approach BFAST (Verbesselt et al.) is built on,
   via mature, GPU-free, pip-installable libraries. Treat detected breaks as candidates
   to investigate, not calibrated alerts.
+- **The "last year" alert window is a display filter, not a shorter model**: STL with a
+  12-month seasonal period needs >=24 months of data to decompose meaningfully, so
+  `bfast_alert.py` always fits on the full history and windows the chart/table for the
+  "last year" view - see `window_view()` there.
 
 ## Natural next steps (beyond this pilot)
 
-- Calibrate `NDWI_DRY_THRESHOLD` (and consider whether this NDWI
-  formulation is the right moisture proxy for the client's species vs.
-  a species-specific index) against ground truth.
-- Turn `drought_monitor_recent.py` into a scheduled job (cron / Airflow)
-  that persists each run's summary and diffs against the previous one to
-  generate actual alerts, rather than a one-off snapshot.
+- Calibrate `NDWI_DRY_THRESHOLD`/`NDMI_DRY_THRESHOLD` per client (and consider
+  whether this NDWI formulation is the right moisture proxy for each client's
+  species vs. a species-specific index) against ground truth.
+- Turn `drought_monitor_recent.py` into a scheduled job (cron / Airflow, looped
+  over every client) that persists each run's summary and diffs against the
+  previous one to generate actual alerts, rather than a one-off snapshot.
 - Add gap-filling/interpolation for months or weeks with no cloud-free
-  observations if the client wants a continuous series rather than NaNs.
-- Multi-plot support (currently one shapefile = one plot per run).
+  observations if a client wants a continuous series rather than NaNs.
+- Multi-plot-per-client support (currently one shapefile = one plot per client).
+- Real access control per client site (see "Data isolation / access control" above) -
+  currently a deploy-time decision this repo documents but doesn't enforce.

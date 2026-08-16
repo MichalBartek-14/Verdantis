@@ -1,0 +1,13 @@
+{
+  "_comment": "Copy this to <slug>.json (slug = short, URL-safe id, e.g. 'acme_north') to onboard a new client. Not read by anything itself - the leading underscore/'.template' suffix keep clients.list_clients() from picking it up.",
+  "slug": "acme_north",
+  "display_name": "Acme North Plot",
+  "client_name": "Acme Forestry Ltd.",
+  "location": "Somewhere, Country",
+  "plot_shapefile": "data/acme_north/Client_Plot.shp",
+  "plot_area_ha": null,
+  "alert_bbox": [0.0, 0.0, 0.0, 0.0],
+  "ndwi_dry_threshold": null,
+  "ndmi_dry_threshold": null,
+  "accent_color": "#2c7a3c"
+}
