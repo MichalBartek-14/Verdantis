@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vegetation Alerts - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+  <nav class="site-nav">
+    <a href="index.html">Overview</a>
+    <a href="historical.html">Historical Pilot</a>
+    <a href="explorer.html">Sector Explorer</a>
+    <a href="recent.html">Recent Monitor</a>
+    <a href="alerts.html" aria-current="page">Vegetation Alerts</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <span class="eyebrow">bfast_alert.py</span>
+  <h1>Structural break detection</h1>
+  <p>A separate branch from the moisture monitoring above: every available raw
+    Sentinel-2 scene over a chosen bounding box (no compositing), decomposed with
+    STL (trend + season + remainder) and searched for changepoints with ruptures'
+    PELT - the same conceptual approach BFAST (Verbesselt et al.) is built on, via
+    GPU-free, pip-installable libraries. Treat detected breaks as candidates to
+    investigate, not calibrated alerts.</p>
+</div>
+
+<section class="section">
+  <p class="status-line" id="status-line"><span class="dot"></span>Loading detected breaks&hellip;</p>
+
+  <div class="kpi-row" id="kpi-row">
+    <div class="kpi"><div class="label">Usable scenes</div><div class="value" id="kpi-scenes">&mdash;</div></div>
+    <div class="kpi"><div class="label">Years requested</div><div class="value" id="kpi-years">&mdash;</div></div>
+    <div class="kpi"><div class="label">Breaks detected</div><div class="value amber" id="kpi-breaks">&mdash;</div></div>
+    <div class="kpi"><div class="label">Penalty used</div><div class="value" id="kpi-penalty">&mdash;</div><div class="sub" id="kpi-scale"></div></div>
+  </div>
+
+  <h2>NDVI trend, raw scenes &amp; detected breaks</h2>
+  <div class="card" style="margin-bottom: 30px;">
+    <img src="assets/img/alert_ndvi_breaks.png" alt="Raw NDVI scatter, fitted trend, and detected breaks" loading="lazy">
+  </div>
+
+  <h2>Break table</h2>
+  <p class="lede">Each row is one detected changepoint in the trend component: the
+    fitted trend level in the ~3 months before vs. after, and the resulting delta.</p>
+  <div style="overflow-x:auto;">
+    <table class="data-table" id="breaks-table">
+      <thead>
+        <tr><th>Date</th><th>Trend before</th><th>Trend after</th><th>Delta</th><th>Read</th></tr>
+      </thead>
+      <tbody id="breaks-tbody">
+        <tr><td colspan="5">Loading&hellip;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    BFAST-<em>style</em>, not the literal BFAST/R package or its OpenCL-dependent
+    Python port. Bounding box, lookback window, and penalty scale are all set in
+    <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>,
+    <code>BFAST_PENALTY_SCALE</code>) - defaults to the client plot's own footprint,
+    but can point at any area of interest.
+  </div>
+</section>
+
+<footer class="site-footer">
+  Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
+  <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
+</footer>
+
+<script>
+async function loadBreaks() {
+  const statusEl = document.getElementById('status-line');
+  const tbody = document.getElementById('breaks-tbody');
+  try {
+    const res = await fetch('data/alert_breaks.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+
+    document.getElementById('kpi-scenes').textContent = d.n_scenes ?? '—';
+    document.getElementById('kpi-years').textContent = d.years_requested ?? '—';
+    document.getElementById('kpi-breaks').textContent = (d.breaks ?? []).length;
+    document.getElementById('kpi-penalty').textContent = d.penalty_used ?? '—';
+    document.getElementById('kpi-scale').textContent = 'scale ' + d.penalty_scale;
+
+    const bbox = (d.bbox || []).map(v => v.toFixed(5)).join(', ');
+    statusEl.innerHTML = '<span class="dot"></span>bbox [' + bbox + ']';
+
+    tbody.innerHTML = '';
+    if (!d.breaks || d.breaks.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5">No structural breaks detected in this window.</td></tr>';
+    } else {
+      for (const b of d.breaks) {
+        const up = b.delta >= 0;
+        const tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td>' + b.date + '</td>' +
+          '<td>' + b.trend_before + '</td>' +
+          '<td>' + b.trend_after + '</td>' +
+          '<td class="' + (up ? 'delta-up' : 'delta-down') + '">' + (up ? '+' : '') + b.delta + '</td>' +
+          '<td>' + (up ? 'Vigour increase' : 'Vigour drop - inspect for harvest/dieback') + '</td>';
+        tbody.appendChild(tr);
+      }
+    }
+  } catch (err) {
+    statusEl.textContent = 'Could not load alert_breaks.json - run bfast_alert.py then publish_site.py.';
+    tbody.innerHTML = '<tr><td colspan="5">No data published yet.</td></tr>';
+    console.error(err);
+  }
+}
+loadBreaks();
+</script>
+
+</body>
+</html>

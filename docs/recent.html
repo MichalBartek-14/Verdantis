@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recent Monitor - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+  <nav class="site-nav">
+    <a href="index.html">Overview</a>
+    <a href="historical.html">Historical Pilot</a>
+    <a href="explorer.html">Sector Explorer</a>
+    <a href="recent.html" aria-current="page">Recent Monitor</a>
+    <a href="alerts.html">Vegetation Alerts</a>
+  </nav>
+</header>
+
+<div class="page-hero">
+  <span class="eyebrow">drought_monitor_recent.py</span>
+  <h1>Current conditions snapshot</h1>
+  <p>The last ~2 months of Sentinel-2 data at weekly cadence, condensed into one
+    composite: current NDVI/NDWI/NDMI plus a "% of the plot below the dry threshold"
+    figure. This is a data feed, not a finished alert product - the numbers below are
+    published by hand whenever <code>publish_site.py</code> is re-run after a fresh
+    monitoring pass, not fetched live from the backend.</p>
+</div>
+
+<section class="section">
+  <p class="status-line" id="status-line"><span class="dot"></span>Loading latest summary&hellip;</p>
+
+  <div class="kpi-row" id="kpi-row">
+    <div class="kpi"><div class="label">Composite date</div><div class="value" id="kpi-date">&mdash;</div></div>
+    <div class="kpi"><div class="label">Mean NDVI</div><div class="value" id="kpi-ndvi">&mdash;</div></div>
+    <div class="kpi"><div class="label">Mean NDWI</div><div class="value" id="kpi-ndwi">&mdash;</div></div>
+    <div class="kpi"><div class="label">Mean NDMI</div><div class="value" id="kpi-ndmi">&mdash;</div></div>
+    <div class="kpi"><div class="label">Plot below dry threshold</div><div class="value amber" id="kpi-dry">&mdash;</div><div class="sub" id="kpi-threshold"></div></div>
+  </div>
+
+  <h2>Latest quicklooks</h2>
+  <p class="lede">NDVI/NDWI/NDMI for the most recent usable composite date.</p>
+  <div class="figure-grid" id="quicklook-grid">
+    <figure class="card">
+      <img id="ql-ndvi" src="" alt="Latest NDVI quicklook" loading="lazy" style="display:none">
+      <figcaption><h3>NDVI</h3><p>Vegetation vigour.</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img id="ql-ndwi" src="" alt="Latest NDWI quicklook" loading="lazy" style="display:none">
+      <figcaption><h3>NDWI</h3><p>Moisture proxy, broad NIR.</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img id="ql-ndmi" src="" alt="Latest NDMI quicklook" loading="lazy" style="display:none">
+      <figcaption><h3>NDMI</h3><p>Moisture proxy, narrow NIR.</p></figcaption>
+    </figure>
+  </div>
+
+  <div class="note">
+    Pilot/precursor output - thresholds not yet calibrated against field data. Natural
+    next step (see README): turn this into a scheduled job that persists each run and
+    diffs against the previous one to generate real alerts.
+  </div>
+</section>
+
+<footer class="site-footer">
+  Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
+  <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
+</footer>
+
+<script>
+async function loadSummary() {
+  const statusEl = document.getElementById('status-line');
+  try {
+    const res = await fetch('data/drought_summary_latest.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const s = await res.json();
+
+    document.getElementById('kpi-date').textContent = s.composite_date ?? '—';
+    document.getElementById('kpi-ndvi').textContent = s.mean_ndvi ?? '—';
+    document.getElementById('kpi-ndwi').textContent = s.mean_ndwi ?? '—';
+    document.getElementById('kpi-ndmi').textContent = s.mean_ndmi ?? '—';
+    document.getElementById('kpi-dry').textContent = (s.pct_pixels_below_dry_threshold ?? '—') + '%';
+    document.getElementById('kpi-threshold').textContent = 'NDWI threshold ' + s.ndwi_dry_threshold;
+
+    statusEl.innerHTML = '<span class="dot"></span>Composite period: ' + (s.compositing_period ?? 'week') +
+      ' &middot; last published ' + s.composite_date;
+
+    const date = s.composite_date;
+    if (date) {
+      for (const idx of ['ndvi', 'ndwi', 'ndmi']) {
+        const img = document.getElementById('ql-' + idx);
+        const src = 'assets/img/recent/' + idx + '_quicklook_' + date + '.png';
+        img.src = src;
+        img.style.display = '';
+        img.onerror = () => { img.style.display = 'none'; };
+      }
+    }
+  } catch (err) {
+    statusEl.textContent = 'Could not load the latest summary (data/drought_summary_latest.json) - run publish_site.py after the next drought_monitor_recent.py pass.';
+    console.error(err);
+  }
+}
+loadSummary();
+</script>
+
+</body>
+</html>

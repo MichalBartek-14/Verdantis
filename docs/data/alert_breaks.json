@@ -1,0 +1,27 @@
+{
+  "bbox": [
+    20.197525,
+    48.444518,
+    20.210338,
+    48.45216
+  ],
+  "years_requested": 5,
+  "seasonal_period_months": 12,
+  "penalty_scale": 1.0,
+  "penalty_used": 0.002356,
+  "n_scenes": 163,
+  "breaks": [
+    {
+      "date": "2023-07-01",
+      "trend_before": 0.5665,
+      "trend_after": 0.5802,
+      "delta": 0.0137
+    },
+    {
+      "date": "2025-10-01",
+      "trend_before": 0.5809,
+      "trend_after": 0.5682,
+      "delta": -0.0127
+    }
+  ]
+}
