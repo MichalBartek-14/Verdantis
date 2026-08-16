@@ -2,57 +2,57 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Verdantis - Satellite Moisture &amp; Vegetation Monitoring</title>
+<title data-i18n="title">Verdantis - Satellite Moisture &amp; Vegetation Monitoring</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Verdantis - a Sentinel-2 based pilot for monitoring forestry/agriculture plot moisture, vegetation vigour, and structural vegetation breaks.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
 <link rel="stylesheet" href="assets/style.css">
-<script src="assets/client.js" defer></script>
 </head>
-<body>
+<body data-page="index">
+<script src="assets/client.js"></script>
 
 <header class="site-header">
   <div class="brand-group">
     <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
-    <span class="client-badge" data-client-display-name>Pilot</span>
+    <span class="client-badge" data-client-display-name data-i18n="badge.default">Pilot</span>
   </div>
   <nav class="site-nav">
-    <a href="index.html" aria-current="page">Overview</a>
-    <a href="historical.html">Historical Pilot</a>
-    <a href="explorer.html">Sector Explorer</a>
-    <a href="monitoring.html">Monitoring &amp; Alerts</a>
+    <a href="index.html" aria-current="page" data-i18n="nav.overview">Overview</a>
+    <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
+    <a href="explorer.html" data-i18n="nav.explorer">Sector Explorer</a>
+    <a href="monitoring.html" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
   </nav>
 </header>
 
 <main>
   <section class="hero">
     <div class="hero-inner">
-      <span class="eyebrow">Sentinel-2 &middot; openEO &middot; ERA5</span>
-      <h1>Moisture &amp; vegetation<br>monitoring, from <span>orbit</span>.</h1>
-      <p class="tagline">
+      <span class="eyebrow" data-i18n-html="hero.eyebrow">Sentinel-2 &middot; openEO &middot; ERA5</span>
+      <h1 data-i18n-html="hero.title_html">Moisture &amp; vegetation<br>monitoring, from <span>orbit</span>.</h1>
+      <p class="tagline" data-i18n-html="hero.tagline">
         Verdantis turns free Copernicus Sentinel-2 imagery into a plot-level view of
         vegetation vigour (NDVI), canopy/soil moisture (NDWI &amp; NDMI), and
         structural change - built as a client-facing pilot for a single forestry
         plot, reusable for any shapefile.
       </p>
       <div class="actions">
-        <a class="btn btn-primary" href="historical.html">View the historical pilot</a>
-        <a class="btn btn-ghost" href="explorer.html">Open the sector explorer</a>
+        <a class="btn btn-primary" href="historical.html" data-i18n="hero.cta_primary">View the historical pilot</a>
+        <a class="btn btn-ghost" href="explorer.html" data-i18n="hero.cta_ghost">Open the sector explorer</a>
       </div>
-      <div class="plot-tag"><span class="dot"></span> Live pilot plot: <span data-client-location>Valice, Slovakia</span> &middot; 5-year Sentinel-2 record</div>
+      <div class="plot-tag"><span class="dot"></span> <span data-i18n="hero.plot_tag_prefix">Live pilot plot:</span> <span data-client-location>Valice, Slovakia</span> &middot; <span data-i18n="hero.plot_tag_suffix">5-year Sentinel-2 record</span></div>
     </div>
   </section>
 
   <div class="stat-strip">
-    <div class="stat"><div class="value">5 yrs</div><div class="label">Monthly history</div></div>
-    <div class="stat"><div class="value">3</div><div class="label">Spectral indices tracked</div></div>
-    <div class="stat"><div class="value">weekly</div><div class="label">Recent-conditions cadence</div></div>
-    <div class="stat"><div class="value">0</div><div class="label">Cost - free CDSE + Open-Meteo data</div></div>
+    <div class="stat"><div class="value" data-i18n="stats.history_value">5 yrs</div><div class="label" data-i18n="stats.history_label">Monthly history</div></div>
+    <div class="stat"><div class="value" data-i18n="stats.indices_value">3</div><div class="label" data-i18n="stats.indices_label">Spectral indices tracked</div></div>
+    <div class="stat"><div class="value" data-i18n="stats.cadence_value">weekly</div><div class="label" data-i18n="stats.cadence_label">Recent-conditions cadence</div></div>
+    <div class="stat"><div class="value" data-i18n="stats.cost_value">0</div><div class="label" data-i18n="stats.cost_label">Cost - free CDSE + Open-Meteo data</div></div>
   </div>
 
   <section class="section">
-    <h2>Four views into the same plot</h2>
-    <p class="lede">
+    <h2 data-i18n="features.title">Four views into the same plot</h2>
+    <p class="lede" data-i18n="features.lede">
       Each product below is generated locally from the same Sentinel-2 pipeline
       and openly documented - none of the thresholds are calibrated operational
       alerts yet, they're pilot starting points meant to be checked against field
@@ -61,31 +61,31 @@
     <div class="feature-grid">
       <a class="feature-card" href="historical.html">
         <span class="icon">📈</span>
-        <h3>Historical Pilot</h3>
-        <p>Up to 5 years of monthly NDVI/NDWI/NDMI time series, a frequency + magnitude
+        <h3 data-i18n="features.historical.title">Historical Pilot</h3>
+        <p data-i18n="features.historical.desc">Up to 5 years of monthly NDVI/NDWI/NDMI time series, a frequency + magnitude
           "where does the plot lose water most" map, and ERA5 temperature + precipitation overlays.</p>
-        <span class="go">Explore the deliverable &rarr;</span>
+        <span class="go" data-i18n-html="features.historical.cta">Explore the deliverable &rarr;</span>
       </a>
       <a class="feature-card" href="explorer.html">
         <span class="icon">🗺️</span>
-        <h3>Sector Explorer</h3>
-        <p>Interactive map - the plot split into 5&times;5-pixel sectors, toggle NDWI/NDMI,
+        <h3 data-i18n="features.explorer.title">Sector Explorer</h3>
+        <p data-i18n-html="features.explorer.desc">Interactive map - the plot split into 5&times;5-pixel sectors, toggle NDWI/NDMI,
           click any sector for its own moisture-vs-temperature history.</p>
-        <span class="go">Open the interactive map &rarr;</span>
+        <span class="go" data-i18n-html="features.explorer.cta">Open the interactive map &rarr;</span>
       </a>
       <a class="feature-card" href="monitoring.html">
         <span class="icon">🌦️</span>
-        <h3>Monitoring &amp; Alerts</h3>
-        <p>Current weekly NDVI/NDWI/NDMI conditions, a scrubbable monthly imagery view of the
+        <h3 data-i18n-html="features.monitoring.title">Monitoring &amp; Alerts</h3>
+        <p data-i18n="features.monitoring.desc">Current weekly NDVI/NDWI/NDMI conditions, a scrubbable monthly imagery view of the
           last year, and BFAST-style structural break detection - harvest, dieback, or
           land-use change flagged in the raw NDVI series.</p>
-        <span class="go">See conditions &amp; alerts &rarr;</span>
+        <span class="go" data-i18n-html="features.monitoring.cta">See conditions &amp; alerts &rarr;</span>
       </a>
     </div>
   </section>
 </main>
 
-<footer class="site-footer">
+<footer class="site-footer" data-i18n-html="footer.html">
   Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
   <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
 </footer>

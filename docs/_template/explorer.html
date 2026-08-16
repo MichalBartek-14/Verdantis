@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Sector Explorer - Verdantis</title>
+<title data-i18n="title">Sector Explorer - Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
 <link rel="stylesheet" href="assets/style.css">
-<script src="assets/client.js" defer></script>
 <style>
   /* Sector explorer - functional styling only; palette below is pinned to
      the site's light theme (docs/assets/style.css) rather than following
@@ -148,25 +147,26 @@
   .app footer.notes code { background: var(--surface-1); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 11.5px; }
 </style>
 </head>
-<body>
+<body data-page="explorer">
+<script src="assets/client.js"></script>
 
 <header class="site-header">
   <div class="brand-group">
     <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
-    <span class="client-badge" data-client-display-name>Pilot</span>
+    <span class="client-badge" data-client-display-name data-i18n="badge.default">Pilot</span>
   </div>
   <nav class="site-nav">
-    <a href="index.html">Overview</a>
-    <a href="historical.html">Historical Pilot</a>
-    <a href="explorer.html" aria-current="page">Sector Explorer</a>
-    <a href="monitoring.html">Monitoring &amp; Alerts</a>
+    <a href="index.html" data-i18n="nav.overview">Overview</a>
+    <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
+    <a href="explorer.html" aria-current="page" data-i18n="nav.explorer">Sector Explorer</a>
+    <a href="monitoring.html" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
   </nav>
 </header>
 
 <div class="page-hero">
   <span class="eyebrow">build_sector_explorer_data.py</span>
-  <h1>Sector Moisture Explorer</h1>
-  <p>The plot's bounding box split into 5&times;5-pixel sectors (partial at the edges).
+  <h1 data-i18n="hero.h1">Sector Moisture Explorer</h1>
+  <p data-i18n-html="hero.intro">The plot's bounding box split into 5&times;5-pixel sectors (partial at the edges).
     Choose NDWI or NDMI, then click a sector to see its own moisture history against ERA5
     temperature for the same months - the whole-plot average, on the right, is the default view.</p>
 </div>
@@ -174,19 +174,19 @@
 <div class="app">
   <main id="tabSector">
     <section class="card grid-pane">
-      <p class="pane-title">Sector map</p>
+      <p class="pane-title" data-i18n="controls.pane_title">Sector map</p>
       <div class="control-row">
         <div class="segmented" role="group" aria-label="Moisture index">
           <button type="button" data-moisture-index="ndwi" aria-pressed="true">NDWI</button>
           <button type="button" data-moisture-index="ndmi" aria-pressed="false">NDMI</button>
         </div>
         <div class="segmented" role="group" aria-label="Grid color metric">
-          <button type="button" data-metric="freq_pct" aria-pressed="true">Dry frequency</button>
-          <button type="button" data-metric="magnitude" aria-pressed="false">Dry magnitude</button>
+          <button type="button" data-metric="freq_pct" aria-pressed="true" data-i18n="controls.metric_freq">Dry frequency</button>
+          <button type="button" data-metric="magnitude" aria-pressed="false" data-i18n="controls.metric_magnitude">Dry magnitude</button>
         </div>
         <div class="segmented" role="group" aria-label="Time window">
-          <button type="button" data-range="full" aria-pressed="true">Full history</button>
-          <button type="button" data-range="1y" aria-pressed="false">Last year</button>
+          <button type="button" data-range="full" aria-pressed="true" data-i18n="controls.range_full">Full history</button>
+          <button type="button" data-range="1y" aria-pressed="false" data-i18n="controls.range_1y">Last year</button>
         </div>
       </div>
       <div id="gridWrap">
@@ -199,8 +199,8 @@
         <span id="legendHigh">100%</span>
       </div>
       <div class="stat-row">
-        <div class="stat-tile"><div class="k">Sectors with data</div><div class="v" id="statSectors">&ndash;</div></div>
-        <div class="stat-tile"><div class="k">Months covered</div><div class="v" id="statMonths">&ndash;</div></div>
+        <div class="stat-tile"><div class="k" data-i18n="controls.stat_sectors">Sectors with data</div><div class="v" id="statSectors">&ndash;</div></div>
+        <div class="stat-tile"><div class="k" data-i18n="controls.stat_months">Months covered</div><div class="v" id="statMonths">&ndash;</div></div>
         <div class="stat-tile"><div class="k" id="statMeanLabel">Plot mean NDWI</div><div class="v" id="statMean">&ndash;</div></div>
         <div class="stat-tile"><div class="k" id="statCorrLabel">NDWI&ndash;temp r</div><div class="v" id="statCorr">&ndash;</div></div>
       </div>
@@ -209,17 +209,17 @@
     <section class="detail-pane">
       <div class="card">
         <div class="head">
-          <h2 id="selectionLabel">Whole plot (average)</h2>
-          <span class="hint" id="selectionHint">click any sector to inspect it</span>
+          <h2 id="selectionLabel" data-i18n="detail.selection_default">Whole plot (average)</h2>
+          <span class="hint" id="selectionHint" data-i18n="detail.selection_hint_default">click any sector to inspect it</span>
         </div>
         <div class="stat-row" id="detailStats"></div>
 
         <div class="chart-card">
-          <h3 id="indexChartLabel">Monthly NDWI</h3>
+          <h3 id="indexChartLabel" data-i18n="detail.index_chart_default">Monthly NDWI</h3>
           <svg id="indexChart" preserveAspectRatio="none"></svg>
         </div>
         <div class="chart-card">
-          <h3>ERA5 monthly mean temperature (&deg;C)</h3>
+          <h3 data-i18n-html="detail.temp_chart_title">ERA5 monthly mean temperature (&deg;C)</h3>
           <svg id="tempChart" preserveAspectRatio="none"></svg>
         </div>
         <div class="chart-tooltip" id="chartTooltip"></div>
@@ -227,7 +227,7 @@
     </section>
   </main>
 
-  <footer class="notes">
+  <footer class="notes" data-i18n-html="footer_html">
     Data: Sentinel-2 L2A monthly median composites via Copernicus Data Space Ecosystem (openEO), clipped to the
     client plot; NDWI = (B08-B11)/(B08+B11) (broad NIR); NDMI = (B8A-B11)/(B8A+B11) (narrow NIR) - same family,
     highly correlated but not identical. Temperature: ERA5 reanalysis via Open-Meteo's archive API. "Dry
@@ -240,14 +240,15 @@
   </footer>
 </div>
 
-<footer class="site-footer">
+<footer class="site-footer" data-i18n-html="footer.html">
   Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
   <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
 </footer>
 
 <script>
-(function () {
+window.VerdantisReady.then(function (ready) {
   "use strict";
+  var t = ready.t;
   fetch("data/sector_explorer_data.json").then(function (r) { return r.json(); }).then(function (DATA) {
   var grid = DATA.grid;
 
@@ -289,9 +290,9 @@
     var withData = activeData().sectors.filter(function (s) { return (s[countField] || 0) > 0; }).length;
     document.getElementById("statSectors").textContent = withData + " / " + (grid.rows * grid.cols);
     document.getElementById("statMonths").textContent = n1y ? DATA.last_year_months : DATA.months.length;
-    document.getElementById("statMeanLabel").textContent = "Plot mean " + currentIndex.toUpperCase();
+    document.getElementById("statMeanLabel").textContent = t("js.plot_mean_prefix") + " " + currentIndex.toUpperCase();
     document.getElementById("statMean").textContent = fmt(activeData().plot_summary[fieldKey("mean")], 3);
-    document.getElementById("statCorrLabel").textContent = currentIndex.toUpperCase() + "–temp r";
+    document.getElementById("statCorrLabel").textContent = currentIndex.toUpperCase() + t("js.corr_suffix");
     document.getElementById("statCorr").textContent = fmtCorr(activeData().plot_summary[fieldKey("corr")]);
     document.getElementById("thresholdNote").textContent = activeData().threshold;
   }
@@ -304,7 +305,7 @@
     if (v === null || v === undefined) return "–";
     return (v >= 0 ? "+" : "") + v.toFixed(3);
   }
-  var MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var MONTH_NAMES = t("js.month_names");
   function monthLabel(m) {
     var parts = m.split("-");
     return MONTH_NAMES[parseInt(parts[1], 10) - 1] + " " + parts[0];
@@ -343,7 +344,7 @@
   var CELL = 20; // logical px per sector cell
 
   function metricLabel(metric) {
-    return metric === "freq_pct" ? "% of months dry" : "mean " + currentIndex.toUpperCase() + " deficit";
+    return metric === "freq_pct" ? t("js.metric_freq_unit") : t("js.metric_deficit", { index: currentIndex.toUpperCase() });
   }
   function metricFmt(metric, v) {
     return metric === "freq_pct" ? fmt(v, 1) + "%" : fmt(v, 3);
@@ -429,15 +430,16 @@
     var rect = wrap.getBoundingClientRect();
     tooltipEl.style.left = (evt.clientX - rect.left) + "px";
     tooltipEl.style.top = (evt.clientY - rect.top - 10) + "px";
+    var sectorLabel = t("js.sector_label", { row: c.row, col: c.col });
     if (val === null || val === undefined) {
       tooltipEl.innerHTML =
-        '<span class="lab">Sector R' + c.row + 'C' + c.col + '</span><br>' +
-        '<span class="lab">no valid data in this window</span>';
+        '<span class="lab">' + sectorLabel + '</span><br>' +
+        '<span class="lab">' + t("js.no_data_window") + '</span>';
     } else {
       tooltipEl.innerHTML =
-        '<span class="lab">Sector R' + c.row + 'C' + c.col + '</span><br>' +
+        '<span class="lab">' + sectorLabel + '</span><br>' +
         '<span class="val">' + metricFmt(currentMetric, val) + '</span> <span class="lab">' + metricLabel(currentMetric) + '</span><br>' +
-        '<span class="lab">mean ' + currentIndex.toUpperCase() + ' ' + fmt(s[fieldKey("mean")], 3) + ' · ' + s.n_pixels + ' px</span>';
+        '<span class="lab">' + t("js.mean_prefix") + ' ' + currentIndex.toUpperCase() + ' ' + fmt(s[fieldKey("mean")], 3) + ' · ' + s.n_pixels + ' ' + t("js.px_suffix") + '</span>';
     }
     tooltipEl.classList.add("visible");
   });
@@ -587,19 +589,19 @@
     tempValues = DATA.temp;
     if (!sector) {
       indexValues = data.plot_summary.series;
-      title = "Whole plot (average)";
-      hint = "click any sector to inspect it";
+      title = t("js.whole_plot");
+      hint = t("js.click_hint");
     } else {
       indexValues = sector.series;
-      title = "Sector R" + sector.row + "C" + sector.col;
-      hint = sector.n_pixels + " px · " + sector[fieldKey("n_valid_months")] + " valid months" + (n1y ? " (last year)" : "");
+      title = t("js.sector_label", { row: sector.row, col: sector.col });
+      hint = sector.n_pixels + " " + t("js.px_suffix") + " · " + sector[fieldKey("n_valid_months")] + " " + t("js.valid_months") + (n1y ? " " + t("js.last_year_suffix") : "");
     }
 
     var stats = [
-      ["Mean " + currentIndex.toUpperCase(), fmt(summarySource[fieldKey("mean")], 3)],
-      ["Dry frequency", fmt(summarySource[fieldKey("freq_pct")], 1) + "%"],
-      ["Dry magnitude", fmt(summarySource[fieldKey("magnitude")], 3)],
-      [currentIndex.toUpperCase() + "–temp r", fmtCorr(summarySource[fieldKey("corr")])]
+      [t("js.stat_mean", { index: currentIndex.toUpperCase() }), fmt(summarySource[fieldKey("mean")], 3)],
+      [t("js.stat_freq"), fmt(summarySource[fieldKey("freq_pct")], 1) + "%"],
+      [t("js.stat_magnitude"), fmt(summarySource[fieldKey("magnitude")], 3)],
+      [currentIndex.toUpperCase() + t("js.corr_suffix"), fmtCorr(summarySource[fieldKey("corr")])]
     ];
 
     if (n1y) {
@@ -611,7 +613,7 @@
 
     document.getElementById("selectionLabel").textContent = title;
     document.getElementById("selectionHint").textContent = hint;
-    document.getElementById("indexChartLabel").textContent = "Monthly " + currentIndex.toUpperCase();
+    document.getElementById("indexChartLabel").textContent = t("js.monthly_prefix", { index: currentIndex.toUpperCase() });
     document.getElementById("detailStats").innerHTML = stats.map(function (s) {
       return '<div class="stat-tile"><div class="k">' + s[0] + '</div><div class="v">' + s[1] + '</div></div>';
     }).join("");
@@ -640,10 +642,10 @@
   window.addEventListener("resize", function () { layout(); drawGrid(); });
   }).catch(function (err) {
     document.getElementById("tabSector").innerHTML =
-      '<p class="empty-state">Could not load data/sector_explorer_data.json - run build_sector_explorer_data.py then publish_site.py.</p>';
+      '<p class="empty-state">' + t("js.load_error") + '</p>';
     console.error(err);
   });
-})();
+});
 </script>
 
 </body>

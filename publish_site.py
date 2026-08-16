@@ -78,6 +78,14 @@ def publish_client_site(slug: str) -> None:
 
     print(f"=== {slug} ({client['display_name']}) ===")
 
+    language = client.get("language", "en")
+    if not (TEMPLATE / "assets" / "i18n" / language).is_dir():
+        available = sorted(p.name for p in (TEMPLATE / "assets" / "i18n").iterdir() if p.is_dir())
+        raise SystemExit(
+            f"clients/{slug}.json sets language=\"{language}\", but there's no "
+            f"docs/_template/assets/i18n/{language}/ folder. Available: {', '.join(available)}."
+        )
+
     # 1. Site shell - byte-identical template, re-copied every run so a
     #    template edit reaches every client on their next publish without
     #    needing per-client changes.
@@ -86,7 +94,8 @@ def publish_client_site(slug: str) -> None:
     shutil.copytree(TEMPLATE, out)
     print(f"  template -> {out}/")
 
-    # 2. Personalization metadata - the one file client.js reads.
+    # 2. Personalization metadata - the one file client.js reads (branding
+    #    AND which i18n/<language>/ dictionary to load - see client.js).
     data.mkdir(parents=True, exist_ok=True)
     meta = {
         "slug": client["slug"],
@@ -95,6 +104,7 @@ def publish_client_site(slug: str) -> None:
         "location": client["location"],
         "plot_area_ha": client.get("plot_area_ha"),
         "accent_color": client.get("accent_color", "#2c7a3c"),
+        "language": language,
     }
     with open(data / "client_meta.json", "w") as f:
         json.dump(meta, f, indent=2)

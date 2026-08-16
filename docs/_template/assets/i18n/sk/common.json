@@ -1,0 +1,14 @@
+{
+  "nav": {
+    "overview": "Prehľad",
+    "historical": "Historický prehľad",
+    "explorer": "Prieskumník sektorov",
+    "monitoring": "Monitoring a upozornenia"
+  },
+  "badge": {
+    "default": "Pilotný projekt"
+  },
+  "footer": {
+    "html": "Pilotný projekt Verdantis &middot; dáta sa aktualizujú lokálne a publikujú ručne, nejde o priame pripojenie na backend &middot; <a href=\"https://github.com/MichalBartek-14/Verdantis\" target=\"_blank\" rel=\"noopener\">zdrojový kód na GitHube</a>"
+  }
+}

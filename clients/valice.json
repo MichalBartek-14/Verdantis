@@ -5,6 +5,7 @@
   "location": "Valice, Slovakia",
   "plot_shapefile": "data/valice/Client_Valice_Plot.shp",
   "plot_area_ha": 59.71,
+  "language": "sk",
   "alert_bbox": [20.197525, 48.444518, 20.210338, 48.45216],
   "ndwi_dry_threshold": null,
   "ndmi_dry_threshold": null,

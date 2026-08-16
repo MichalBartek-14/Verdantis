@@ -52,6 +52,10 @@ def load_client(slug: str) -> dict:
     data.setdefault("ndwi_dry_threshold", None)
     data.setdefault("ndmi_dry_threshold", None)
     data.setdefault("accent_color", "#2c7a3c")  # Verdantis green, the site's own default
+    # Must match a docs/_template/assets/i18n/<language>/ folder - see
+    # publish_site.py (writes this into client_meta.json) and
+    # docs/_template/assets/client.js (reads it from there at page load).
+    data.setdefault("language", "en")
     return data
 
 

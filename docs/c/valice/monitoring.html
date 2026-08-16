@@ -2,31 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Monitoring & Alerts - Verdantis</title>
+<title data-i18n="title">Monitoring & Alerts - Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
 <link rel="stylesheet" href="assets/style.css">
-<script src="assets/client.js" defer></script>
 </head>
-<body>
+<body data-page="monitoring">
+<script src="assets/client.js"></script>
 
 <header class="site-header">
   <div class="brand-group">
     <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
-    <span class="client-badge" data-client-display-name>Pilot</span>
+    <span class="client-badge" data-client-display-name data-i18n="badge.default">Pilot</span>
   </div>
   <nav class="site-nav">
-    <a href="index.html">Overview</a>
-    <a href="historical.html">Historical Pilot</a>
-    <a href="explorer.html">Sector Explorer</a>
-    <a href="monitoring.html" aria-current="page">Monitoring &amp; Alerts</a>
+    <a href="index.html" data-i18n="nav.overview">Overview</a>
+    <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
+    <a href="explorer.html" data-i18n="nav.explorer">Sector Explorer</a>
+    <a href="monitoring.html" aria-current="page" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
   </nav>
 </header>
 
 <div class="page-hero">
   <span class="eyebrow">drought_monitor_recent.py &middot; build_sector_explorer_data.py &middot; bfast_alert.py</span>
-  <h1>Current conditions &amp; vegetation alerts</h1>
-  <p>Everything that isn't the multi-year historical pilot deliverable lives here: the latest
+  <h1 data-i18n-html="hero.h1">Current conditions &amp; vegetation alerts</h1>
+  <p data-i18n-html="hero.intro_html">Everything that isn't the multi-year historical pilot deliverable lives here: the latest
     weekly conditions snapshot, a scrubbable month-by-month view of the last year, and
     structural-break detection over the raw (uncomposited) NDVI series. All three are data
     feeds, not finished alert products - the numbers below are published by hand whenever
@@ -35,45 +35,45 @@
 </div>
 
 <section class="section">
-  <h2>Current conditions</h2>
-  <p class="lede">Last ~2 months of Sentinel-2 data at weekly cadence, condensed into one
+  <h2 data-i18n="recent.title">Current conditions</h2>
+  <p class="lede" data-i18n="recent.lede">Last ~2 months of Sentinel-2 data at weekly cadence, condensed into one
     composite: current NDVI/NDWI/NDMI plus a "% of the plot below the dry threshold" figure.</p>
 
-  <p class="status-line" id="recent-status"><span class="dot"></span>Loading latest summary&hellip;</p>
+  <p class="status-line" id="recent-status"><span class="dot"></span><span data-i18n="recent.loading">Loading latest summary&hellip;</span></p>
 
   <div class="kpi-row" id="kpi-row">
-    <div class="kpi"><div class="label">Composite date</div><div class="value" id="kpi-date">&mdash;</div></div>
-    <div class="kpi"><div class="label">Mean NDVI</div><div class="value" id="kpi-ndvi">&mdash;</div></div>
-    <div class="kpi"><div class="label">Mean NDWI</div><div class="value" id="kpi-ndwi">&mdash;</div></div>
-    <div class="kpi"><div class="label">Mean NDMI</div><div class="value" id="kpi-ndmi">&mdash;</div></div>
-    <div class="kpi"><div class="label">Plot below dry threshold</div><div class="value amber" id="kpi-dry">&mdash;</div><div class="sub" id="kpi-threshold"></div></div>
+    <div class="kpi"><div class="label" data-i18n="recent.kpi_date">Composite date</div><div class="value" id="kpi-date">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="recent.kpi_ndvi">Mean NDVI</div><div class="value" id="kpi-ndvi">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="recent.kpi_ndwi">Mean NDWI</div><div class="value" id="kpi-ndwi">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="recent.kpi_ndmi">Mean NDMI</div><div class="value" id="kpi-ndmi">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="recent.kpi_dry">Plot below dry threshold</div><div class="value amber" id="kpi-dry">&mdash;</div><div class="sub" id="kpi-threshold"></div></div>
   </div>
 
-  <h3 style="font-size:1.05rem;margin:0 0 6px;">Latest quicklooks</h3>
-  <p class="lede" style="margin-bottom:16px;">NDVI/NDWI/NDMI for the most recent usable weekly composite.</p>
+  <h3 style="font-size:1.05rem;margin:0 0 6px;" data-i18n="recent.quicklooks_title">Latest quicklooks</h3>
+  <p class="lede" style="margin-bottom:16px;" data-i18n="recent.quicklooks_lede">NDVI/NDWI/NDMI for the most recent usable weekly composite.</p>
   <div class="figure-grid" id="quicklook-grid">
     <figure class="card">
       <img id="ql-ndvi" src="" alt="Latest NDVI quicklook" loading="lazy" style="display:none">
-      <figcaption><h3>NDVI</h3><p>Vegetation vigour.</p></figcaption>
+      <figcaption><h3>NDVI</h3><p data-i18n="recent.ndvi_caption">Vegetation vigour.</p></figcaption>
     </figure>
     <figure class="card">
       <img id="ql-ndwi" src="" alt="Latest NDWI quicklook" loading="lazy" style="display:none">
-      <figcaption><h3>NDWI</h3><p>Moisture proxy, broad NIR.</p></figcaption>
+      <figcaption><h3>NDWI</h3><p data-i18n="recent.ndwi_caption">Moisture proxy, broad NIR.</p></figcaption>
     </figure>
     <figure class="card">
       <img id="ql-ndmi" src="" alt="Latest NDMI quicklook" loading="lazy" style="display:none">
-      <figcaption><h3>NDMI</h3><p>Moisture proxy, narrow NIR.</p></figcaption>
+      <figcaption><h3>NDMI</h3><p data-i18n="recent.ndmi_caption">Moisture proxy, narrow NIR.</p></figcaption>
     </figure>
   </div>
 </section>
 
 <section class="section">
-  <h2>Monthly imagery, last year</h2>
-  <p class="lede">Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same
+  <h2 data-i18n="imagery.title">Monthly imagery, last year</h2>
+  <p class="lede" data-i18n="imagery.lede">Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same
     12-month window as the Sector Explorer's "Last year" option, moved here since it's a
     single time series rather than a per-sector breakdown.</p>
 
-  <p class="status-line" id="imagery-status"><span class="dot"></span>Loading monthly imagery&hellip;</p>
+  <p class="status-line" id="imagery-status"><span class="dot"></span><span data-i18n="imagery.loading">Loading monthly imagery&hellip;</span></p>
 
   <div class="control-row" style="margin-bottom:14px;">
     <div class="segmented" role="group" aria-label="Imagery index" id="imagery-index-group">
@@ -94,45 +94,45 @@
 </section>
 
 <section class="section">
-  <h2>Vegetation break alerts</h2>
-  <p class="lede">A separate branch from the moisture monitoring above: every available raw
+  <h2 data-i18n="alerts.title">Vegetation break alerts</h2>
+  <p class="lede" data-i18n="alerts.lede">A separate branch from the moisture monitoring above: every available raw
     Sentinel-2 scene over a chosen bounding box (no compositing), decomposed with STL (trend +
     season + remainder) and searched for changepoints with ruptures' PELT - the same conceptual
     approach BFAST (Verbesselt et al.) is built on, via GPU-free, pip-installable libraries.
     Treat detected breaks as candidates to investigate, not calibrated alerts.</p>
 
-  <p class="status-line" id="alerts-status"><span class="dot"></span>Loading detected breaks&hellip;</p>
+  <p class="status-line" id="alerts-status"><span class="dot"></span><span data-i18n="alerts.loading">Loading detected breaks&hellip;</span></p>
 
   <div class="control-row" style="margin-bottom:14px;">
     <div class="segmented" role="group" aria-label="Alert history window" id="alert-window-group"></div>
   </div>
 
   <div class="kpi-row" id="alert-kpi-row">
-    <div class="kpi"><div class="label">Scenes in window</div><div class="value" id="kpi-scenes">&mdash;</div></div>
-    <div class="kpi"><div class="label">Years requested</div><div class="value" id="kpi-years">&mdash;</div></div>
-    <div class="kpi"><div class="label">Breaks detected</div><div class="value amber" id="kpi-breaks">&mdash;</div></div>
-    <div class="kpi"><div class="label">Penalty used</div><div class="value" id="kpi-penalty">&mdash;</div><div class="sub" id="kpi-scale"></div></div>
+    <div class="kpi"><div class="label" data-i18n="alerts.kpi_scenes">Scenes in window</div><div class="value" id="kpi-scenes">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="alerts.kpi_years">Years requested</div><div class="value" id="kpi-years">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="alerts.kpi_breaks">Breaks detected</div><div class="value amber" id="kpi-breaks">&mdash;</div></div>
+    <div class="kpi"><div class="label" data-i18n="alerts.kpi_penalty">Penalty used</div><div class="value" id="kpi-penalty">&mdash;</div><div class="sub" id="kpi-scale"></div></div>
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
     <img id="alert-chart" src="assets/img/alert_ndvi_breaks.png" alt="Raw NDVI scatter, fitted trend, and detected breaks" loading="lazy">
   </div>
 
-  <h3 style="font-size:1.05rem;margin:0 0 6px;">Break table</h3>
-  <p class="lede">Each row is one detected changepoint in the trend component: the fitted
+  <h3 style="font-size:1.05rem;margin:0 0 6px;" data-i18n="alerts.table_title">Break table</h3>
+  <p class="lede" data-i18n="alerts.table_lede">Each row is one detected changepoint in the trend component: the fitted
     trend level in the ~3 months before vs. after, and the resulting delta.</p>
   <div style="overflow-x:auto;">
     <table class="data-table" id="breaks-table">
       <thead>
-        <tr><th>Date</th><th>Trend before</th><th>Trend after</th><th>Delta</th><th>Read</th></tr>
+        <tr><th data-i18n="alerts.th_date">Date</th><th data-i18n="alerts.th_trend_before">Trend before</th><th data-i18n="alerts.th_trend_after">Trend after</th><th data-i18n="alerts.th_delta">Delta</th><th data-i18n="alerts.th_read">Read</th></tr>
       </thead>
       <tbody id="breaks-tbody">
-        <tr><td colspan="5">Loading&hellip;</td></tr>
+        <tr><td colspan="5" data-i18n="alerts.loading_row">Loading&hellip;</td></tr>
       </tbody>
     </table>
   </div>
 
-  <div class="note">
+  <div class="note" data-i18n-html="alerts.note_html">
     Pilot/precursor output across this whole page - none of these thresholds are calibrated
     against field data yet. BFAST-<em>style</em>, not the literal BFAST/R package. Bounding
     box, lookback window, and penalty scale are all set in <code>config.py</code>
@@ -142,13 +142,13 @@
   </div>
 </section>
 
-<footer class="site-footer">
+<footer class="site-footer" data-i18n-html="footer.html">
   Verdantis pilot &middot; data refreshed locally and republished by hand, not a live backend &middot;
   <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
 </footer>
 
 <script>
-async function loadRecent() {
+async function loadRecent(t) {
   const statusEl = document.getElementById('recent-status');
   try {
     const res = await fetch('data/drought_summary_latest.json', { cache: 'no-store' });
@@ -160,10 +160,10 @@ async function loadRecent() {
     document.getElementById('kpi-ndwi').textContent = s.mean_ndwi ?? '—';
     document.getElementById('kpi-ndmi').textContent = s.mean_ndmi ?? '—';
     document.getElementById('kpi-dry').textContent = (s.pct_pixels_below_dry_threshold ?? '—') + '%';
-    document.getElementById('kpi-threshold').textContent = 'NDWI threshold ' + s.ndwi_dry_threshold;
+    document.getElementById('kpi-threshold').textContent = t('js.threshold_prefix') + ' ' + s.ndwi_dry_threshold;
 
-    statusEl.innerHTML = '<span class="dot"></span>Composite period: ' + (s.compositing_period ?? 'week') +
-      ' &middot; last published ' + s.composite_date;
+    const period = s.compositing_period === 'week' ? t('js.period_week') : (s.compositing_period ?? t('js.period_week'));
+    statusEl.innerHTML = '<span class="dot"></span>' + t('js.recent_status', { period: period, date: s.composite_date });
 
     const date = s.composite_date;
     if (date) {
@@ -175,17 +175,17 @@ async function loadRecent() {
       }
     }
   } catch (err) {
-    statusEl.textContent = 'Could not load the latest summary (data/drought_summary_latest.json) - run publish_site.py after the next drought_monitor_recent.py pass.';
+    statusEl.textContent = t('js.recent_error');
     console.error(err);
   }
 }
 
-async function loadImagery() {
+async function loadImagery(t) {
   const statusEl = document.getElementById('imagery-status');
   const slider = document.getElementById('imagerySlider');
   const img = document.getElementById('imageryImg');
   const monthLabelEl = document.getElementById('imageryMonthLabel');
-  const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MONTH_NAMES = t('js.month_names');
   function monthLabel(m) {
     const parts = m.split('-');
     return MONTH_NAMES[parseInt(parts[1], 10) - 1] + ' ' + parts[0];
@@ -227,36 +227,45 @@ async function loadImagery() {
     });
 
     update();
-    statusEl.innerHTML = '<span class="dot"></span>' + months.length + ' months, ' + months[0] + ' to ' + months[months.length - 1];
+    statusEl.innerHTML = '<span class="dot"></span>' + t('js.imagery_status', { count: months.length, first: months[0], last: months[months.length - 1] });
   } catch (err) {
-    statusEl.textContent = 'Could not load data/monthly_imagery.json - run build_sector_explorer_data.py then publish_site.py.';
+    statusEl.textContent = t('js.imagery_error');
     console.error(err);
   }
 }
 
-async function loadAlerts() {
+async function loadAlerts(t) {
   const statusEl = document.getElementById('alerts-status');
   const tbody = document.getElementById('breaks-tbody');
   const chartImg = document.getElementById('alert-chart');
   const windowGroup = document.getElementById('alert-window-group');
 
+  // Windows are keyed "5y"/"1y" etc. by bfast_alert.py, but the label
+  // shown to the user is always one of exactly two phrases regardless of
+  // language, so it's translated here rather than trusting the (English)
+  // "label" string the pipeline writes into alert_breaks.json.
+  function windowLabel(d, key) {
+    return key === d.default_window ? t('js.window_full') : t('js.window_last_year');
+  }
+
   function renderWindow(d, key) {
     const w = d.windows[key];
+    const label = windowLabel(d, key);
     document.getElementById('kpi-scenes').textContent = w.n_scenes ?? '—';
     document.getElementById('kpi-years').textContent = d.years_requested ?? '—';
     document.getElementById('kpi-breaks').textContent = (w.breaks ?? []).length;
     document.getElementById('kpi-penalty').textContent = d.penalty_used ?? '—';
-    document.getElementById('kpi-scale').textContent = 'scale ' + d.penalty_scale;
+    document.getElementById('kpi-scale').textContent = t('js.scale_prefix') + ' ' + d.penalty_scale;
 
     const bbox = (d.bbox || []).map(v => v.toFixed(5)).join(', ');
-    statusEl.innerHTML = '<span class="dot"></span>' + w.label + ' &middot; bbox [' + bbox + ']';
+    statusEl.innerHTML = '<span class="dot"></span>' + t('js.alert_status', { label: label, bbox: bbox });
 
     chartImg.src = 'assets/img/alert_ndvi_breaks' + (key === d.default_window ? '' : '_' + key) + '.png';
-    chartImg.alt = 'Raw NDVI scatter, fitted trend, and detected breaks - ' + w.label.toLowerCase();
+    chartImg.alt = t('js.chart_alt', { label: label.toLowerCase() });
 
     tbody.innerHTML = '';
     if (!w.breaks || w.breaks.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5">No structural breaks detected in this window.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5">' + t('js.no_breaks') + '</td></tr>';
     } else {
       for (const b of w.breaks) {
         const up = b.delta >= 0;
@@ -266,7 +275,7 @@ async function loadAlerts() {
           '<td>' + b.trend_before + '</td>' +
           '<td>' + b.trend_after + '</td>' +
           '<td class="' + (up ? 'delta-up' : 'delta-down') + '">' + (up ? '+' : '') + b.delta + '</td>' +
-          '<td>' + (up ? 'Vigour increase' : 'Vigour drop - inspect for harvest/dieback') + '</td>';
+          '<td>' + (up ? t('js.vigour_increase') : t('js.vigour_decrease')) + '</td>';
         tbody.appendChild(tr);
       }
     }
@@ -283,7 +292,7 @@ async function loadAlerts() {
     const keys = Object.keys(d.windows).sort((a, b) => d.windows[b].years - d.windows[a].years);
     windowGroup.innerHTML = keys.map((key, i) =>
       '<button type="button" data-window="' + key + '" aria-pressed="' + (key === d.default_window ? 'true' : 'false') + '">' +
-      d.windows[key].label + '</button>'
+      windowLabel(d, key) + '</button>'
     ).join('');
     windowGroup.querySelectorAll('button').forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -295,15 +304,17 @@ async function loadAlerts() {
 
     renderWindow(d, d.default_window);
   } catch (err) {
-    statusEl.textContent = 'Could not load alert_breaks.json - run bfast_alert.py then publish_site.py.';
-    tbody.innerHTML = '<tr><td colspan="5">No data published yet.</td></tr>';
+    statusEl.textContent = t('js.alert_error');
+    tbody.innerHTML = '<tr><td colspan="5">' + t('js.no_data_yet') + '</td></tr>';
     console.error(err);
   }
 }
 
-loadRecent();
-loadImagery();
-loadAlerts();
+window.VerdantisReady.then(({ t }) => {
+  loadRecent(t);
+  loadImagery(t);
+  loadAlerts(t);
+});
 </script>
 
 </body>

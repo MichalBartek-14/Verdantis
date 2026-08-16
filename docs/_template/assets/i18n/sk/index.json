@@ -1,0 +1,42 @@
+{
+  "title": "Verdantis - Satelitné sledovanie vlhkosti a vegetácie",
+  "description": "Verdantis - pilotný projekt na báze Sentinel-2 na sledovanie vlhkosti lesných/poľnohospodárskych parciel, vitality vegetácie a štrukturálnych zmien porastu.",
+  "hero": {
+    "eyebrow": "Sentinel-2 &middot; openEO &middot; ERA5",
+    "title_html": "Vlhkosť a vegetácia<br>pod dohľadom z <span>orbity</span>.",
+    "tagline": "Verdantis premieňa voľne dostupné satelitné snímky Copernicus Sentinel-2 na pohľad na parcelu: vitalitu vegetácie (NDVI), vlhkosť korún/pôdy (NDWI &amp; NDMI) a štrukturálne zmeny - postavené ako pilotný projekt pre klienta na jednej lesnej parcele, opakovane použiteľný pre akýkoľvek shapefile.",
+    "cta_primary": "Zobraziť historický prehľad",
+    "cta_ghost": "Otvoriť prieskumník sektorov",
+    "plot_tag_prefix": "Aktívna pilotná parcela:",
+    "plot_tag_suffix": "5-ročný záznam Sentinel-2"
+  },
+  "stats": {
+    "history_value": "5 rokov",
+    "history_label": "Mesačná história",
+    "indices_value": "3",
+    "indices_label": "Sledované spektrálne indexy",
+    "cadence_value": "týždenne",
+    "cadence_label": "Frekvencia aktuálnych podmienok",
+    "cost_value": "0",
+    "cost_label": "Náklady - bezplatné dáta CDSE + Open-Meteo"
+  },
+  "features": {
+    "title": "Štyri pohľady na tú istú parcelu",
+    "lede": "Každý z produktov nižšie sa generuje lokálne z rovnakého pipeline pre Sentinel-2 a je otvorene zdokumentovaný - žiadna z prahových hodnôt zatiaľ nie je kalibrovaným prevádzkovým upozornením, ide o pilotné východiskové body, ktoré treba pred reálnym rozhodovaním overiť terénnym pozorovaním.",
+    "historical": {
+      "title": "Historický prehľad",
+      "desc": "Až 5 rokov mesačných časových radov NDVI/NDWI/NDMI, mapa frekvencie + intenzity \"kde parcela najviac stráca vodu\" a prekrytie s ERA5 teplotou + zrážkami.",
+      "cta": "Preskúmať výstup &rarr;"
+    },
+    "explorer": {
+      "title": "Prieskumník sektorov",
+      "desc": "Interaktívna mapa - parcela rozdelená na sektory 5&times;5 pixelov, prepínanie NDWI/NDMI, kliknutím na sektor zobrazíte jeho vlastnú históriu vlhkosti voči teplote.",
+      "cta": "Otvoriť interaktívnu mapu &rarr;"
+    },
+    "monitoring": {
+      "title": "Monitoring &amp; upozornenia",
+      "desc": "Aktuálne týždenné podmienky NDVI/NDWI/NDMI, posúvateľný mesačný náhľad snímok za posledný rok a detekcia štrukturálnych zmien v štýle BFAST - ťažba, odumieranie alebo zmena využitia pôdy zachytená v surovom rade NDVI.",
+      "cta": "Zobraziť podmienky &amp; upozornenia &rarr;"
+    }
+  }
+}
