@@ -4,7 +4,7 @@
   "hero": {
     "eyebrow": "Sentinel-2 &middot; openEO &middot; ERA5",
     "title_html": "Vlhkosť a vegetácia<br>pod dohľadom z <span>orbitu</span>.",
-    "tagline": "Verdantis premieňa satelitné snímky Copernicus Sentinel-2 na pohľad na parcelu: vitalitu vegetácie (NDVI), vlhkosť korún/pôdy (NDWI &amp; NDMI) a štrukturálne zmeny - postavené ako pilotný projekt pre klienta na jednej lesnej parcele, opakovane použiteľný pre akýkoľvek shapefile.",
+    "tagline": "Verdantis premieňa satelitné snímky Copernicus Sentinel-2 na pohľad na parcelu: vitalitu vegetácie (NDVI), vlhkosť korún/pôdy (NDWI &amp; NDMI) a štrukturálne zmeny - postavené ako pilotný projekt na jednej parcele, opakovane použiteľný pre akýkoľvek pozemok a shapefile.",
     "cta_primary": "Zobraziť historický prehľad",
     "cta_ghost": "Otvoriť prieskumník sektorov",
     "plot_tag_prefix": "Aktívna pilotná parcela:",
