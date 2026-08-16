@@ -361,3 +361,36 @@ table.data-table tr:last-child td { border-bottom: none; }
 }
 .stat-strip .stat .value { font-size: 1.6rem; font-weight: 800; color: var(--green-dark); }
 .stat-strip .stat .label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* --- Monthly imagery slider (docs/monitoring.html) -----------------------
+   Ported from the sector explorer's former "Monthly Imagery" tab, restyled
+   to the site palette. Data: data/monthly_imagery.json (published by
+   publish_site.py from outputs/sector_explorer_data.json's "imagery" key). */
+.imagery-viewer {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  max-width: 640px;
+}
+.imagery-viewer img { display: block; width: 100%; height: auto; }
+.imagery-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  max-width: 640px;
+}
+.imagery-controls button {
+  font: inherit;
+  font-size: 15px;
+  width: 32px; height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+.imagery-controls button:hover { background: var(--bg-alt); }
+#imagerySlider { flex: 1; accent-color: var(--green); }
+.imagery-month { font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; color: var(--text); }
