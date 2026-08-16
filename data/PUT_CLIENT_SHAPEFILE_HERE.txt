@@ -1,0 +1,8 @@
+Place the client's plot shapefile here (all sidecar files together):
+
+  client_plot.shp
+  client_plot.dbf
+  client_plot.shx
+  client_plot.prj
+
+Then update PLOT_SHAPEFILE in config.py if the filename differs.
