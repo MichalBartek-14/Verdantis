@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+outputs/*
+!outputs/.gitkeep
+data/*
+!data/PUT_CLIENT_SHAPEFILE_HERE.txt
+!data/.gitkeep
