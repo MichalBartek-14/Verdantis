@@ -39,8 +39,10 @@ HISTORICAL_IMAGES = [
     "ndwi_temperature_combo.png",
 ]
 
-# Alert chart referenced by docs/monitoring.html.
-ALERT_IMAGES = ["alert_ndvi_breaks.png"]
+# Alert charts referenced by docs/monitoring.html - one per history window
+# (bfast_alert.py writes a full-history chart plus a "last year" zoom into
+# the same fit; see its window_view() for why 1y isn't a separate model).
+ALERT_IMAGES = ["alert_ndvi_breaks.png", "alert_ndvi_breaks_1y.png"]
 
 
 def _copy(name, dest_dir):

@@ -99,15 +99,19 @@
 
   <p class="status-line" id="alerts-status"><span class="dot"></span>Loading detected breaks&hellip;</p>
 
+  <div class="control-row" style="margin-bottom:14px;">
+    <div class="segmented" role="group" aria-label="Alert history window" id="alert-window-group"></div>
+  </div>
+
   <div class="kpi-row" id="alert-kpi-row">
-    <div class="kpi"><div class="label">Usable scenes</div><div class="value" id="kpi-scenes">&mdash;</div></div>
+    <div class="kpi"><div class="label">Scenes in window</div><div class="value" id="kpi-scenes">&mdash;</div></div>
     <div class="kpi"><div class="label">Years requested</div><div class="value" id="kpi-years">&mdash;</div></div>
     <div class="kpi"><div class="label">Breaks detected</div><div class="value amber" id="kpi-breaks">&mdash;</div></div>
     <div class="kpi"><div class="label">Penalty used</div><div class="value" id="kpi-penalty">&mdash;</div><div class="sub" id="kpi-scale"></div></div>
   </div>
 
   <div class="card" style="margin-bottom: 30px;">
-    <img src="assets/img/alert_ndvi_breaks.png" alt="Raw NDVI scatter, fitted trend, and detected breaks" loading="lazy">
+    <img id="alert-chart" src="assets/img/alert_ndvi_breaks.png" alt="Raw NDVI scatter, fitted trend, and detected breaks" loading="lazy">
   </div>
 
   <h3 style="font-size:1.05rem;margin:0 0 6px;">Break table</h3>
@@ -229,25 +233,28 @@ async function loadImagery() {
 async function loadAlerts() {
   const statusEl = document.getElementById('alerts-status');
   const tbody = document.getElementById('breaks-tbody');
-  try {
-    const res = await fetch('data/alert_breaks.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const d = await res.json();
+  const chartImg = document.getElementById('alert-chart');
+  const windowGroup = document.getElementById('alert-window-group');
 
-    document.getElementById('kpi-scenes').textContent = d.n_scenes ?? '—';
+  function renderWindow(d, key) {
+    const w = d.windows[key];
+    document.getElementById('kpi-scenes').textContent = w.n_scenes ?? '—';
     document.getElementById('kpi-years').textContent = d.years_requested ?? '—';
-    document.getElementById('kpi-breaks').textContent = (d.breaks ?? []).length;
+    document.getElementById('kpi-breaks').textContent = (w.breaks ?? []).length;
     document.getElementById('kpi-penalty').textContent = d.penalty_used ?? '—';
     document.getElementById('kpi-scale').textContent = 'scale ' + d.penalty_scale;
 
     const bbox = (d.bbox || []).map(v => v.toFixed(5)).join(', ');
-    statusEl.innerHTML = '<span class="dot"></span>bbox [' + bbox + ']';
+    statusEl.innerHTML = '<span class="dot"></span>' + w.label + ' &middot; bbox [' + bbox + ']';
+
+    chartImg.src = 'assets/img/alert_ndvi_breaks' + (key === d.default_window ? '' : '_' + key) + '.png';
+    chartImg.alt = 'Raw NDVI scatter, fitted trend, and detected breaks - ' + w.label.toLowerCase();
 
     tbody.innerHTML = '';
-    if (!d.breaks || d.breaks.length === 0) {
+    if (!w.breaks || w.breaks.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5">No structural breaks detected in this window.</td></tr>';
     } else {
-      for (const b of d.breaks) {
+      for (const b of w.breaks) {
         const up = b.delta >= 0;
         const tr = document.createElement('tr');
         tr.innerHTML =
@@ -259,6 +266,30 @@ async function loadAlerts() {
         tbody.appendChild(tr);
       }
     }
+  }
+
+  try {
+    const res = await fetch('data/alert_breaks.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+
+    // Order windows longest-first (e.g. "5y" before "1y") so "Full history"
+    // reads as the default/primary option, matching the Sector Explorer's
+    // "Full history" / "Last year" convention.
+    const keys = Object.keys(d.windows).sort((a, b) => d.windows[b].years - d.windows[a].years);
+    windowGroup.innerHTML = keys.map((key, i) =>
+      '<button type="button" data-window="' + key + '" aria-pressed="' + (key === d.default_window ? 'true' : 'false') + '">' +
+      d.windows[key].label + '</button>'
+    ).join('');
+    windowGroup.querySelectorAll('button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        windowGroup.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        btn.setAttribute('aria-pressed', 'true');
+        renderWindow(d, btn.getAttribute('data-window'));
+      });
+    });
+
+    renderWindow(d, d.default_window);
   } catch (err) {
     statusEl.textContent = 'Could not load alert_breaks.json - run bfast_alert.py then publish_site.py.';
     tbody.innerHTML = '<tr><td colspan="5">No data published yet.</td></tr>';

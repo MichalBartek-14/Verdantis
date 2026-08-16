@@ -153,6 +153,50 @@ def run_alert():
             "delta": round(after - before, 4),
         })
 
+    # ---------- history-length view: full window + a "last year" zoom -----
+    # STL(period=12) needs >= 2 full seasonal cycles to decompose meaningfully
+    # (guarded above), so a literal 1-year *recomputation* would be invalid -
+    # there just isn't enough data for STL to separate trend from season on
+    # its own. Instead, both views share the ONE trend/break computation
+    # above (fit on the full ALERT_YEARS history) and the "1y" view is a
+    # display-only window into it: the same trend line and only the breaks
+    # that fall in the last 12 months, scoped for a closer look at recent
+    # activity - not a second, shorter-and-shakier model.
+    def window_view(years):
+        """years=None -> full history, unfiltered. Otherwise everything
+        (raw scatter, trend line, breaks) clipped to the last `years`
+        years of the same fit above."""
+        if years is None:
+            return raw_series, monthly_index, trend.values, break_dates, breaks
+        cutoff = monthly_index.max() - relativedelta(years=years)
+        w_raw = raw_series[raw_series.index >= cutoff]
+        w_mask = monthly_index >= cutoff
+        w_index = monthly_index[w_mask]
+        w_trend = trend.values[w_mask]
+        w_breaks = [b for b in breaks if pd.Timestamp(b["date"]) >= cutoff]
+        w_break_dates = [bd for bd in break_dates if bd >= cutoff]
+        return w_raw, w_index, w_trend, w_break_dates, w_breaks
+
+    full_label = f"{config.ALERT_YEARS}y"
+    windows_spec = [(full_label, None, "Full history"), ("1y", 1, "Last year")]
+
+    windows_json = {}
+    for key, years, label in windows_spec:
+        w_raw, w_index, w_trend, w_break_dates, w_breaks = window_view(years)
+        windows_json[key] = {
+            "label": label,
+            "years": years if years is not None else config.ALERT_YEARS,
+            "n_scenes": len(w_raw),
+            "breaks": w_breaks,
+        }
+        suffix = "" if key == full_label else f"_{key}"
+        plot_path = config.OUTPUT_DIR / f"alert_ndvi_breaks{suffix}.png"
+        plot_bfast_breaks(
+            w_raw, w_index, w_trend, w_break_dates, plot_path,
+            title=f"NDVI - {label.lower()}, with detected structural breaks",
+        )
+        print(f"Chart saved ({label}): {plot_path}")
+
     breaks_path = config.OUTPUT_DIR / "alert_breaks.json"
     with open(breaks_path, "w") as f:
         json.dump({
@@ -163,13 +207,12 @@ def run_alert():
             "penalty_used": round(penalty, 6),
             "n_scenes": len(raw_series),
             "breaks": breaks,
+            "default_window": full_label,
+            "windows": windows_json,
         }, f, indent=2)
-    print(f"Detected {len(breaks)} break(s): {[b['date'] for b in breaks]}")
+    print(f"Detected {len(breaks)} break(s) over the full {config.ALERT_YEARS}y history: {[b['date'] for b in breaks]}")
+    print(f"  of which {len(windows_json['1y']['breaks'])} fall in the last year")
     print(f"Breaks saved: {breaks_path}")
-
-    plot_path = config.OUTPUT_DIR / "alert_ndvi_breaks.png"
-    plot_bfast_breaks(raw_series, monthly_index, trend.values, break_dates, plot_path)
-    print(f"Chart saved: {plot_path}")
 
     print("\nAlert run complete. Outputs in:", config.OUTPUT_DIR.resolve())
 

@@ -23,5 +23,40 @@
       "trend_after": 0.5682,
       "delta": -0.0127
     }
-  ]
+  ],
+  "default_window": "5y",
+  "windows": {
+    "5y": {
+      "label": "Full history",
+      "years": 5,
+      "n_scenes": 163,
+      "breaks": [
+        {
+          "date": "2023-07-01",
+          "trend_before": 0.5665,
+          "trend_after": 0.5802,
+          "delta": 0.0137
+        },
+        {
+          "date": "2025-10-01",
+          "trend_before": 0.5809,
+          "trend_after": 0.5682,
+          "delta": -0.0127
+        }
+      ]
+    },
+    "1y": {
+      "label": "Last year",
+      "years": 1,
+      "n_scenes": 49,
+      "breaks": [
+        {
+          "date": "2025-10-01",
+          "trend_before": 0.5809,
+          "trend_after": 0.5682,
+          "delta": -0.0127
+        }
+      ]
+    }
+  }
 }
