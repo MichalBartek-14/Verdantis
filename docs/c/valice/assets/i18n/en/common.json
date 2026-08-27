@@ -3,7 +3,8 @@
     "overview": "Overview",
     "historical": "Historical Pilot",
     "explorer": "Sector Explorer",
-    "monitoring": "Monitoring & Alerts"
+    "monitoring": "Monitoring & Alerts",
+    "briefing": "Satellite Briefing"
   },
   "badge": {
     "default": "Pilot"

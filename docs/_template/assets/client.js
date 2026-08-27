@@ -77,6 +77,14 @@
     document.querySelectorAll("[data-client-area]").forEach(function (el) {
       el.textContent = meta.plot_area_ha ? meta.plot_area_ha + " ha" : "";
     });
+
+    // "Satellite Briefing" nav link (see style.css's .nav-briefing) always
+    // points one level up at the shared docs/index.html briefing, but
+    // which LANGUAGE of it depends on this client - docs/sk/ is the only
+    // non-English briefing today, so this is a plain either/or rather than
+    // a lang -> path lookup; extend it if a third briefing language shows up.
+    var briefingHref = meta.language === "sk" ? "../../sk/index.html" : "../../index.html";
+    document.querySelectorAll("[data-briefing-link]").forEach(function (el) { el.href = briefingHref; });
   }
 
   function loadDict(lang, page) {

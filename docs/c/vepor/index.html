@@ -7,6 +7,18 @@
 <meta name="description" content="Verdantis - a Sentinel-2 based pilot for monitoring forestry/agriculture plot moisture, vegetation vigour, and structural vegetation breaks.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
 <link rel="stylesheet" href="assets/style.css">
+<!-- Leaflet, for the plot-location map further down this page (see
+     #plotMap below). Loaded from unpkg with the exact tags/SRI hashes
+     leafletjs.com/download.html publishes for 1.9.4 - the one deliberate
+     exception to this site otherwise having no external dependencies,
+     since a real interactive basemap isn't something worth vendoring or
+     redrawing by hand. Tiles themselves come from OpenStreetMap at
+     runtime (see the tileLayer() call below), which is the other half of
+     that same trade-off. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </head>
 <body data-page="index">
 <script src="assets/client.js"></script>
@@ -21,6 +33,7 @@
     <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
     <a href="explorer.html" data-i18n="nav.explorer">Sector Explorer</a>
     <a href="monitoring.html" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
+    <a href="../../index.html" class="nav-briefing" data-briefing-link data-i18n="nav.briefing">Satellite Briefing</a>
   </nav>
 </header>
 
@@ -57,6 +70,15 @@
     <div class="stat"><div class="value" data-i18n="stats.cadence_value">weekly</div><div class="label" data-i18n="stats.cadence_label">Recent-conditions cadence</div></div>
     <div class="stat"><div class="value" data-i18n="stats.cost_value">0</div><div class="label" data-i18n="stats.cost_label">Cost - free CDSE + Open-Meteo data</div></div>
   </div>
+
+  <section class="section">
+    <h2 data-i18n="map.title">Where this plot sits</h2>
+    <p class="lede" data-i18n="map.lede">Drag and zoom to explore - the plot's true-colour satellite photo sits
+      over OpenStreetMap at 70% opacity, so you can see exactly where it lines up on the ground.</p>
+    <div id="plotMap" class="plot-map" style="display:none;"></div>
+    <p class="note" id="plotMapFallback" data-i18n="map.fallback">The plot-location map isn't
+      available yet for this client - it appears once render_true_color.py has recorded the photo's geographic bounds.</p>
+  </section>
 
   <section class="section">
     <h2 data-i18n="features.title">Four views into the same plot</h2>
@@ -104,21 +126,69 @@ window.VerdantisReady.then(function (ready) {
   var img = document.getElementById('hero-photo');
   img.alt = ready.t('hero.photo_alt');
 
+  var PHOTO = 'assets/img/true_color.png';
+
   // Plain probe-then-swap rather than just setting img.src directly: an
   // <img> with a broken src still occupies its box (or shows a broken-image
   // icon) even with display:none swapped later, so load into a throwaway
   // Image() first and only touch the real <img>/placeholder once we know
   // whether assets/img/true_color.png actually exists for this client.
-  var probe = new Image();
-  probe.onload = function () {
-    img.src = 'assets/img/true_color.png';
+  // Wrapped in a promise since the plot-location map below needs the same
+  // answer (a photo with no map, or a map with no photo, isn't useful).
+  var photoReady = new Promise(function (resolve) {
+    var probe = new Image();
+    probe.onload = function () { resolve(true); };
+    probe.onerror = function () {
+      // No GeoTIFF rendered for this client yet - the placeholder set in the
+      // HTML above stays visible. Not an error state, just "not published yet".
+      resolve(false);
+    };
+    probe.src = PHOTO;
+  });
+
+  photoReady.then(function (ok) {
+    if (!ok) return;
+    img.src = PHOTO;
     wrap.classList.add('has-photo');
-  };
-  probe.onerror = function () {
-    // No GeoTIFF rendered for this client yet - the placeholder set in the
-    // HTML above stays visible. Not an error state, just "not published yet".
-  };
-  probe.src = 'assets/img/true_color.png';
+  });
+
+  // Plot-location map: OpenStreetMap underneath, the same true-colour photo
+  // laid over it at 70% opacity via Leaflet's L.imageOverlay(), positioned
+  // with the photo's own WGS84 bounds - written by render_true_color.py
+  // alongside the PNG (see true_color_bounds.json) since the PNG itself
+  // carries no georeference. Needs both pieces, so it waits on the same
+  // photo probe above plus its own fetch, and only builds the map (rather
+  // than leaving the "not available yet" note in the HTML) once both
+  // resolve - a photo with no known position isn't placeable on a map.
+  var boundsReady = fetch('data/true_color_bounds.json', { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('no true_color_bounds.json yet'); return r.json(); })
+    .catch(function () { return null; });
+
+  Promise.all([photoReady, boundsReady]).then(function (results) {
+    var photoOk = results[0], bounds = results[1];
+    if (!photoOk || !bounds) return; // HTML's fallback note stays visible, #plotMap stays hidden
+
+    // The map div is display:none until this point - Leaflet measures its
+    // container's size on init, so it has to be shown FIRST or the map
+    // comes out zero-height. Swap visibility before calling L.map().
+    document.getElementById('plotMapFallback').style.display = 'none';
+    document.getElementById('plotMap').style.display = '';
+
+    var latLngBounds = [[bounds.south, bounds.west], [bounds.north, bounds.east]];
+    // scrollWheelZoom off by default - a big embedded map trapping the
+    // page's scroll on mouseover is a worse experience than requiring a
+    // click/drag or the +/- buttons (still fully draggable/zoomable).
+    var map = L.map('plotMap', { scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    L.imageOverlay(PHOTO, latLngBounds, { opacity: 0.7 }).addTo(map);
+    // Dashed outline at the photo's exact edges - at 70% opacity the where-
+    // does-the-photo-end line can get lost against similarly-toned tiles.
+    L.rectangle(latLngBounds, { color: '#fff', weight: 2, fill: false, dashArray: '6 4' }).addTo(map);
+    map.fitBounds(latLngBounds, { padding: [40, 40] });
+  });
 });
 </script>
 

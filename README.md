@@ -132,7 +132,20 @@ Outputs land in `outputs/<client>/`:
 `docs/` is a static site, deployed as-is (GitHub Pages, Netlify, ...) with **no backend** -
 the browser never talks to this machine or to openEO. It has three parts:
 
-- `docs/index.html` - a client picker, reading `docs/clients.json` (a manifest of every
+- `docs/index.html` (+ `docs/intro-2.html`, `docs/intro-3.html`) - a 3-page satellite
+  intelligence briefing shown before any plot is picked: what satellite land monitoring is,
+  how near-infrared/SWIR bands reveal plant health the eye can't see, and how that's used
+  for drought/flood/storm monitoring. Plain hand-written text, no per-client data, no i18n
+  system - ends with a "Choose your plot" CTA into `plots.html`. `docs/sk/` holds a byte-
+  for-byte-structural Slovak translation of the same three pages (an EN/SK toggle sits in
+  each page's top bar); adding another language means copying `sk/` to `<lang>/`, translating
+  the visible text, and adding a toggle link for it. Each page reserves one photo slot (see
+  the "CUSTOM PHOTO SLOT" comment in the HTML for the exact file path and recommended
+  pixel size/aspect ratio for that spot) - drop a file at `docs/assets/img/intro/page<N>.jpg`
+  and it appears automatically, shared by both languages; leave it out and a placeholder
+  shows instead of a broken image. All other text on these pages is edited directly in the
+  HTML - there's no CMS or build step.
+- `docs/plots.html` - the client picker, reading `docs/clients.json` (a manifest of every
   published client's slug/name/location).
 - `docs/_template/` - the ONE hand-maintained site template (4 pages: Overview, Historical
   Pilot, Sector Explorer, Monitoring & Alerts), byte-identical across every client. Personalizes

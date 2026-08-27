@@ -22,6 +22,11 @@
     "cost_value": "0",
     "cost_label": "Cost - free CDSE + Open-Meteo data"
   },
+  "map": {
+    "title": "Where this plot sits",
+    "lede": "Drag and zoom to explore - the plot's true-colour satellite photo sits over OpenStreetMap at 70% opacity, so you can see exactly where it lines up on the ground.",
+    "fallback": "The plot-location map isn't available yet for this client - it appears once render_true_color.py has recorded the photo's geographic bounds."
+  },
   "features": {
     "title": "Four views into the same plot",
     "lede": "Each product below is generated locally from the same Sentinel-2 pipeline and openly documented - none of the thresholds are calibrated operational alerts yet, they're pilot starting points meant to be checked against field observations before driving real decisions.",

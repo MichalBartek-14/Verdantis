@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>From signal to warning - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Verdantis - how satellite vegetation and moisture indices flag drought, flood, and storm damage on a forestry plot.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="stylesheet" href="_template/assets/style.css">
+<style>
+  /* See docs/index.html's top-of-file comment for how this 3-page briefing
+     is organized (languages, customizing text/photos). This is page 3/EN;
+     the Slovak translation is sk/intro-3.html. */
+  body { background: var(--bg); }
+  .intro-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px clamp(20px, 5vw, 56px);
+  }
+  .intro-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
+  .intro-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
+  .intro-topbar-right { display: flex; align-items: center; gap: 18px; }
+  .intro-skip { font-size: 0.84rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+  .intro-skip:hover { color: var(--green-dark); }
+  .lang-switch { display: flex; gap: 4px; font-size: 0.8rem; font-weight: 700; }
+  .lang-switch a, .lang-switch span { padding: 3px 8px; border-radius: 6px; text-decoration: none; }
+  .lang-switch span { background: var(--bg-alt); color: var(--text); }
+  .lang-switch a { color: var(--text-muted); }
+  .lang-switch a:hover { color: var(--green-dark); }
+
+  .intro-body { max-width: 900px; margin: 0 auto; padding: 10px clamp(20px, 5vw, 56px) 10px; }
+  .intro-body .eyebrow { display: block; margin-bottom: 10px; }
+  .intro-body h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0 0 14px; }
+  .intro-body > p.lede { color: var(--text-muted); max-width: 68ch; font-size: 1.05rem; margin: 0 0 34px; }
+
+  .scenario-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; }
+  .scenario {
+    display: grid; grid-template-columns: 52px 1fr; gap: 18px;
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px 22px;
+  }
+  .scenario .icon {
+    width: 52px; height: 52px; border-radius: 12px; background: var(--bg-alt);
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  }
+  .scenario h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .scenario p { margin: 0; color: var(--text-muted); font-size: 0.92rem; }
+
+  .closing {
+    background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px 26px; margin-bottom: 10px;
+  }
+  .closing p { margin: 0; color: var(--text); font-size: 0.98rem; }
+  .closing strong { color: var(--green-dark); }
+
+  .intro-next {
+    display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;
+    padding: 34px clamp(20px, 5vw, 56px) 60px; background: var(--bg-alt); border-top: 1px solid var(--border); margin-top: 20px;
+  }
+  .step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+  .step-dot.current { background: var(--green-dark); color: #fff; }
+  .step-dot.link { color: var(--text-muted); border: 1px solid var(--border); }
+  .back-link { font-size: 0.86rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+  .back-link:hover { color: var(--green-dark); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     EDITING THIS PAGE: headline, lede, the three scenario texts,
+     and the closing note are plain HTML - change them freely.
+     ============================================================ -->
+
+<div class="intro-topbar">
+  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+  <div class="intro-topbar-right">
+    <span class="lang-switch"><span>EN</span><a href="sk/intro-3.html">SK</a></span>
+    <a class="intro-skip" href="plots.html">Skip the briefing, go to dashboards &rarr;</a>
+  </div>
+</div>
+
+<div class="intro-body">
+  <span class="eyebrow">Satellite intelligence briefing &middot; 3 of 3</span>
+  <h1>From signal to warning</h1>
+  <p class="lede">Tracked continuously across an entire plot, the vigour and moisture signals from
+    page two stop being curiosities and start being an early-warning system.</p>
+
+  <div class="scenario-list">
+    <div class="scenario">
+      <span class="icon">🌵</span>
+      <div>
+        <h3>Drought</h3>
+        <p>Canopy and soil moisture (NDWI/NDMI) start dropping weeks before a tree visibly wilts.
+          Cross-checked against ERA5 temperature and rainfall, that trend tells you whether a
+          dry spell is driving it - or whether something else is.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <span class="icon">🌊</span>
+      <div>
+        <h3>Flood &amp; waterlogging</h3>
+        <p>A sudden shift in the moisture indices, localised to specific sectors of the plot,
+          pinpoints where standing water or saturated ground is a problem - without walking the
+          whole property to find it.</p>
+      </div>
+    </div>
+    <div class="scenario">
+      <span class="icon">⛈️</span>
+      <div>
+        <h3>Storms &amp; severe weather</h3>
+        <p>Structural break detection in the vigour record (BFAST-style) flags a real, lasting
+          change - windthrow, hail damage, dieback - and tells it apart from ordinary seasonal
+          swings in the same series.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="closing">
+    <p>Everything on the next pages - the <strong>Historical Pilot</strong>, the
+      <strong>Sector Explorer</strong>, and <strong>Monitoring &amp; Alerts</strong> - is built
+      from exactly these signals, for your plot specifically.</p>
+  </div>
+</div>
+
+<div class="intro-next">
+  <a class="back-link" href="intro-2.html">&larr; Back</a>
+  <a class="step-dot link" href="index.html">1</a>
+  <a class="step-dot link" href="intro-2.html">2</a>
+  <span class="step-dot current">3</span>
+  <a class="btn btn-primary" href="plots.html" style="margin-left:6px;">Choose your plot &rarr;</a>
+</div>
+
+</body>
+</html>

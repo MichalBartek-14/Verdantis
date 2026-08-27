@@ -1,7 +1,15 @@
 """
 Renders a client's true-color satellite GeoTIFF into a lightweight PNG for
 the site's title page hero (docs/_template/index.html - the photo sits
-next to the title, see assets/style.css's .hero-image rules).
+next to the title, see assets/style.css's .hero-image rules) AND records
+that GeoTIFF's own geographic extent, reprojected to WGS84, as
+outputs/<slug>/true_color_bounds.json - the plot-location map further down
+that same page (index.html's own inline <script>, not client.js) uses
+those bounds to lay the PNG over OpenStreetMap with L.imageOverlay(), so
+the photo lands exactly where the plot really is rather than at some
+approximate/guessed box. The PNG itself carries no georeference
+(plt.imsave strips it), which is why this is written out as a sidecar
+file instead.
 
 The GeoTIFF itself is produced by a separate process outside this
 pipeline (not by any script here) and is expected to already be cropped/
@@ -28,11 +36,13 @@ Run:    python render_true_color.py --client <slug>
         python render_true_color.py --all
 """
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
 import rasterio
 from rasterio.enums import Resampling
+from rasterio.warp import transform_bounds
 
 import clients
 
@@ -94,6 +104,11 @@ def render(client: dict) -> Path | None:
         ).astype("float32")
         if src.nodata is not None:
             bands[bands == src.nodata] = np.nan
+        # densify_pts=21 samples points along each edge before reprojecting,
+        # not just the four corners - the safe way to get a WGS84 bounding
+        # box for a source CRS whose grid isn't axis-aligned with lat/lon
+        # (a plain per-corner reproject can under-cover the true extent).
+        west, south, east, north = transform_bounds(src.crs, "EPSG:4326", *src.bounds, densify_pts=21)
 
     if n_bands == 1:
         # Single-band source (e.g. panchromatic) - show as grayscale rather
@@ -111,6 +126,11 @@ def render(client: dict) -> Path | None:
                                        # when render() bails out early above (no GeoTIFF yet)
     plt.imsave(out_path, rgb)
     print(f"  saved: {out_path} ({rgb.shape[1]}x{rgb.shape[0]}, from {tif_path})")
+
+    bounds_path = out_dir / "true_color_bounds.json"
+    with open(bounds_path, "w") as f:
+        json.dump({"west": west, "south": south, "east": east, "north": north}, f, indent=2)
+    print(f"  saved: {bounds_path} (WGS84 extent, for the plot-location map)")
     return out_path
 
 

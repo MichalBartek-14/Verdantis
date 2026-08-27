@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Light you can't see - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Verdantis - how near-infrared and short-wave infrared bands reveal plant health invisible to the naked eye.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="stylesheet" href="_template/assets/style.css">
+<style>
+  /* See docs/index.html's top-of-file comment for how this 3-page briefing
+     is organized (languages, customizing text/photos). This is page 2/EN;
+     the Slovak translation is sk/intro-2.html. */
+  body { background: var(--bg); }
+  .intro-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px clamp(20px, 5vw, 56px);
+  }
+  .intro-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
+  .intro-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
+  .intro-topbar-right { display: flex; align-items: center; gap: 18px; }
+  .intro-skip { font-size: 0.84rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+  .intro-skip:hover { color: var(--green-dark); }
+  .lang-switch { display: flex; gap: 4px; font-size: 0.8rem; font-weight: 700; }
+  .lang-switch a, .lang-switch span { padding: 3px 8px; border-radius: 6px; text-decoration: none; }
+  .lang-switch span { background: var(--bg-alt); color: var(--text); }
+  .lang-switch a { color: var(--text-muted); }
+  .lang-switch a:hover { color: var(--green-dark); }
+
+  .intro-body { max-width: 900px; margin: 0 auto; padding: 10px clamp(20px, 5vw, 56px) 20px; }
+  .intro-body .eyebrow { display: block; margin-bottom: 10px; }
+  .intro-body h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0 0 14px; }
+  .intro-body > p.lede { color: var(--text-muted); max-width: 68ch; font-size: 1.05rem; margin: 0 0 34px; }
+
+  /* Reflectance diagram: two leaves, four bars each (visible / NIR / SWIR),
+     healthy vs. stressed - a self-contained SVG so the point ("same light,
+     different bounce-back") doesn't need a stock photo or a live chart. */
+  .diagram { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px clamp(16px, 4vw, 34px); margin-bottom: 34px; }
+  .diagram-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; align-items: center; }
+  .diagram-caption { font-size: 0.85rem; color: var(--text-muted); margin-top: 16px; text-align: center; }
+
+  /* Custom photo banner, light-background variant of the dark title
+     page's .hero-image - see the "CUSTOM PHOTO SLOT" comment in the body
+     for the file path and recommended size. */
+  .intro-photo { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--bg-alt); margin-bottom: 34px; }
+  .intro-photo img { display: none; width: 100%; height: 100%; object-fit: cover; }
+  .intro-photo.has-photo img { display: block; }
+  .intro-photo.has-photo .intro-photo-placeholder { display: none; }
+  .intro-photo-placeholder { position: absolute; inset: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 16px; border: 1px dashed var(--border); border-radius: 10px; color: var(--text-muted); font-size: 0.82rem; }
+  .intro-photo-placeholder .icon { font-size: 1.5rem; opacity: 0.7; }
+
+  .band-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 10px; }
+  .band-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px 22px 20px; }
+  .band-card .tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #fff; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; }
+  .band-card.nir .tag { background: var(--green); }
+  .band-card.swir .tag { background: var(--teal); }
+  .band-card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .band-card p { margin: 0; color: var(--text-muted); font-size: 0.92rem; }
+
+  .intro-next {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    padding: 34px clamp(20px, 5vw, 56px) 60px; background: var(--bg-alt); border-top: 1px solid var(--border); margin-top: 20px;
+  }
+  .step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+  .step-dot.current { background: var(--green-dark); color: #fff; }
+  .step-dot.link { color: var(--text-muted); border: 1px solid var(--border); }
+  .back-link { font-size: 0.86rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+  .back-link:hover { color: var(--green-dark); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     EDITING THIS PAGE: headline, lede, and the two band-card texts
+     are plain HTML - change them freely. The banner photo above the
+     band cards is optional; see "CUSTOM PHOTO SLOT" below for the
+     file path and recommended size.
+     ============================================================ -->
+
+<div class="intro-topbar">
+  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+  <div class="intro-topbar-right">
+    <span class="lang-switch"><span>EN</span><a href="sk/intro-2.html">SK</a></span>
+    <a class="intro-skip" href="plots.html">Skip the briefing, go to dashboards &rarr;</a>
+  </div>
+</div>
+
+<div class="intro-body">
+  <span class="eyebrow">Satellite intelligence briefing &middot; 2 of 3</span>
+  <h1>Light you can't see</h1>
+  <p class="lede">A normal photo only uses the sliver of light your eyes register - red, green, blue.
+    Sentinel-2 measures well beyond that, and two of those invisible bands are exactly the
+    ones that reveal plant condition earliest.</p>
+
+  <!-- CUSTOM PHOTO SLOT - page 2 banner, sits above the band cards.
+       Drop a file at docs/assets/img/intro/page2.jpg (repo-relative; shared
+       by the EN and SK versions of this page). Recommended size: at least
+       1600x900px, 16:9 aspect ratio (wide landscape) - object-fit:cover
+       crops to fill this frame, so keep the main subject centered. A good
+       pick here: a false-colour/NDVI-style image, or a real photo of the
+       plot's canopy. Until the file exists, the dashed placeholder below
+       stays and nothing looks broken. -->
+  <div class="intro-photo" id="photoSlot">
+    <img id="photoImg" alt="">
+    <div class="intro-photo-placeholder">
+      <span class="icon">🖼️</span>
+      <span>Add your own photo here - see the "CUSTOM PHOTO SLOT" comment in the HTML for the ideal size.</span>
+    </div>
+  </div>
+
+  <div class="diagram">
+    <div class="diagram-grid">
+      <svg viewBox="0 0 300 220" width="100%" height="220" role="img" aria-labelledby="leafHealthyTitle">
+        <title id="leafHealthyTitle">Healthy leaf: strong near-infrared and short-wave infrared reflectance</title>
+        <path d="M150 20 C90 40 60 110 90 170 C110 195 150 200 150 200 C150 200 190 195 210 170 C240 110 210 40 150 20 Z" fill="#2c7a3c" opacity="0.18"/>
+        <path d="M150 30 C100 48 75 108 98 160 C114 182 150 190 150 190 C150 190 186 182 202 160 C225 108 200 48 150 30 Z" fill="none" stroke="#2c7a3c" stroke-width="2.5"/>
+        <line x1="150" y1="40" x2="150" y2="182" stroke="#2c7a3c" stroke-width="1.5" opacity="0.6"/>
+        <g transform="translate(30,190)">
+          <rect x="0" y="-14" width="14" height="14" fill="#c4c9c0"/>
+          <rect x="20" y="-46" width="14" height="46" fill="#2c7a3c"/>
+          <rect x="40" y="-38" width="14" height="38" fill="#1f7a8c"/>
+        </g>
+        <text x="55" y="215" text-anchor="middle" font-size="12" fill="#57655c" font-family="Segoe UI, sans-serif">Healthy - strong bounce-back</text>
+      </svg>
+      <svg viewBox="0 0 300 220" width="100%" height="220" role="img" aria-labelledby="leafStressedTitle">
+        <title id="leafStressedTitle">Stressed leaf: weak near-infrared and short-wave infrared reflectance</title>
+        <path d="M150 30 C100 55 80 115 105 165 C120 188 150 195 150 195 C150 195 180 188 195 165 C220 115 200 55 150 30 Z" fill="#c07a20" opacity="0.16"/>
+        <path d="M150 38 C108 60 92 112 112 155 C124 175 150 182 150 182 C150 182 176 175 188 155 C208 112 192 60 150 38 Z" fill="none" stroke="#c07a20" stroke-width="2.5" stroke-dasharray="5 3"/>
+        <line x1="150" y1="46" x2="150" y2="176" stroke="#c07a20" stroke-width="1.5" opacity="0.6"/>
+        <g transform="translate(30,190)">
+          <rect x="0" y="-14" width="14" height="14" fill="#c4c9c0"/>
+          <rect x="20" y="-20" width="14" height="20" fill="#c07a20"/>
+          <rect x="40" y="-16" width="14" height="16" fill="#c07a20"/>
+        </g>
+        <text x="55" y="215" text-anchor="middle" font-size="12" fill="#57655c" font-family="Segoe UI, sans-serif">Stressed - weak bounce-back, invisible to the eye</text>
+      </svg>
+    </div>
+    <p class="diagram-caption">Same visible-light bar (grey) in both leaves - the eye sees little difference yet.
+      The near-infrared and short-wave-infrared bars (green/teal) already tell the two apart.</p>
+  </div>
+
+  <div class="band-cards">
+    <div class="band-card nir">
+      <span class="tag">Near-Infrared &middot; NIR</span>
+      <h3>Vigour</h3>
+      <p>A healthy leaf's internal cell structure reflects a lot of near-infrared light - far more
+        than it reflects visible red. As a leaf thins, yellows, or dies back, that reflectance
+        drops well before the change is visible to a person walking the plot. Comparing NIR
+        against red gives NDVI, the standard vegetation-vigour index.</p>
+    </div>
+    <div class="band-card swir">
+      <span class="tag">Short-Wave Infrared &middot; SWIR</span>
+      <h3>Moisture</h3>
+      <p>Water absorbs short-wave infrared strongly, so leaves and soil holding less water
+        reflect more of it. Comparing NIR against SWIR gives NDWI and NDMI - two moisture
+        proxies for canopy and soil that dry out before the plot looks dry.</p>
+    </div>
+  </div>
+</div>
+
+<div class="intro-next">
+  <a class="back-link" href="index.html">&larr; Back</a>
+  <a class="step-dot link" href="index.html">1</a>
+  <span class="step-dot current">2</span>
+  <a class="step-dot link" href="intro-3.html">3</a>
+  <a class="btn btn-primary" href="intro-3.html" style="margin-left:6px;">What that's for &rarr;</a>
+</div>
+
+<script>
+(function () {
+  var wrap = document.getElementById('photoSlot');
+  var img = document.getElementById('photoImg');
+  var probe = new Image();
+  probe.onload = function () {
+    img.src = 'assets/img/intro/page2.jpg';
+    wrap.classList.add('has-photo');
+  };
+  probe.onerror = function () {};
+  probe.src = 'assets/img/intro/page2.jpg';
+})();
+</script>
+
+</body>
+</html>

@@ -1,26 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="sk">
 <head>
 <meta charset="utf-8">
-<title>Verdantis - Satellite Intelligence Briefing</title>
+<title>Verdantis - Brífing o satelitnej inteligencii</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Verdantis - what satellite land monitoring is, and what it can tell you about a forestry plot.">
+<meta name="description" content="Verdantis - čo je satelitné sledovanie pôdy a čo vám dokáže povedať o vašom lesnom pozemku.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
-<link rel="stylesheet" href="_template/assets/style.css">
+<link rel="stylesheet" href="../_template/assets/style.css">
 <style>
-  /* Standalone 3-page briefing shown before the client picker (plots.html).
-     Not part of _template/ - it has no per-client data, so it's plain
-     hand-written text (one copy per language - this file is English, the
-     Slovak translation lives at sk/index.html and is otherwise identical
-     markup/CSS). Reuses the template stylesheet + its dark topographic
-     .hero look so the briefing feels like the front cover of the same
-     product, not a bolted-on slide deck.
-
-     CUSTOMIZING: edit the headline/paragraph/card text below directly -
-     it's plain HTML, no build step. For the photo slot on the right, see
-     the "CUSTOM PHOTO SLOT" comment further down. Adding a language:
-     duplicate sk/ as <lang>/, translate the three files, and add a toggle
-     link for it next to the EN/SK pair in .intro-topbar below. */
+  /* Slovak translation of ../index.html - same markup/CSS/photo-slot
+     mechanics, see that file's top-of-file comment for how the briefing is
+     organized and how to customize it. Keep both language versions in sync
+     structurally; only the visible text differs. */
   body { background: var(--bg); }
 
   .intro-topbar {
@@ -66,48 +57,48 @@
 <body>
 
 <!-- ============================================================
-     EDITING THIS PAGE: the headline, tagline and the three cards
-     below are plain text - change them freely. The photo panel on
-     the right (a placeholder until you add a real image) is marked
-     "CUSTOM PHOTO SLOT" further down, with the size that fits it best.
+     EDITING THIS PAGE (Slovak): text below is plain HTML, change
+     freely. The photo slot on the right is shared with the English
+     page - see "CUSTOM PHOTO SLOT" further down for the file path
+     and recommended size (same photo, no text on it either way).
      ============================================================ -->
 
 <div class="intro-topbar">
   <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
   <div class="intro-topbar-right">
-    <span class="lang-switch"><span>EN</span><a href="sk/index.html">SK</a></span>
-    <a class="intro-skip" href="plots.html">Skip the briefing, go to dashboards &rarr;</a>
+    <span class="lang-switch"><a href="../index.html">EN</a><span>SK</span></span>
+    <a class="intro-skip" href="../plots.html">Preskočiť brífing, prejsť na prehľady &rarr;</a>
   </div>
 </div>
 
 <section class="hero intro-hero" id="introHero" style="min-height:auto; padding-top:50px; padding-bottom:70px;">
   <div class="hero-inner">
-    <span class="eyebrow">Satellite intelligence briefing &middot; 1 of 3</span>
-    <h1>Your land, seen from <span>orbit</span>.</h1>
+    <span class="eyebrow">Brífing o satelitnej inteligencii &middot; 1 z 3</span>
+    <h1>Vaša pôda, videná z <span>obežnej dráhy</span>.</h1>
     <p class="tagline">
-      Before you open a plot's dashboard, three short pages on what satellite
-      monitoring actually does: what it sees, how it sees things your own eyes
-      can't, and what that's good for when weather turns against you.
+      Skôr než otvoríte prehľad konkrétneho pozemku, tri krátke strany o tom, čo satelitné
+      sledovanie skutočne robí: čo vidí, ako vidí veci, ktoré vaše oči nedokážu, a na čo je
+      to dobré, keď sa počasie obráti proti vám.
     </p>
 
     <div class="card-row">
       <div class="intro-card">
         <span class="icon">🛰️</span>
-        <div><h3>A photo, but wider</h3>
-          <p>One pass of the Sentinel-2 satellites images your entire plot boundary in a single
-            frame - not just the tree line you can see from the access road.</p></div>
+        <div><h3>Fotka, ale širšia</h3>
+          <p>Jeden prelet satelitov Sentinel-2 odfotí celý pozemok v jedinom
+            zábere.</p></div>
       </div>
       <div class="intro-card">
         <span class="icon">🔁</span>
-        <div><h3>A photo, but repeated</h3>
-          <p>The same plot gets re-imaged automatically every few days, for free, building a
-            continuous record instead of a single site-visit snapshot.</p></div>
+        <div><h3>Fotka, ale opakovaná</h3>
+          <p>Ten istý pozemok sa automaticky preskenuje znova každých pár dní, zadarmo, a
+            vytvára tak nepretržitý záznam namiesto jednorazovej návštevy na mieste.</p></div>
       </div>
       <div class="intro-card">
         <span class="icon">👁️</span>
-        <div><h3>A photo, but deeper</h3>
-          <p>The satellite doesn't just record colour - it measures light your eyes never
-            register at all. That's page two.</p></div>
+        <div><h3>Fotka, ale hlbšia</h3>
+          <p>Satelit nezaznamenáva len farbu - meria aj svetlo, ktoré ľudské oči vôbec
+            nezachytia. Viac na druhej strane.</p></div>
       </div>
     </div>
   </div>
@@ -116,12 +107,12 @@
        text panel (photo shows through on the right, fades to the dark
        green panel on the left so the text stays readable - see the JS
        below, which paints it as a background rather than a boxed image).
-       Drop a file at docs/assets/img/intro/page1.png (repo-relative; same
-       file is shared by the EN and SK versions of this page). Recommended
-       size: at least 1920x1080px, landscape (16:9 or wider) and high-
-       resolution - this can render as large as the full section width on
-       a wide monitor. Keep the main subject in the right half/two-thirds
-       of the frame, since the left side sits under the darkest part of the
+       Drop a file at docs/assets/img/intro/page1.png (repo-relative; shared
+       with ../index.html, one photo for both languages). Recommended size:
+       at least 1920x1080px, landscape (16:9 or wider) and high-resolution -
+       this can render as large as the full section width on a wide
+       monitor. Keep the main subject in the right half/two-thirds of the
+       frame, since the left side sits under the darkest part of the
        overlay and the text panel. Until the file exists, the section keeps
        its default dark topographic background and nothing looks broken. -->
 </section>
@@ -130,12 +121,12 @@
   <span class="step-dot current">1</span>
   <a class="step-dot link" href="intro-2.html">2</a>
   <a class="step-dot link" href="intro-3.html">3</a>
-  <a class="btn btn-primary" href="intro-2.html" style="margin-left:16px;">See how &rarr;</a>
+  <a class="btn btn-primary" href="intro-2.html" style="margin-left:16px;">Pozrieť ako &rarr;</a>
 </div>
 
 <script>
 (function () {
-  var PHOTO = 'assets/img/intro/page1.png';
+  var PHOTO = '../assets/img/intro/page1.png';
   var hero = document.getElementById('introHero');
   // Same probe-before-use trick as _template/index.html's title-page photo:
   // load into a throwaway Image() first so a missing file just leaves the

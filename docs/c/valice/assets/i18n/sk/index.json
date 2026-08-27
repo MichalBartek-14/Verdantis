@@ -22,6 +22,11 @@
     "cost_value": "0",
     "cost_label": "Náklady - bezplatné dáta CDSE + Open-Meteo"
   },
+  "map": {
+    "title": "Kde sa táto parcela nachádza",
+    "lede": "Potiahnutím a priblížením preskúmajte okolie - pravdivo farebná satelitná fotka parcely je položená nad mapou OpenStreetMap s 70% priehľadnosťou, takže presne vidíte, kde na teréne leží.",
+    "fallback": "Mapa umiestnenia parcely zatiaľ nie je pre tohto klienta k dispozícii - zobrazí sa, keď render_true_color.py zaznamená geografické hranice fotky."
+  },
   "features": {
     "title": "Štyri pohľady na tú istú parcelu",
     "lede": "Každý z produktov nižšie sa generuje lokálne z rovnakého pipeline pre Sentinel-2 a je otvorene zdokumentovaný - žiadna z prahových hodnôt zatiaľ nie je kalibrovaným prevádzkovým upozornením, ide o pilotné východiskové body, ktoré treba pred reálnym rozhodovaním overiť terénnym pozorovaním.",

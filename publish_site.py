@@ -119,6 +119,16 @@ def publish_client_site(slug: str) -> None:
     else:
         print("  true-color hero photo: none yet (run render_true_color.py once the GeoTIFF exists)")
 
+    # 3b. That same photo's WGS84 bounds - written alongside it by
+    #     render_true_color.py - so index.html's plot-location map can lay
+    #     it over OpenStreetMap at its real position via L.imageOverlay().
+    #     Goes to data/, not assets/img/, since it's JSON the page fetches,
+    #     not a static asset.
+    if _copy(outputs_dir, "true_color_bounds.json", data):
+        print("  true-color bounds (for the plot-location map): copied")
+    else:
+        print("  true-color bounds: none yet (same as the hero photo above - run render_true_color.py)")
+
     # 4. Historical pilot images.
     print("  historical pilot images:")
     for name in HISTORICAL_IMAGES:

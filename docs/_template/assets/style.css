@@ -106,6 +106,19 @@ img { max-width: 100%; display: block; }
   border-bottom-color: var(--green);
 }
 
+/* "Back to the 3-page satellite briefing" link - the one nav item that
+   doesn't point at another tab of THIS client's dashboard but back out to
+   the shared docs/index.html (+intro-2/3.html) briefing pages one level up
+   from docs/c/<slug>/. Styled as a filled pill rather than a plain nav
+   link so it doesn't get mistaken for a fifth dashboard tab; its exact
+   href (en vs. sk) is set at runtime by client.js from client_meta.json's
+   language, since this markup is shared byte-for-byte across every client. */
+.site-nav a.nav-briefing {
+  color: #fff; background: var(--green); border-bottom-color: transparent;
+  padding: 6px 14px; border-radius: 999px;
+}
+.site-nav a.nav-briefing:hover { color: #fff; background: var(--green-dark); border-bottom-color: transparent; }
+
 main { display: block; }
 
 .page-hero {
@@ -425,6 +438,17 @@ table.data-table tr:last-child td { border-bottom: none; }
 }
 .stat-strip .stat .value { font-size: 1.6rem; font-weight: 800; color: var(--green-dark); }
 .stat-strip .stat .label { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* --- Plot-location map (docs/index.html) -----------------------------
+   OpenStreetMap basemap underneath, the client's own true-colour photo
+   laid over it at 70% opacity via Leaflet's L.imageOverlay() - see the
+   inline <script> at the bottom of index.html for the map init, and
+   render_true_color.py / true_color_bounds.json for where the photo's
+   geographic bounds come from. Sized as its own "large window" per the
+   brief rather than reusing .figure-grid's card sizing - a map this small
+   isn't useful for actually orienting yourself on the plot. */
+.plot-map { height: min(60vh, 560px); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); background: var(--bg-alt); }
+@media (max-width: 640px) { .plot-map { height: 360px; } }
 
 /* --- Monthly imagery slider (docs/monitoring.html) -----------------------
    Ported from the sector explorer's former "Monthly Imagery" tab, restyled
