@@ -9,6 +9,12 @@
 [build]
   publish = "docs"
 
+# Per-client Basic Auth for /c/<slug>/* - see
+# netlify/edge-functions/protect-clients.js (auto-discovered from that
+# default directory, no [[edge_functions]] entry needed here) and
+# README.md's "Client access control" section for the env vars each
+# client's credentials come from.
+
 # Every asset under docs/ (style.css, client.js, true_color.png, the i18n
 # JSON, sector_explorer_data.json, ...) is served under a FIXED filename
 # that publish_site.py overwrites in place on every republish - nothing is

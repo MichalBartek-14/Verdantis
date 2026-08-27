@@ -242,17 +242,54 @@ this GitHub repo and it just works, no configuration needed in Netlify's UI:
   these before a deploy can keep serving the stale copy long after the new version is
   live (this project hit exactly that with a locally-cached `style.css` during
   development - a hard refresh fixed it, but production visitors won't know to do that).
-- **Custom domain / per-client access control**: not handled by `netlify.toml` - see
-  "Data isolation / access control" just below.
+- **Custom domain**: not handled by `netlify.toml` - see Netlify's own "Domain management"
+  page for the site.
+- **Per-client access control**: see the next section - `netlify.toml` + a bundled edge
+  function already implement this.
 
-**Data isolation / access control**: this repository is one shared codebase for every
-client, but `docs/c/<slug>/` folders are meant to be deployed - and gated - independently.
+### Client access control
+
 Static hosting has no per-file ACL: anyone with a `docs/c/<slug>/...` URL can read that
-client's data, full stop. For a real multi-client rollout, put each client's path (or
-subdomain) behind an access-control layer at the hosting/edge level - e.g. one
-[Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/)
-policy per `/c/<slug>/*` path or per client subdomain, restricted to that client's email
-domain. That's a hosting/DNS decision, not something this codebase can enforce itself.
+client's data, full stop. For a two-client pilot, that's solved cheaply (no extra Netlify
+plan, no third-party service) with `netlify/edge-functions/protect-clients.js`, a Netlify
+Edge Function bundled in this repo: it gates every request under `/c/valice/*` and
+`/c/vepor/*` behind that client's own HTTP Basic Auth username/password, while leaving the
+public briefing/picker pages open to anyone. Edge Functions run on every Netlify plan
+including free/Starter, with an invocation quota far beyond what two low-traffic pilot
+clients will ever use.
+
+**One-time setup** (Netlify dashboard -> this site -> **Site configuration -> Environment
+variables**), add four variables:
+
+| Key | Value |
+|---|---|
+| `VALICE_USER` | a username for Valice, e.g. `valice` |
+| `VALICE_PASS` | a password for Valice |
+| `VEPOR_USER` | a username for Vepor, e.g. `vepor` |
+| `VEPOR_PASS` | a password for Vepor |
+
+Then trigger a redeploy (env var changes only take effect on the *next* deploy - push any
+commit, or use **Deploys -> Trigger deploy -> Deploy site** if there's nothing to push).
+The credentials are never committed to the repo - if `protect-clients.js` can't find a
+client's env vars, it fails **closed** (blocks that client's path with a 503) rather than
+silently letting anyone through.
+
+**What to send each client**: the URL, the username, and the password - nothing else to
+install or configure on their end. They'll see the browser's native login prompt
+("Verdantis - Valice" / "Verdantis - Vepor") the first time they visit, then their browser
+remembers it for the session.
+
+- Valice: `https://<your-site>.netlify.app/c/valice/` + `VALICE_USER` / `VALICE_PASS`
+- Vepor: `https://<your-site>.netlify.app/c/vepor/` + `VEPOR_USER` / `VEPOR_PASS`
+
+Adding a third client later: add a row to the `PROTECTED` array in
+`protect-clients.js` (prefix/env var names/realm) plus its two env vars in Netlify, commit,
+push.
+
+For anything beyond this pilot's scale (a client roster that outgrows hand-managed
+passwords, or a need for per-user audit logs / SSO), a dedicated access layer - e.g.
+[Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/policies/access/) -
+would be the next step, but it's unnecessary spend for two clients today.
 
 ## Key assumptions this pilot makes (check before showing to a client)
 
