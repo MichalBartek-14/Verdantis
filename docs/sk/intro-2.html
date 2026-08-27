@@ -31,9 +31,49 @@
   .intro-body h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0 0 14px; }
   .intro-body > p.lede { color: var(--text-muted); max-width: 68ch; font-size: 1.05rem; margin: 0 0 34px; }
 
-  .diagram { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px clamp(16px, 4vw, 34px); margin-bottom: 34px; }
-  .diagram-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; align-items: center; }
-  .diagram-caption { font-size: 0.85rem; color: var(--text-muted); margin-top: 16px; text-align: center; }
+  /* RGB / NIR compare slider - see ../intro-2.html's CSS comment for how
+     the pieces (clip-path, custom property, transparent range input) fit
+     together; kept identical here so both languages stay in sync. */
+  .compare-slider { margin-bottom: 34px; }
+  .compare-frame {
+    position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius);
+    overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow);
+    background: var(--bg-alt); --reveal: 50%;
+  }
+  .compare-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .compare-under { z-index: 1; }
+  .compare-over { z-index: 2; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); }
+  .compare-divider {
+    position: absolute; top: 0; bottom: 0; left: var(--reveal); width: 3px; margin-left: -1.5px;
+    background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.25), 0 0 10px rgba(0,0,0,0.3);
+    z-index: 3; pointer-events: none;
+  }
+  .compare-divider::after {
+    content: "\21c6"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 34px; height: 34px; border-radius: 50%; background: #fff; color: var(--text);
+    display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .compare-tag {
+    position: absolute; top: 10px; z-index: 3; pointer-events: none;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    color: #fff; background: rgba(12,33,24,0.65); padding: 4px 10px; border-radius: 999px;
+  }
+  .compare-tag-left { left: 10px; }
+  .compare-tag-right { right: 10px; }
+  .compare-placeholder {
+    position: absolute; inset: 6px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 8px; text-align: center; padding: 16px; z-index: 4;
+    border: 1px dashed var(--border); border-radius: 10px; background: var(--bg-alt);
+    color: var(--text-muted); font-size: 0.82rem;
+  }
+  .compare-frame.has-both .compare-placeholder { display: none; }
+  .compare-placeholder .icon { font-size: 1.5rem; opacity: 0.7; }
+  .compare-range {
+    position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+    opacity: 0; cursor: ew-resize; z-index: 5; -webkit-appearance: none; appearance: none;
+  }
+  .compare-hint { font-size: 0.82rem; color: var(--text-muted); margin: 10px 0 0; text-align: center; }
 
   .intro-photo { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--bg-alt); margin-bottom: 34px; }
   .intro-photo img { display: none; width: 100%; height: 100%; object-fit: cover; }
@@ -65,8 +105,10 @@
 
 <!-- ============================================================
      EDITING THIS PAGE (Slovak): text below is plain HTML, change
-     freely. Banner photo above the band cards is optional - see
-     "CUSTOM PHOTO SLOT" further down for the file path and size.
+     freely. There are two optional visuals: the RGB/NIR compare slider
+     (see "COMPARE SLIDER" below) and, under it, a static photo
+     illustrating the reflectance principle (see "CUSTOM PHOTO SLOT"
+     below).
      ============================================================ -->
 
 <div class="intro-topbar">
@@ -84,16 +126,48 @@
     zelenú, modrú. Sentinel-2 meria oveľa širšie spektrum a práve dve z týchto neviditeľných
     pásiem najskôr prezradia stav rastlín.</p>
 
-  <!-- CUSTOM PHOTO SLOT - page 2 banner, sits above the band cards.
-       Drop a file at docs/assets/img/intro/page2.jpg (repo-relative; shared
-       with ../intro-2.html, one photo for both languages). Recommended
-       size: at least 1600x900px, 16:9 aspect ratio (wide landscape) -
-       object-fit:cover crops to fill this frame, so keep the main subject
-       centered. A good pick here: a false-colour/NDVI-style image, or a
-       real photo of the plot's canopy. Until the file exists, the dashed
-       placeholder below stays and nothing looks broken. -->
-  <div class="intro-photo" id="photoSlot">
-    <img id="photoImg" alt="">
+  <!-- COMPARE SLIDER - page 2 banner, sits above the reflectance photo.
+       Drag it (or the divider) left/right to reveal the true-colour photo
+       vs. the false-colour NIR composite of the same area.
+
+       Drop TWO files, both repo-relative, shared with ../intro-2.html:
+         - docs/assets/img/intro/page2-rgb.png  (true-colour RGB image)
+         - docs/assets/img/intro/page2-nir.png  (false-colour NIR composite)
+
+       Recommended size: at least 1600x900px, 16:9 aspect ratio, and -
+       important for this widget specifically - BOTH images must be the
+       same pixel dimensions and the same crop/extent of the same area
+       (ideally the same acquisition date), or the slider will look like a
+       jump-cut instead of a smooth reveal. The comparison only appears
+       once BOTH files are found. -->
+  <div class="compare-slider">
+    <div class="compare-frame" id="compareFrame">
+      <img class="compare-img compare-under" id="compareNir" alt="Falošnofarebný infračervený kompozit pozemku">
+      <img class="compare-img compare-over" id="compareRgb" alt="Skutočnofarebná satelitná fotka pozemku">
+      <div class="compare-divider"></div>
+      <span class="compare-tag compare-tag-left">Skutočné farby</span>
+      <span class="compare-tag compare-tag-right">Infračervené farby</span>
+      <div class="compare-placeholder">
+        <span class="icon">🖼️</span>
+        <span>Sem vložte dva obrázky - názvy súborov a odporúčaný rozmer nájdete v komentári "COMPARE SLIDER" v HTML.</span>
+      </div>
+      <input type="range" class="compare-range" id="compareRange" min="0" max="100" value="50"
+             aria-label="Potiahnutím porovnáte skutočnofarebnú fotku a infračervený kompozit. Neprosperujúce rastliny odrážajú viacej Infračervených vĺn a na vizualizácií sa javia ako tyrkysové a čierne. Zdravé rastliny majú červené odtiene.">
+    </div>
+    <p class="compare-hint">Potiahnite pre porovnanie - vľavo skutočné farby, vpravo infračervené.</p>
+  </div>
+
+  <!-- CUSTOM PHOTO SLOT - sits under the compare slider, replacing what
+       used to be a hand-drawn SVG diagram with a real image of the
+       reflectance principle. Drop a file at
+       docs/assets/img/intro/page3.jpg (repo-relative; shared with
+       ../intro-2.html). Recommended size: at least 1600x900px, 16:9
+       aspect ratio (wide landscape) - object-fit:cover crops to fill this
+       frame, so keep the main subject/labels centered. Until the file
+       exists, the dashed placeholder below stays and nothing looks
+       broken. -->
+  <div class="intro-photo" id="photoSlot2">
+    <img id="photoImg2" alt="">
     <div class="intro-photo-placeholder">
       <span class="icon">🖼️</span>
       <span>Sem vložte vlastnú fotku - odporúčaný rozmer nájdete v komentári "CUSTOM PHOTO SLOT" v HTML.</span>
@@ -128,16 +202,48 @@
 </div>
 
 <script>
+// RGB/NIR compare slider - see ../intro-2.html's identical script for how
+// this works; kept byte-for-byte the same logic here, just different paths.
+function initCompareSlider(rgbSrc, nirSrc) {
+  var frame = document.getElementById('compareFrame');
+  var imgRgb = document.getElementById('compareRgb');
+  var imgNir = document.getElementById('compareNir');
+  var range = document.getElementById('compareRange');
+
+  range.addEventListener('input', function () {
+    frame.style.setProperty('--reveal', range.value + '%');
+  });
+
+  var ready = { rgb: false, nir: false };
+  function maybeReveal() {
+    if (ready.rgb && ready.nir) {
+      imgRgb.src = rgbSrc;
+      imgNir.src = nirSrc;
+      frame.classList.add('has-both');
+    }
+  }
+  var probeRgb = new Image();
+  probeRgb.onload = function () { ready.rgb = true; maybeReveal(); };
+  probeRgb.onerror = function () {};
+  probeRgb.src = rgbSrc;
+
+  var probeNir = new Image();
+  probeNir.onload = function () { ready.nir = true; maybeReveal(); };
+  probeNir.onerror = function () {};
+  probeNir.src = nirSrc;
+}
+initCompareSlider('../assets/img/intro/page2-rgb.png', '../assets/img/intro/page2-nir.png');
+
 (function () {
-  var wrap = document.getElementById('photoSlot');
-  var img = document.getElementById('photoImg');
+  var wrap = document.getElementById('photoSlot2');
+  var img = document.getElementById('photoImg2');
   var probe = new Image();
   probe.onload = function () {
-    img.src = '../assets/img/intro/page2.jpg';
+    img.src = '../assets/img/intro/page3.jpg';
     wrap.classList.add('has-photo');
   };
   probe.onerror = function () {};
-  probe.src = '../assets/img/intro/page2.jpg';
+  probe.src = '../assets/img/intro/page3.jpg';
 })();
 </script>
 

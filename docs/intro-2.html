@@ -32,12 +32,55 @@
   .intro-body h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); margin: 0 0 14px; }
   .intro-body > p.lede { color: var(--text-muted); max-width: 68ch; font-size: 1.05rem; margin: 0 0 34px; }
 
-  /* Reflectance diagram: two leaves, four bars each (visible / NIR / SWIR),
-     healthy vs. stressed - a self-contained SVG so the point ("same light,
-     different bounce-back") doesn't need a stock photo or a live chart. */
-  .diagram { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px clamp(16px, 4vw, 34px); margin-bottom: 34px; }
-  .diagram-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; align-items: center; }
-  .diagram-caption { font-size: 0.85rem; color: var(--text-muted); margin-top: 16px; text-align: center; }
+  /* RGB / NIR compare slider - see the "COMPARE SLIDER" comment in the
+     body for the two file paths and recommended size. Two images sit
+     stacked (.compare-under underneath, full width; .compare-over on top,
+     clipped to the left --reveal percent via clip-path), a thin native
+     <input type=range> is stretched transparently over the whole frame so
+     dragging anywhere moves the split, and a cosmetic line + grip
+     (.compare-divider) redraws itself at the same --reveal position to
+     show where the cut is. --reveal is a CSS custom property so one JS
+     line (setProperty) moves both the clip and the divider in sync. */
+  .compare-slider { margin-bottom: 34px; }
+  .compare-frame {
+    position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius);
+    overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow);
+    background: var(--bg-alt); --reveal: 50%;
+  }
+  .compare-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .compare-under { z-index: 1; }
+  .compare-over { z-index: 2; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); }
+  .compare-divider {
+    position: absolute; top: 0; bottom: 0; left: var(--reveal); width: 3px; margin-left: -1.5px;
+    background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.25), 0 0 10px rgba(0,0,0,0.3);
+    z-index: 3; pointer-events: none;
+  }
+  .compare-divider::after {
+    content: "\21c6"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 34px; height: 34px; border-radius: 50%; background: #fff; color: var(--text);
+    display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .compare-tag {
+    position: absolute; top: 10px; z-index: 3; pointer-events: none;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    color: #fff; background: rgba(12,33,24,0.65); padding: 4px 10px; border-radius: 999px;
+  }
+  .compare-tag-left { left: 10px; }
+  .compare-tag-right { right: 10px; }
+  .compare-placeholder {
+    position: absolute; inset: 6px; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 8px; text-align: center; padding: 16px; z-index: 4;
+    border: 1px dashed var(--border); border-radius: 10px; background: var(--bg-alt);
+    color: var(--text-muted); font-size: 0.82rem;
+  }
+  .compare-frame.has-both .compare-placeholder { display: none; }
+  .compare-placeholder .icon { font-size: 1.5rem; opacity: 0.7; }
+  .compare-range {
+    position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+    opacity: 0; cursor: ew-resize; z-index: 5; -webkit-appearance: none; appearance: none;
+  }
+  .compare-hint { font-size: 0.82rem; color: var(--text-muted); margin: 10px 0 0; text-align: center; }
 
   /* Custom photo banner, light-background variant of the dark title
      page's .hero-image - see the "CUSTOM PHOTO SLOT" comment in the body
@@ -72,9 +115,10 @@
 
 <!-- ============================================================
      EDITING THIS PAGE: headline, lede, and the two band-card texts
-     are plain HTML - change them freely. The banner photo above the
-     band cards is optional; see "CUSTOM PHOTO SLOT" below for the
-     file path and recommended size.
+     are plain HTML - change them freely. There are two optional visuals:
+     the RGB/NIR compare slider (see "COMPARE SLIDER" below) and, under
+     it, a static photo illustrating the reflectance principle (see
+     "CUSTOM PHOTO SLOT" below).
      ============================================================ -->
 
 <div class="intro-topbar">
@@ -92,51 +136,58 @@
     Sentinel-2 measures well beyond that, and two of those invisible bands are exactly the
     ones that reveal plant condition earliest.</p>
 
-  <!-- CUSTOM PHOTO SLOT - page 2 banner, sits above the band cards.
-       Drop a file at docs/assets/img/intro/page2.jpg (repo-relative; shared
-       by the EN and SK versions of this page). Recommended size: at least
-       1600x900px, 16:9 aspect ratio (wide landscape) - object-fit:cover
-       crops to fill this frame, so keep the main subject centered. A good
-       pick here: a false-colour/NDVI-style image, or a real photo of the
-       plot's canopy. Until the file exists, the dashed placeholder below
-       stays and nothing looks broken. -->
-  <div class="intro-photo" id="photoSlot">
-    <img id="photoImg" alt="">
+  <!-- COMPARE SLIDER - page 2 banner, sits above the reflectance photo.
+       Drag it (or the divider) left/right to reveal the true-colour photo
+       vs. the false-colour NIR composite of the same area.
+
+       Drop TWO files, both repo-relative, shared by the EN and SK versions
+       of this page:
+         - docs/assets/img/intro/page2-rgb.png  (true-colour RGB image)
+         - docs/assets/img/intro/page2-nir.png  (false-colour NIR composite)
+
+       Recommended size: at least 1600x900px, 16:9 aspect ratio, and -
+       important for this widget specifically - BOTH images must be the
+       same pixel dimensions and the same crop/extent of the same area
+       (ideally the same acquisition date). object-fit:cover crops both
+       identically to fill the frame, but if the two source images frame
+       the plot differently, the slider will look like a jump-cut instead
+       of a smooth reveal. The comparison only appears once BOTH files are
+       found - one without the other leaves the placeholder below in place,
+       since half a comparison isn't useful. -->
+  <div class="compare-slider">
+    <div class="compare-frame" id="compareFrame">
+      <img class="compare-img compare-under" id="compareNir" alt="Near-infrared false-colour composite of the plot">
+      <img class="compare-img compare-over" id="compareRgb" alt="True-colour satellite photo of the plot">
+      <div class="compare-divider"></div>
+      <span class="compare-tag compare-tag-left">True colour</span>
+      <span class="compare-tag compare-tag-right">Near-infrared</span>
+      <div class="compare-placeholder">
+        <span class="icon">🖼️</span>
+        <span>Add two images here - see the "COMPARE SLIDER" comment in the HTML for file names and recommended size.</span>
+      </div>
+      <input type="range" class="compare-range" id="compareRange" min="0" max="100" value="50"
+             aria-label="Drag to compare the true-colour photo and the near-infrared composite">
+    </div>
+    <p class="compare-hint">Drag to compare - true colour on the left, near-infrared on the right.</p>
+  </div>
+
+  <!-- CUSTOM PHOTO SLOT - sits under the compare slider, replacing what
+       used to be a hand-drawn SVG diagram with a real image of the
+       reflectance principle (e.g. a reflectance-curve chart or annotated
+       photo showing why healthy vs. stressed vegetation bounces back NIR
+       differently). Drop a file at docs/assets/img/intro/page3.jpg
+       (repo-relative; shared by the EN and SK versions of this page).
+       Recommended size: at least 1600x900px, 16:9 aspect ratio (wide
+       landscape) - object-fit:cover crops to fill this frame, so keep the
+       main subject/labels centered rather than near the edges. Until the
+       file exists, the dashed placeholder below stays and nothing looks
+       broken. -->
+  <div class="intro-photo" id="photoSlot2">
+    <img id="photoImg2" alt="">
     <div class="intro-photo-placeholder">
       <span class="icon">🖼️</span>
       <span>Add your own photo here - see the "CUSTOM PHOTO SLOT" comment in the HTML for the ideal size.</span>
     </div>
-  </div>
-
-  <div class="diagram">
-    <div class="diagram-grid">
-      <svg viewBox="0 0 300 220" width="100%" height="220" role="img" aria-labelledby="leafHealthyTitle">
-        <title id="leafHealthyTitle">Healthy leaf: strong near-infrared and short-wave infrared reflectance</title>
-        <path d="M150 20 C90 40 60 110 90 170 C110 195 150 200 150 200 C150 200 190 195 210 170 C240 110 210 40 150 20 Z" fill="#2c7a3c" opacity="0.18"/>
-        <path d="M150 30 C100 48 75 108 98 160 C114 182 150 190 150 190 C150 190 186 182 202 160 C225 108 200 48 150 30 Z" fill="none" stroke="#2c7a3c" stroke-width="2.5"/>
-        <line x1="150" y1="40" x2="150" y2="182" stroke="#2c7a3c" stroke-width="1.5" opacity="0.6"/>
-        <g transform="translate(30,190)">
-          <rect x="0" y="-14" width="14" height="14" fill="#c4c9c0"/>
-          <rect x="20" y="-46" width="14" height="46" fill="#2c7a3c"/>
-          <rect x="40" y="-38" width="14" height="38" fill="#1f7a8c"/>
-        </g>
-        <text x="55" y="215" text-anchor="middle" font-size="12" fill="#57655c" font-family="Segoe UI, sans-serif">Healthy - strong bounce-back</text>
-      </svg>
-      <svg viewBox="0 0 300 220" width="100%" height="220" role="img" aria-labelledby="leafStressedTitle">
-        <title id="leafStressedTitle">Stressed leaf: weak near-infrared and short-wave infrared reflectance</title>
-        <path d="M150 30 C100 55 80 115 105 165 C120 188 150 195 150 195 C150 195 180 188 195 165 C220 115 200 55 150 30 Z" fill="#c07a20" opacity="0.16"/>
-        <path d="M150 38 C108 60 92 112 112 155 C124 175 150 182 150 182 C150 182 176 175 188 155 C208 112 192 60 150 38 Z" fill="none" stroke="#c07a20" stroke-width="2.5" stroke-dasharray="5 3"/>
-        <line x1="150" y1="46" x2="150" y2="176" stroke="#c07a20" stroke-width="1.5" opacity="0.6"/>
-        <g transform="translate(30,190)">
-          <rect x="0" y="-14" width="14" height="14" fill="#c4c9c0"/>
-          <rect x="20" y="-20" width="14" height="20" fill="#c07a20"/>
-          <rect x="40" y="-16" width="14" height="16" fill="#c07a20"/>
-        </g>
-        <text x="55" y="215" text-anchor="middle" font-size="12" fill="#57655c" font-family="Segoe UI, sans-serif">Stressed - weak bounce-back, invisible to the eye</text>
-      </svg>
-    </div>
-    <p class="diagram-caption">Same visible-light bar (grey) in both leaves - the eye sees little difference yet.
-      The near-infrared and short-wave-infrared bars (green/teal) already tell the two apart.</p>
   </div>
 
   <div class="band-cards">
@@ -167,16 +218,53 @@
 </div>
 
 <script>
+// RGB/NIR compare slider - reusable for any page that drops in this same
+// markup (id="compareFrame"/"compareRange" + .compare-under/.compare-over
+// img elements) by calling initCompareSlider(rgbPath, nirPath).
+function initCompareSlider(rgbSrc, nirSrc) {
+  var frame = document.getElementById('compareFrame');
+  var imgRgb = document.getElementById('compareRgb');
+  var imgNir = document.getElementById('compareNir');
+  var range = document.getElementById('compareRange');
+
+  range.addEventListener('input', function () {
+    frame.style.setProperty('--reveal', range.value + '%');
+  });
+
+  // Probe-then-swap (same trick as the title page's hero photo): only
+  // point the real <img> tags at the files - and only reveal the slider -
+  // once BOTH have been confirmed to actually exist, so a half-uploaded
+  // pair never shows a broken image or a meaningless one-sided "compare".
+  var ready = { rgb: false, nir: false };
+  function maybeReveal() {
+    if (ready.rgb && ready.nir) {
+      imgRgb.src = rgbSrc;
+      imgNir.src = nirSrc;
+      frame.classList.add('has-both');
+    }
+  }
+  var probeRgb = new Image();
+  probeRgb.onload = function () { ready.rgb = true; maybeReveal(); };
+  probeRgb.onerror = function () {};
+  probeRgb.src = rgbSrc;
+
+  var probeNir = new Image();
+  probeNir.onload = function () { ready.nir = true; maybeReveal(); };
+  probeNir.onerror = function () {};
+  probeNir.src = nirSrc;
+}
+initCompareSlider('assets/img/intro/page2-rgb.png', 'assets/img/intro/page2-nir.png');
+
 (function () {
-  var wrap = document.getElementById('photoSlot');
-  var img = document.getElementById('photoImg');
+  var wrap = document.getElementById('photoSlot2');
+  var img = document.getElementById('photoImg2');
   var probe = new Image();
   probe.onload = function () {
-    img.src = 'assets/img/intro/page2.jpg';
+    img.src = 'assets/img/intro/page3.jpg';
     wrap.classList.add('has-photo');
   };
   probe.onerror = function () {};
-  probe.src = 'assets/img/intro/page2.jpg';
+  probe.src = 'assets/img/intro/page3.jpg';
 })();
 </script>
 
