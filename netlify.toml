@@ -1,0 +1,24 @@
+# Netlify deploy config for the docs/ static site - see README.md's "The
+# site" / "Deploying (Netlify)" sections. There is no build step: publish_site.py
+# runs locally against openEO-derived data and its output is committed
+# straight into docs/, so this file only tells Netlify which folder to
+# serve and how browsers should cache it. Every push to the connected
+# branch (main) redeploys docs/ as it stands in that commit - run
+# publish_site.py and commit before pushing, or Netlify will just
+# reserve whatever was last committed.
+[build]
+  publish = "docs"
+
+# Every asset under docs/ (style.css, client.js, true_color.png, the i18n
+# JSON, sector_explorer_data.json, ...) is served under a FIXED filename
+# that publish_site.py overwrites in place on every republish - nothing is
+# content-hashed. Without an explicit Cache-Control, a browser that cached
+# one of these before a deploy can go on serving the stale copy well after
+# the new version is live - this project hit exactly that bug with a
+# locally-cached style.css during development. must-revalidate forces a
+# conditional GET on every load (cheap - Netlify's CDN answers with a 304
+# when nothing changed) instead of silently reusing a stale disk cache.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

@@ -223,6 +223,28 @@ python publish_site.py --all             # every client in clients/
 
 then review `docs/` locally and `git add docs/` + commit + push.
 
+### Deploying (Netlify)
+
+`netlify.toml` at the repo root is already set up for this - point a Netlify site at
+this GitHub repo and it just works, no configuration needed in Netlify's UI:
+
+- **Publish directory**: `docs` (set via `netlify.toml`'s `[build] publish`).
+- **Build command**: none - there's nothing to build. `publish_site.py` already ran
+  locally and its output is what's committed into `docs/`; Netlify just serves that
+  commit as-is. Every push to the connected branch (`main`) redeploys whatever `docs/`
+  looked like in that push, so **run the pipeline + `publish_site.py` + commit + push**
+  is the entire release process - there's no separate "deploy" step to remember.
+- **Cache headers**: `netlify.toml` also sets `Cache-Control: must-revalidate` site-wide.
+  This matters here specifically because every asset under `docs/` (`style.css`,
+  `client.js`, `true_color.png`, the i18n JSON, `sector_explorer_data.json`, ...) is
+  served under a fixed filename that gets overwritten in place on each republish -
+  nothing is content-hashed. Without forcing revalidation, a browser that cached one of
+  these before a deploy can keep serving the stale copy long after the new version is
+  live (this project hit exactly that with a locally-cached `style.css` during
+  development - a hard refresh fixed it, but production visitors won't know to do that).
+- **Custom domain / per-client access control**: not handled by `netlify.toml` - see
+  "Data isolation / access control" just below.
+
 **Data isolation / access control**: this repository is one shared codebase for every
 client, but `docs/c/<slug>/` folders are meant to be deployed - and gated - independently.
 Static hosting has no per-file ACL: anyone with a `docs/c/<slug>/...` URL can read that
