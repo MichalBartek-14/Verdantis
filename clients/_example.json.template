@@ -11,5 +11,15 @@
   "ndwi_dry_threshold": null,
   "ndmi_dry_threshold": null,
   "accent_color": "#2c7a3c",
-  "true_color_tif": null
+  "true_color_tif": null,
+  "_i18n_overrides_comment": "i18n_overrides below is optional - delete the whole key if this client needs no wording tweaks. Shape: {language: {page: {...same nested keys as that page's docs/_template/assets/i18n/<lang>/<page>.json...}}}, only including keys you're actually changing - see clients.load_client(). A fix that should apply to EVERY client in a language (a typo, a grammar error) belongs in the shared template file instead, not here.",
+  "i18n_overrides": {
+    "en": {
+      "index": {
+        "hero": {
+          "tagline": "Example: a tagline just for Acme North, overriding the shared English one."
+        }
+      }
+    }
+  }
 }

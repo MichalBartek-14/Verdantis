@@ -9,5 +9,14 @@
   "alert_bbox": [20.197525, 48.444518, 20.210338, 48.45216],
   "ndwi_dry_threshold": null,
   "ndmi_dry_threshold": null,
-  "accent_color": "#2c7a3c"
+  "accent_color": "#2c7a3c",
+  "i18n_overrides": {
+    "sk": {
+      "index": {
+        "hero": {
+          "tagline": "Verdantis premieňa voľne dostupné satelitné snímky Copernicus Sentinel-2 na pohľad na parcelu: vitalitu vegetácie (NDVI), vlhkosť korún/pôdy (NDWI &amp; NDMI) a štrukturálne zmeny - postavené ako pilotný projekt, opakovane použiteľný pre akékoľvek územie."
+        }
+      }
+    }
+  }
 }

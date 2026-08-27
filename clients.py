@@ -4,9 +4,10 @@ Per-client registry.
 One JSON file per client under clients/ (see clients/_example.json.template
 for the schema and clients/valice.json for a real one) holds everything
 that varies plot-to-plot: shapefile path, alert bbox, per-client threshold
-overrides, and the display metadata the published site personalizes with
+overrides, the display metadata the published site personalizes with
 (docs/c/<slug>/data/client_meta.json is generated from this by
-publish_site.py - see there for how it reaches the browser).
+publish_site.py - see there for how it reaches the browser), and optional
+per-client site-copy tweaks (i18n_overrides - see load_client() below).
 
 Everything that does NOT vary per client - backend URL, collection id,
 cloud-mask kernel sizes, monthly reducer, history window length, BFAST
@@ -42,7 +43,12 @@ def load_client(slug: str) -> dict:
         known = ", ".join(list_clients()) or "(none configured yet)"
         raise FileNotFoundError(f"No client config at {path}. Known clients: {known}")
 
-    data = json.loads(path.read_text())
+    # encoding="utf-8" is NOT the default for Path.read_text() - it falls
+    # back to the platform's preferred encoding, which on Windows is
+    # typically cp1252, silently mangling any non-ASCII character (e.g. a
+    # Slovak client_name/location, or non-English i18n_overrides text)
+    # into mojibake instead of raising an error you'd actually notice.
+    data = json.loads(path.read_text(encoding="utf-8"))
     missing = [f for f in REQUIRED_FIELDS if not data.get(f)]
     if missing:
         raise ValueError(f"{path} is missing required field(s): {', '.join(missing)}")
@@ -62,6 +68,19 @@ def load_client(slug: str) -> dict:
     # explicitly if a client's folder ever holds more than one GeoTIFF and
     # auto-discovery would be ambiguous.
     data.setdefault("true_color_tif", None)
+    # Optional per-client wording tweaks, applied by publish_site.py AFTER
+    # it copies the shared docs/_template/assets/i18n/<lang>/ dictionaries -
+    # for when the shared template's phrasing doesn't fit one specific
+    # client (e.g. a forest plot vs. a fruit orchard) but isn't wrong
+    # enough to change for everyone. Shape mirrors the i18n JSON files
+    # themselves: {"<language>": {"<page>": {...same nested keys...}}} -
+    # only include the keys you want to override, everything else still
+    # comes from the template. See clients/_example.json.template for a
+    # worked example. NEVER hand-edit docs/c/<slug>/assets/i18n/ directly -
+    # publish_site.py overwrites it from scratch (template + these
+    # overrides) on every run, so a direct edit there is silently lost the
+    # next time anyone republishes.
+    data.setdefault("i18n_overrides", {})
     return data
 
 

@@ -69,6 +69,45 @@ def _copy(src_dir: Path, name: str, dest_dir: Path) -> bool:
     return True
 
 
+def _deep_merge(base: dict, patch: dict) -> None:
+    """In-place recursive merge of patch into base - a leaf value in patch
+    (string, number, list, ...) replaces base's value at that key path
+    outright; a nested dict recurses so sibling keys in base survive.
+    Used to apply a client's i18n_overrides on top of the just-copied
+    template dictionary without needing the client to repeat every key
+    from the template, only the ones they're actually changing."""
+    for key, value in patch.items():
+        if isinstance(value, dict) and isinstance(base.get(key), dict):
+            _deep_merge(base[key], value)
+        else:
+            base[key] = value
+
+
+def _apply_i18n_overrides(client: dict, out: Path) -> None:
+    """Patches docs/c/<slug>/assets/i18n/<lang>/<page>.json files (already
+    copied verbatim from the template in step 1) with this client's
+    i18n_overrides - see clients.load_client() for the field's shape and
+    why it exists (per-client wording tweaks that survive republishing,
+    instead of hand-edits to the published copy that the next `template ->
+    out/` copy would silently wipe out)."""
+    overrides = client.get("i18n_overrides") or {}
+    if not overrides:
+        print("  i18n overrides: none configured for this client")
+        return
+    for lang, pages in overrides.items():
+        for page, patch in pages.items():
+            path = out / "assets" / "i18n" / lang / f"{page}.json"
+            if not path.exists():
+                print(f"  i18n overrides: SKIPPED {lang}/{page}.json - no such template dictionary at {path}")
+                continue
+            with open(path, encoding="utf-8") as f:
+                dictionary = json.load(f)
+            _deep_merge(dictionary, patch)
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(dictionary, f, indent=2, ensure_ascii=False)
+            print(f"  i18n overrides: applied to {lang}/{page}.json")
+
+
 def publish_client_site(slug: str) -> None:
     client = clients.load_client(slug)
     out = CLIENTS_ROOT / slug
@@ -93,6 +132,12 @@ def publish_client_site(slug: str) -> None:
         shutil.rmtree(out)
     shutil.copytree(TEMPLATE, out)
     print(f"  template -> {out}/")
+
+    # 1b. Per-client wording tweaks on top of the template's i18n dictionaries
+    #     just copied above - see clients.load_client()'s i18n_overrides
+    #     comment. Must run after the copy (it patches those exact files)
+    #     and before nothing else depends on ordering here.
+    _apply_i18n_overrides(client, out)
 
     # 2. Personalization metadata - the one file client.js reads (branding
     #    AND which i18n/<language>/ dictionary to load - see client.js).
