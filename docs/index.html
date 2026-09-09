@@ -30,8 +30,14 @@
   .intro-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
   .intro-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
   .intro-topbar-right { display: flex; align-items: center; gap: 18px; }
-  .intro-skip { font-size: 0.84rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
-  .intro-skip:hover { color: var(--green-dark); }
+  .intro-skip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.9rem; font-weight: 700;
+    color: #fff; background: var(--green);
+    padding: 11px 20px; border-radius: 999px;
+    text-decoration: none;
+  }
+  .intro-skip:hover { background: var(--green-dark); }
   .lang-switch { display: flex; gap: 4px; font-size: 0.8rem; font-weight: 700; }
   .lang-switch a, .lang-switch span { padding: 3px 8px; border-radius: 6px; text-decoration: none; }
   .lang-switch span { background: var(--bg-alt); color: var(--text); }
@@ -116,7 +122,7 @@
        text panel (photo shows through on the right, fades to the dark
        green panel on the left so the text stays readable - see the JS
        below, which paints it as a background rather than a boxed image).
-       Drop a file at docs/assets/img/intro/page1.png (repo-relative; same
+       Drop a file at docs/assets/img/intro/page1.jpg (repo-relative; same
        file is shared by the EN and SK versions of this page). Recommended
        size: at least 1920x1080px, landscape (16:9 or wider) and high-
        resolution - this can render as large as the full section width on
@@ -131,11 +137,12 @@
   <a class="step-dot link" href="intro-2.html">2</a>
   <a class="step-dot link" href="intro-3.html">3</a>
   <a class="btn btn-primary" href="intro-2.html" style="margin-left:16px;">See how &rarr;</a>
+  <a class="intro-skip" href="plots.html" style="margin-left:auto;">Skip the briefing, go to dashboards &rarr;</a>
 </div>
 
 <script>
 (function () {
-  var PHOTO = 'assets/img/intro/page1.png';
+  var PHOTO = 'assets/img/intro/page1.jpg';
   var hero = document.getElementById('introHero');
   // Same probe-before-use trick as _template/index.html's title-page photo:
   // load into a throwaway Image() first so a missing file just leaves the

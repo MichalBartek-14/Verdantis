@@ -18,8 +18,14 @@
   .intro-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
   .intro-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
   .intro-topbar-right { display: flex; align-items: center; gap: 18px; }
-  .intro-skip { font-size: 0.84rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
-  .intro-skip:hover { color: var(--green-dark); }
+  .intro-skip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.9rem; font-weight: 700;
+    color: #fff; background: var(--green);
+    padding: 11px 20px; border-radius: 999px;
+    text-decoration: none;
+  }
+  .intro-skip:hover { background: var(--green-dark); }
   .lang-switch { display: flex; gap: 4px; font-size: 0.8rem; font-weight: 700; }
   .lang-switch a, .lang-switch span { padding: 3px 8px; border-radius: 6px; text-decoration: none; }
   .lang-switch span { background: var(--bg-alt); color: var(--text); }
