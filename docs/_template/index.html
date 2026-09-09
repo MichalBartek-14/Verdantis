@@ -152,21 +152,26 @@ window.VerdantisReady.then(function (ready) {
     wrap.classList.add('has-photo');
   });
 
-  // Plot-location map: OpenStreetMap underneath, the same true-colour photo
-  // laid over it at 70% opacity via Leaflet's L.imageOverlay(), positioned
-  // with the photo's own WGS84 bounds - written by render_true_color.py
-  // alongside the PNG (see true_color_bounds.json) since the PNG itself
-  // carries no georeference. Needs both pieces, so it waits on the same
-  // photo probe above plus its own fetch, and only builds the map (rather
-  // than leaving the "not available yet" note in the HTML) once both
-  // resolve - a photo with no known position isn't placeable on a map.
+  // Plot-location map: OpenStreetMap underneath, with the plot's own extent
+  // marked on top. Two possible sources for that extent, best one wins:
+  //   - true_color_bounds.json - written by render_true_color.py alongside
+  //     the hero photo, the photo's own precise WGS84 bounds. When present,
+  //     the photo itself is laid over the map at 70% opacity.
+  //   - ready.meta.plot_bounds - plain bounding box from clients/<slug>.json's
+  //     alert_bbox (see publish_site.py), always present once a client has a
+  //     plot configured at all. Used whenever there's no true-color photo
+  //     yet, so the map itself - not just the photo overlay - is available
+  //     from day one (e.g. so a client's live sensor feed has somewhere to
+  //     plot points onto immediately, independent of the photo pipeline).
   var boundsReady = fetch('data/true_color_bounds.json', { cache: 'no-store' })
     .then(function (r) { if (!r.ok) throw new Error('no true_color_bounds.json yet'); return r.json(); })
     .catch(function () { return null; });
 
   Promise.all([photoReady, boundsReady]).then(function (results) {
-    var photoOk = results[0], bounds = results[1];
-    if (!photoOk || !bounds) return; // HTML's fallback note stays visible, #plotMap stays hidden
+    var photoOk = results[0], trueColorBounds = results[1];
+    var hasPhoto = photoOk && !!trueColorBounds;
+    var extent = hasPhoto ? trueColorBounds : ready.meta.plot_bounds;
+    if (!extent) return; // no georeferenced extent at all - HTML's fallback note stays visible, #plotMap stays hidden
 
     // The map div is display:none until this point - Leaflet measures its
     // container's size on init, so it has to be shown FIRST or the map
@@ -174,7 +179,7 @@ window.VerdantisReady.then(function (ready) {
     document.getElementById('plotMapFallback').style.display = 'none';
     document.getElementById('plotMap').style.display = '';
 
-    var latLngBounds = [[bounds.south, bounds.west], [bounds.north, bounds.east]];
+    var latLngBounds = [[extent.south, extent.west], [extent.north, extent.east]];
     // scrollWheelZoom off by default - a big embedded map trapping the
     // page's scroll on mouseover is a worse experience than requiring a
     // click/drag or the +/- buttons (still fully draggable/zoomable).
@@ -183,11 +188,22 @@ window.VerdantisReady.then(function (ready) {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
     }).addTo(map);
-    L.imageOverlay(PHOTO, latLngBounds, { opacity: 0.7 }).addTo(map);
-    // Dashed outline at the photo's exact edges - at 70% opacity the where-
-    // does-the-photo-end line can get lost against similarly-toned tiles.
-    L.rectangle(latLngBounds, { color: '#fff', weight: 2, fill: false, dashArray: '6 4' }).addTo(map);
+    if (hasPhoto) {
+      L.imageOverlay(PHOTO, latLngBounds, { opacity: 0.7 }).addTo(map);
+    }
+    // Dashed outline at the extent's exact edges - at 70% opacity against a
+    // photo the where-does-it-end line can get lost against similarly-toned
+    // tiles; with no photo, this outline IS the plot marker, so it gets a
+    // light accent-colored fill too rather than just a line.
+    L.rectangle(latLngBounds, {
+      color: hasPhoto ? '#fff' : (ready.meta.accent_color || '#2c7a3c'),
+      weight: 2, fill: !hasPhoto, fillOpacity: hasPhoto ? 0 : 0.12, dashArray: '6 4'
+    }).addTo(map);
     map.fitBounds(latLngBounds, { padding: [40, 40] });
+
+    // Exposed for later per-client work (e.g. streaming live sensor
+    // readings onto this same map) without needing to rebuild it.
+    window.VerdantisPlotMap = map;
   });
 });
 </script>

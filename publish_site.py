@@ -142,6 +142,7 @@ def publish_client_site(slug: str) -> None:
     # 2. Personalization metadata - the one file client.js reads (branding
     #    AND which i18n/<language>/ dictionary to load - see client.js).
     data.mkdir(parents=True, exist_ok=True)
+    alert_bbox = client["alert_bbox"]
     meta = {
         "slug": client["slug"],
         "display_name": client["display_name"],
@@ -150,6 +151,18 @@ def publish_client_site(slug: str) -> None:
         "plot_area_ha": client.get("plot_area_ha"),
         "accent_color": client.get("accent_color", "#2c7a3c"),
         "language": language,
+        # Plain WGS84 bounding box (from alert_bbox - see clients.py, it
+        # defaults to the plot's own bbox) so index.html's plot-location map
+        # has SOMETHING to center/outline even for a client with no
+        # true-color GeoTIFF yet (that pipeline writes its own, more precise
+        # true_color_bounds.json - index.html prefers that when present).
+        # Keeps the map itself always available from day one, independent of
+        # the photo - e.g. so a client's live sensor feed has somewhere to
+        # plot points onto right away.
+        "plot_bounds": {
+            "west": alert_bbox[0], "south": alert_bbox[1],
+            "east": alert_bbox[2], "north": alert_bbox[3],
+        },
     }
     with open(data / "client_meta.json", "w") as f:
         json.dump(meta, f, indent=2)

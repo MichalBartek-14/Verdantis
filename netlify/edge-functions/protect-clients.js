@@ -16,6 +16,7 @@
 const PROTECTED = [
   { prefix: "/c/valice/", userEnv: "VALICE_USER", passEnv: "VALICE_PASS", realm: "Verdantis - Valice" },
   { prefix: "/c/vepor/", userEnv: "VEPOR_USER", passEnv: "VEPOR_PASS", realm: "Verdantis - Vepor" },
+  { prefix: "/c/devinska/", userEnv: "DEVINSKA_USER", passEnv: "DEVINSKA_PASS", realm: "Verdantis - Devinska" },
 ];
 
 export default async (request, context) => {

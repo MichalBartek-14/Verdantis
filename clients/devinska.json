@@ -1,0 +1,23 @@
+{
+  "slug": "devinska",
+  "display_name": "Devinska Nova Ves Urban Greenery Plot",
+  "client_name": "Devinska Nova Ves Urban Greenery Plot",
+  "location": "Devinska Nova Ves, Bratislava, Slovakia",
+  "plot_shapefile": "data/devinska/Client_Devinska.shp",
+  "plot_area_ha": 57.57,
+  "language": "en",
+  "alert_bbox": [16.976556, 48.218328, 16.991429, 48.227495],
+  "ndwi_dry_threshold": null,
+  "ndmi_dry_threshold": null,
+  "accent_color": "#2f9e5c",
+  "true_color_tif": null,
+  "i18n_overrides": {
+    "en": {
+      "index": {
+        "hero": {
+          "tagline": "Verdantis turns free Copernicus Sentinel-2 imagery into a plot-level view of vegetation vigour (NDVI), canopy/soil moisture (NDWI &amp; NDMI), and structural change - built as a client-facing pilot for urban green infrastructure, reusable for any shapefile."
+        }
+      }
+    }
+  }
+}

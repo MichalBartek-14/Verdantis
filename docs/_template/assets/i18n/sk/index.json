@@ -24,8 +24,8 @@
   },
   "map": {
     "title": "Kde sa táto parcela nachádza",
-    "lede": "Potiahnutím a priblížením preskúmajte okolie - pravdivo farebná satelitná fotka parcely je položená nad mapou OpenStreetMap s 70% priehľadnosťou, takže presne vidíte, kde na teréne leží.",
-    "fallback": "Mapa umiestnenia parcely zatiaľ nie je pre tohto klienta k dispozícii - zobrazí sa, keď render_true_color.py zaznamená geografické hranice fotky."
+    "lede": "Potiahnutím a priblížením preskúmajte okolie - keď bude pre túto parcelu publikovaná pravdivo farebná satelitná fotka, zobrazí sa tu nad mapou OpenStreetMap s 70% priehľadnosťou, takže presne uvidíte, kde na teréne leží.",
+    "fallback": "Mapa umiestnenia parcely zatiaľ nie je pre tohto klienta k dispozícii - najprv treba nastaviť hranice parcely v clients/<slug>.json."
   },
   "features": {
     "title": "Štyri pohľady na tú istú parcelu",
