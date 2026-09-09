@@ -1,0 +1,43 @@
+{
+  "title": "Prieskumník sektorov - Verdantis",
+  "hero": {
+    "h1": "Prieskumník vlhkosti sektorov",
+    "intro": "Ohraničujúci obdĺžnik parcely rozdelený na sektory 5&times;5 pixelov (na okrajoch čiastočné). Vyberte NDWI alebo NDMI a kliknutím na sektor zobrazíte jeho vlastnú históriu vlhkosti voči teplote ERA5 za rovnaké mesiace - priemer za celú parcelu vpravo je predvolené zobrazenie."
+  },
+  "controls": {
+    "pane_title": "Mapa sektorov",
+    "metric_freq": "Frekvencia sucha",
+    "metric_magnitude": "Intenzita sucha",
+    "range_full": "Celá história",
+    "range_1y": "Posledný rok",
+    "stat_sectors": "Sektory s dátami",
+    "stat_months": "Pokryté mesiace"
+  },
+  "detail": {
+    "selection_default": "Celá parcela (priemer)",
+    "selection_hint_default": "kliknutím na sektor ho preskúmate",
+    "index_chart_default": "Mesačné NDWI",
+    "temp_chart_title": "Priemerná mesačná teplota ERA5 (&deg;C)"
+  },
+  "footer_html": "Dáta: mesačné mediánové kompozity Sentinel-2 L2A cez Copernicus Data Space Ecosystem (openEO), orezané na klientovu parcelu; NDWI = (B08-B11)/(B08+B11) (široké NIR); NDMI = (B8A-B11)/(B8A+B11) (úzke NIR) - rovnaká rodina, silne korelované, no nie identické. Teplota: ERA5 reanalýza cez archívne API Open-Meteo. \"Frekvencia sucha\" je % platných mesiacov, kedy zvolený index klesol pod prahovú hodnotu <code id=\"thresholdNote\">threshold</code>; \"intenzita sucha\" je, ako hlboko pod prahovú hodnotu index v tých mesiacoch typicky klesol. Generované z <code>outputs/monthly_ndvi_ndwi_ndmi.nc</code> a <code>outputs/era5_temperature_monthly.csv</code>, publikované cez <code>publish_site.py</code> - bez priameho pripojenia na dáta. Hľadáte posúvač mesačných snímok NDVI/NDWI/NDMI, ktorý tu kedysi bol? Je teraz na stránke <a href=\"monitoring.html\">Monitoring &amp; upozornenia</a>, spolu s aktuálnymi podmienkami a upozorneniami na zmeny vegetácie.",
+  "js": {
+    "no_data_window": "žiadne platné dáta v tomto okne",
+    "sector_label": "Sektor R{row}C{col}",
+    "metric_freq_unit": "% mesiacov suchých",
+    "metric_deficit": "priemerný deficit {index}",
+    "mean_prefix": "priemer",
+    "px_suffix": "px",
+    "whole_plot": "Celá parcela (priemer)",
+    "click_hint": "kliknutím na sektor ho preskúmate",
+    "valid_months": "platných mesiacov",
+    "last_year_suffix": "(posledný rok)",
+    "stat_mean": "Priemer {index}",
+    "stat_freq": "Frekvencia sucha",
+    "stat_magnitude": "Intenzita sucha",
+    "corr_suffix": "–teplota r",
+    "plot_mean_prefix": "Priemer parcely",
+    "monthly_prefix": "Mesačné {index}",
+    "load_error": "Nepodarilo sa načítať data/sector_explorer_data.json - spustite build_sector_explorer_data.py a následne publish_site.py.",
+    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"]
+  }
+}

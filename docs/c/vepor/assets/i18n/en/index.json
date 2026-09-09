@@ -24,8 +24,8 @@
   },
   "map": {
     "title": "Where this plot sits",
-    "lede": "Drag and zoom to explore - the plot's true-colour satellite photo sits over OpenStreetMap at 70% opacity, so you can see exactly where it lines up on the ground.",
-    "fallback": "The plot-location map isn't available yet for this client - it appears once render_true_color.py has recorded the photo's geographic bounds."
+    "lede": "Drag and zoom to explore - once a true-colour satellite photo is published for this plot, it sits over OpenStreetMap here at 70% opacity so you can see exactly where it lines up on the ground.",
+    "fallback": "The plot-location map isn't available yet for this client - it needs a plot boundary configured in clients/<slug>.json first."
   },
   "features": {
     "title": "Four views into the same plot",

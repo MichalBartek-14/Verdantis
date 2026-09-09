@@ -1,0 +1,64 @@
+{
+  "title": "Monitoring & Alerts - Verdantis",
+  "hero": {
+    "h1": "Current conditions &amp; vegetation alerts",
+    "intro_html": "Everything that isn't the multi-year historical pilot deliverable lives here: the latest weekly conditions snapshot, a scrubbable month-by-month view of the last year, and structural-break detection over the raw (uncomposited) NDVI series. All three are data feeds, not finished alert products - the numbers below are published by hand whenever <code>publish_site.py</code> is re-run after a fresh local pass, not fetched live from the backend."
+  },
+  "recent": {
+    "title": "Current conditions",
+    "lede": "Last ~2 months of Sentinel-2 data at weekly cadence, condensed into one composite: current NDVI/NDWI/NDMI plus a \"% of the plot below the dry threshold\" figure.",
+    "loading": "Loading latest summary&hellip;",
+    "kpi_date": "Composite date",
+    "kpi_ndvi": "Mean NDVI",
+    "kpi_ndwi": "Mean NDWI",
+    "kpi_ndmi": "Mean NDMI",
+    "kpi_dry": "Plot below dry threshold",
+    "quicklooks_title": "Latest quicklooks",
+    "quicklooks_lede": "NDVI/NDWI/NDMI for the most recent usable weekly composite.",
+    "ndvi_caption": "Vegetation vigour.",
+    "ndwi_caption": "Moisture proxy, broad NIR.",
+    "ndmi_caption": "Moisture proxy, narrow NIR."
+  },
+  "imagery": {
+    "title": "Monthly imagery, last year",
+    "lede": "Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same 12-month window as the Sector Explorer's \"Last year\" option, moved here since it's a single time series rather than a per-sector breakdown.",
+    "loading": "Loading monthly imagery&hellip;"
+  },
+  "alerts": {
+    "title": "Vegetation break alerts",
+    "lede": "A separate branch from the moisture monitoring above: every available raw Sentinel-2 scene over a chosen bounding box (no compositing), decomposed with STL (trend + season + remainder) and searched for changepoints with ruptures' PELT - the same conceptual approach BFAST (Verbesselt et al.) is built on, via GPU-free, pip-installable libraries. Treat detected breaks as candidates to investigate, not calibrated alerts.",
+    "loading": "Loading detected breaks&hellip;",
+    "kpi_scenes": "Scenes in window",
+    "kpi_years": "Years requested",
+    "kpi_breaks": "Breaks detected",
+    "kpi_penalty": "Penalty used",
+    "table_title": "Break table",
+    "table_lede": "Each row is one detected changepoint in the trend component: the fitted trend level in the ~3 months before vs. after, and the resulting delta.",
+    "th_date": "Date",
+    "th_trend_before": "Trend before",
+    "th_trend_after": "Trend after",
+    "th_delta": "Delta",
+    "th_read": "Read",
+    "loading_row": "Loading&hellip;",
+    "note_html": "Pilot/precursor output across this whole page - none of these thresholds are calibrated against field data yet. BFAST-<em>style</em>, not the literal BFAST/R package. Bounding box, lookback window, and penalty scale are all set in <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>, <code>BFAST_PENALTY_SCALE</code>). Natural next step (see README): turn the recent-conditions feed into a scheduled job that persists each run and diffs against the previous one to generate real alerts."
+  },
+  "js": {
+    "recent_status": "Composite period: {period} &middot; last published {date}",
+    "recent_error": "Could not load the latest summary (data/drought_summary_latest.json) - run publish_site.py after the next drought_monitor_recent.py pass.",
+    "period_week": "week",
+    "threshold_prefix": "NDWI threshold",
+    "imagery_status": "{count} months, {first} to {last}",
+    "imagery_error": "Could not load data/monthly_imagery.json - run build_sector_explorer_data.py then publish_site.py.",
+    "month_names": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "window_full": "Full history",
+    "window_last_year": "Last year",
+    "alert_status": "{label} &middot; bbox [{bbox}]",
+    "alert_error": "Could not load alert_breaks.json - run bfast_alert.py then publish_site.py.",
+    "no_breaks": "No structural breaks detected in this window.",
+    "no_data_yet": "No data published yet.",
+    "scale_prefix": "scale",
+    "vigour_increase": "Vigour increase",
+    "vigour_decrease": "Vigour drop - inspect for harvest/dieback",
+    "chart_alt": "Raw NDVI scatter, fitted trend, and detected breaks - {label}"
+  }
+}

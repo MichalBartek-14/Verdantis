@@ -1,0 +1,11 @@
+{
+  "plot_shapefile": "data\\devinska\\Client_Devinska.shp",
+  "composite_date": "2026-09-06",
+  "compositing_period": "week",
+  "mean_ndvi": 0.366,
+  "mean_ndwi": -0.074,
+  "mean_ndmi": -0.036,
+  "pct_pixels_below_dry_threshold": 40.1,
+  "ndwi_dry_threshold": 0.1,
+  "note": "Pilot/precursor output - thresholds not yet calibrated against field data."
+}

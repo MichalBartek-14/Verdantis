@@ -1,0 +1,64 @@
+{
+  "title": "Monitoring a upozornenia - Verdantis",
+  "hero": {
+    "h1": "Aktuálne podmienky &amp; upozornenia na zmeny vegetácie",
+    "intro_html": "Všetko, čo nie je súčasťou viacročného historického prehľadu, je tu: najnovší týždenný záznam podmienok, posúvateľný mesačný pohľad na posledný rok a detekcia štrukturálnych zmien v surovom (nekompozitnom) rade NDVI. Všetky tri sú dátové zdroje, nie hotové produkty upozornení - čísla nižšie sa publikujú ručne vždy, keď sa po čerstvom lokálnom behu znovu spustí <code>publish_site.py</code>, nejde o priame načítanie z backendu."
+  },
+  "recent": {
+    "title": "Aktuálne podmienky",
+    "lede": "Posledné ~2 mesiace dát Sentinel-2 s týždennou frekvenciou, zhrnuté do jedného kompozitu: aktuálne NDVI/NDWI/NDMI a údaj \"% parcely pod prahom sucha\".",
+    "loading": "Načítavam najnovší prehľad&hellip;",
+    "kpi_date": "Dátum kompozitu",
+    "kpi_ndvi": "Priemerné NDVI",
+    "kpi_ndwi": "Priemerné NDWI",
+    "kpi_ndmi": "Priemerné NDMI",
+    "kpi_dry": "Parcela pod prahom sucha",
+    "quicklooks_title": "Najnovšie náhľady",
+    "quicklooks_lede": "NDVI/NDWI/NDMI pre najnovší použiteľný týždenný kompozit.",
+    "ndvi_caption": "Vitalita vegetácie.",
+    "ndwi_caption": "Ukazovateľ vlhkosti, široké NIR.",
+    "ndmi_caption": "Ukazovateľ vlhkosti, úzke NIR."
+  },
+  "imagery": {
+    "title": "Mesačné snímky, posledný rok",
+    "lede": "Kompozity NDVI/NDWI/NDMI za celú parcelu, posúvanie mesiac po mesiaci - rovnaké 12-mesačné okno ako možnosť \"Posledný rok\" v Prieskumníkovi sektorov, presunuté sem, keďže ide o jeden časový rad, nie rozpad po sektoroch.",
+    "loading": "Načítavam mesačné snímky&hellip;"
+  },
+  "alerts": {
+    "title": "Upozornenia na zmeny vegetácie",
+    "lede": "Samostatná vetva oproti sledovaniu vlhkosti vyššie: každá dostupná surová snímka Sentinel-2 nad zvoleným ohraničujúcim obdĺžnikom (bez kompozitovania), rozložená pomocou STL (trend + sezónnosť + zvyšok) a prehľadaná na zmeny pomocou PELT z knižnice ruptures - rovnaký princíp, na akom je postavený BFAST (Verbesselt et al.), cez zrelé knižnice bez potreby GPU. Detegované zmeny berte ako kandidátov na preverenie, nie kalibrované upozornenia.",
+    "loading": "Načítavam detegované zmeny&hellip;",
+    "kpi_scenes": "Snímky v okne",
+    "kpi_years": "Požadované roky",
+    "kpi_breaks": "Detegované zmeny",
+    "kpi_penalty": "Použitá penalizácia",
+    "table_title": "Tabuľka zmien",
+    "table_lede": "Každý riadok je jedna detegovaná zmena v trendovej zložke: hodnota trendu približne 3 mesiace pred a po, a výsledný rozdiel.",
+    "th_date": "Dátum",
+    "th_trend_before": "Trend pred",
+    "th_trend_after": "Trend po",
+    "th_delta": "Rozdiel",
+    "th_read": "Interpretácia",
+    "loading_row": "Načítavam&hellip;",
+    "note_html": "Pilotný/predbežný výstup na celej tejto stránke - žiadna z týchto prahových hodnôt zatiaľ nie je kalibrovaná voči terénnym dátam. Ide o štýl <em>BFAST</em>, nie doslovný balík BFAST/R. Ohraničujúci obdĺžnik, dĺžka spätného obdobia a mierka penalizácie sa nastavujú v <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>, <code>BFAST_PENALTY_SCALE</code>). Prirodzený ďalší krok (pozri README): premeniť tok aktuálnych podmienok na naplánovanú úlohu, ktorá uchováva každý beh a porovnáva ho s predchádzajúcim, aby vznikli skutočné upozornenia."
+  },
+  "js": {
+    "recent_status": "Perióda kompozitu: {period} &middot; naposledy publikované {date}",
+    "recent_error": "Nepodarilo sa načítať najnovší prehľad (data/drought_summary_latest.json) - spustite publish_site.py po ďalšom behu drought_monitor_recent.py.",
+    "period_week": "týždeň",
+    "threshold_prefix": "Prah NDWI",
+    "imagery_status": "{count} mesiacov, {first} až {last}",
+    "imagery_error": "Nepodarilo sa načítať data/monthly_imagery.json - spustite build_sector_explorer_data.py a následne publish_site.py.",
+    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"],
+    "window_full": "Celá história",
+    "window_last_year": "Posledný rok",
+    "alert_status": "{label} &middot; bbox [{bbox}]",
+    "alert_error": "Nepodarilo sa načítať alert_breaks.json - spustite bfast_alert.py a následne publish_site.py.",
+    "no_breaks": "V tomto okne neboli detegované žiadne štrukturálne zmeny.",
+    "no_data_yet": "Zatiaľ neboli publikované žiadne dáta.",
+    "scale_prefix": "mierka",
+    "vigour_increase": "Nárast vitality",
+    "vigour_decrease": "Pokles vitality - preverte možnú ťažbu alebo odumieranie",
+    "chart_alt": "Surové hodnoty NDVI, fitovaný trend a detegované zmeny - {label}"
+  }
+}

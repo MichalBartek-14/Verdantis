@@ -1,0 +1,43 @@
+{
+  "title": "Sector Explorer - Verdantis",
+  "hero": {
+    "h1": "Sector Moisture Explorer",
+    "intro": "The plot's bounding box split into 5&times;5-pixel sectors (partial at the edges). Choose NDWI or NDMI, then click a sector to see its own moisture history against ERA5 temperature for the same months - the whole-plot average, on the right, is the default view."
+  },
+  "controls": {
+    "pane_title": "Sector map",
+    "metric_freq": "Dry frequency",
+    "metric_magnitude": "Dry magnitude",
+    "range_full": "Full history",
+    "range_1y": "Last year",
+    "stat_sectors": "Sectors with data",
+    "stat_months": "Months covered"
+  },
+  "detail": {
+    "selection_default": "Whole plot (average)",
+    "selection_hint_default": "click any sector to inspect it",
+    "index_chart_default": "Monthly NDWI",
+    "temp_chart_title": "ERA5 monthly mean temperature (&deg;C)"
+  },
+  "footer_html": "Data: Sentinel-2 L2A monthly median composites via Copernicus Data Space Ecosystem (openEO), clipped to the client plot; NDWI = (B08-B11)/(B08+B11) (broad NIR); NDMI = (B8A-B11)/(B8A+B11) (narrow NIR) - same family, highly correlated but not identical. Temperature: ERA5 reanalysis via Open-Meteo's archive API. \"Dry frequency\" is the % of valid months the selected index fell below the <code id=\"thresholdNote\">threshold</code> dryness threshold; \"dry magnitude\" is how far below threshold it typically fell on those months. Generated from <code>outputs/monthly_ndvi_ndwi_ndmi.nc</code> and <code>outputs/era5_temperature_monthly.csv</code>, published via <code>publish_site.py</code> - no live data connection. Looking for the monthly NDVI/NDWI/NDMI imagery slider that used to live here? It's now on the <a href=\"monitoring.html\">Monitoring &amp; Alerts</a> page, alongside current conditions and vegetation-break alerts.",
+  "js": {
+    "no_data_window": "no valid data in this window",
+    "sector_label": "Sector R{row}C{col}",
+    "metric_freq_unit": "% of months dry",
+    "metric_deficit": "mean {index} deficit",
+    "mean_prefix": "mean",
+    "px_suffix": "px",
+    "whole_plot": "Whole plot (average)",
+    "click_hint": "click any sector to inspect it",
+    "valid_months": "valid months",
+    "last_year_suffix": "(last year)",
+    "stat_mean": "Mean {index}",
+    "stat_freq": "Dry frequency",
+    "stat_magnitude": "Dry magnitude",
+    "corr_suffix": "–temp r",
+    "plot_mean_prefix": "Plot mean",
+    "monthly_prefix": "Monthly {index}",
+    "load_error": "Could not load data/sector_explorer_data.json - run build_sector_explorer_data.py then publish_site.py.",
+    "month_names": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  }
+}

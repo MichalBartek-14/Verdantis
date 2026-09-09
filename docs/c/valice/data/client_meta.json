@@ -1,9 +1,15 @@
 {
   "slug": "valice",
   "display_name": "Valice Fruit tree Plot",
-  "client_name": "Ferko Toth",
+  "client_name": "Frantisek Toth",
   "location": "Valice, Slovakia",
   "plot_area_ha": 59.71,
   "accent_color": "#2c7a3c",
-  "language": "sk"
+  "language": "sk",
+  "plot_bounds": {
+    "west": 20.197525,
+    "south": 48.444518,
+    "east": 20.210338,
+    "north": 48.45216
+  }
 }

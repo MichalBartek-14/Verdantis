@@ -4,7 +4,7 @@
   "hero": {
     "eyebrow": "Sentinel-2 &middot; openEO &middot; ERA5",
     "title_html": "Moisture &amp; vegetation<br>monitoring, from <span>orbit</span>.",
-    "tagline": "Verdantis turns free Copernicus Sentinel-2 imagery into a plot-level view of vegetation vigour (NDVI), canopy/soil moisture (NDWI &amp; NDMI), and structural change - built as a client-facing pilot for a single forestry plot, reusable for any shapefile.",
+    "tagline": "Verdantis turns free Copernicus Sentinel-2 imagery into a plot-level view of vegetation vigour (NDVI), canopy/soil moisture (NDWI &amp; NDMI), and structural change - built as a client-facing pilot for urban green infrastructure, reusable for any shapefile.",
     "cta_primary": "View the historical pilot",
     "cta_ghost": "Open the sector explorer",
     "plot_tag_prefix": "Live pilot plot:",

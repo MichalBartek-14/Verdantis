@@ -1,0 +1,62 @@
+{
+  "bbox": [
+    16.976556,
+    48.218328,
+    16.991429,
+    48.227495
+  ],
+  "years_requested": 5,
+  "seasonal_period_months": 12,
+  "penalty_scale": 1.0,
+  "penalty_used": 0.00435,
+  "n_scenes": 302,
+  "breaks": [
+    {
+      "date": "2024-03-01",
+      "trend_before": 0.4138,
+      "trend_after": 0.4046,
+      "delta": -0.0092
+    },
+    {
+      "date": "2025-09-01",
+      "trend_before": 0.3756,
+      "trend_after": 0.3678,
+      "delta": -0.0079
+    }
+  ],
+  "default_window": "5y",
+  "windows": {
+    "5y": {
+      "label": "Full history",
+      "years": 5,
+      "n_scenes": 302,
+      "breaks": [
+        {
+          "date": "2024-03-01",
+          "trend_before": 0.4138,
+          "trend_after": 0.4046,
+          "delta": -0.0092
+        },
+        {
+          "date": "2025-09-01",
+          "trend_before": 0.3756,
+          "trend_after": 0.3678,
+          "delta": -0.0079
+        }
+      ]
+    },
+    "1y": {
+      "label": "Last year",
+      "years": 1,
+      "n_scenes": 71,
+      "breaks": [
+        {
+          "date": "2025-09-01",
+          "trend_before": 0.3756,
+          "trend_after": 0.3678,
+          "delta": -0.0079
+        }
+      ]
+    }
+  }
+}

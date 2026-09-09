@@ -1,0 +1,36 @@
+{
+  "title": "Historický prehľad - Verdantis",
+  "hero": {
+    "h1": "Výstup pilotného projektu pre klienta",
+    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, dvojpanelová mapa sucha (frekvencia + intenzita) pre NDWI aj NDMI, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
+  },
+  "timeseries": {
+    "title": "Časové rady (priemer za parcelu, mesačne)",
+    "lede": "NDVI sleduje vitalitu vegetácie; NDWI a NDMI sú dve formulácie toho istého podkladového signálu vlhkosti (široké vs. úzke NIR pásmo) - zobrazené vedľa seba, nie vybrané jedno z dvoch, keďže sú korelované, no nie identické.",
+    "ndvi_title": "NDVI",
+    "ndvi_desc": "Vitalita vegetácie, (NIR&minus;Red)/(NIR+Red).",
+    "ndwi_title": "NDWI",
+    "ndwi_desc": "Vlhkosť korún/pôdy, formulácia so širokým NIR pásmom (Gao).",
+    "ndmi_title": "NDMI",
+    "ndmi_desc": "Ukazovateľ vlhkosti, formulácia s úzkym NIR pásmom (štandard Sentinel Hub)."
+  },
+  "dryness": {
+    "title": "Kde parcela najviac stráca vodu",
+    "lede": "Frekvencia sucha na úrovni pixelov (% mesiacov pod prahovou hodnotou) a intenzita deficitu (ako výrazné bolo sucho v mesiacoch, keď nastalo) - mapa frekvencie dopĺňa mapu intenzity: sektor môže byť suchý často, no mierne, alebo zriedka, no výrazne.",
+    "freq_title": "Frekvencia sucha (NDWI)",
+    "freq_desc": "% platných mesiacov, kedy bol daný pixel klasifikovaný ako \"suchý\".",
+    "ndwi_map_title": "Mapa straty vody (NDWI)",
+    "ndwi_map_desc": "Frekvencia + priemerná intenzita deficitu, vedľa seba.",
+    "ndmi_map_title": "Mapa straty vody (NDMI)",
+    "ndmi_map_desc": "Rovnaká analýza, index s úzkym NIR pásmom - porovnajte s verziou NDWI."
+  },
+  "weather": {
+    "title": "Vlhkosť vs. počasie",
+    "lede": "NDWI zlúčené s mesačnou priemernou teplotou vzduchu a úhrnom zrážok z ERA5 (archív Open-Meteo, bez potreby API kľúča) za rovnaké obdobie a lokalitu.",
+    "temp_title": "NDWI &amp; teplota ERA5, mesačne",
+    "temp_desc": "Pearsonovo r &asymp; 0,47 (NDWI) a &asymp; 0,52 (NDMI) voči teplote za celú históriu, vypisované skriptom pri každom behu - kontrola logickej konzistencie, nie kalibrovaný vzťah.",
+    "precip_title": "NDWI &amp; zrážky ERA5, mesačne",
+    "precip_desc": "Pearsonovo r &asymp; 0,32 (NDWI) a &asymp; 0,33 (NDMI) voči mesačnému úhrnu zrážok za celú históriu - pozitívne, ako sa dalo očakávať (vlhkejšie mesiace, vyššie NDWI), slabšie ako korelácia s teplotou vyššie, keďže úhrn zrážok za jeden mesiac je zašumenejším ukazovateľom vlhkosti korún/pôdy než teplota."
+  },
+  "note_html": "Každá prahová hodnota a korelácia na tejto stránke je iba pilotný východiskový bod. Prahové hodnoty \"sucha\" pre NDWI/NDMI (tu 0,10) aj veľkosti jadier pre maskovanie oblačnosti sú prevzaté z dokumentovaných predvolených hodnôt, nie samostatne kalibrované pre druhové zloženie či pôdu tejto parcely - pred použitím akéhokoľvek čísla na reálne rozhodovanie si pozrite README projektu."
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Historical Pilot - Verdantis",
+  "hero": {
+    "h1": "The client-facing pilot deliverable",
+    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a two-panel dryness map (frequency + magnitude) for both NDWI and NDMI, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
+  },
+  "timeseries": {
+    "title": "Time series (plot-average, monthly)",
+    "lede": "NDVI tracks vegetation vigour; NDWI and NDMI are two moisture-proxy formulations of the same underlying signal (broad vs. narrow NIR band) - shown side by side rather than picked between, since they're correlated but not identical.",
+    "ndvi_title": "NDVI",
+    "ndvi_desc": "Vegetation vigour, (NIR&minus;Red)/(NIR+Red).",
+    "ndwi_title": "NDWI",
+    "ndwi_desc": "Canopy/soil moisture, broad-NIR (Gao-family) formulation.",
+    "ndmi_title": "NDMI",
+    "ndmi_desc": "Moisture proxy, narrow-NIR (Sentinel Hub standard) formulation."
+  },
+  "dryness": {
+    "title": "Where the plot loses water most",
+    "lede": "Per-pixel dryness frequency (% of months below threshold) and deficit magnitude (how badly, on the months it was dry) - the frequency map complements the magnitude map: a sector can be dry often but mildly, or rarely but severely.",
+    "freq_title": "Dryness frequency (NDWI)",
+    "freq_desc": "% of valid months each pixel was classified \"dry\".",
+    "ndwi_map_title": "Water-loss map (NDWI)",
+    "ndwi_map_desc": "Frequency + average deficit magnitude, side by side.",
+    "ndmi_map_title": "Water-loss map (NDMI)",
+    "ndmi_map_desc": "Same analysis, narrow-NIR index - compare against the NDWI version."
+  },
+  "weather": {
+    "title": "Moisture vs. weather",
+    "lede": "NDWI merged against ERA5-based (Open-Meteo archive, no API key needed) monthly mean air temperature and total precipitation, for the same window and location.",
+    "temp_title": "NDWI &amp; ERA5 temperature, monthly",
+    "temp_desc": "Pearson r &asymp; 0.47 (NDWI) and &asymp; 0.52 (NDMI) vs. temperature over the full history, printed by the script on every run - a sanity check, not a calibrated relationship.",
+    "precip_title": "NDWI &amp; ERA5 precipitation, monthly",
+    "precip_desc": "Pearson r &asymp; 0.32 (NDWI) and &asymp; 0.33 (NDMI) vs. total monthly precipitation over the full history - positive as expected (wetter months, higher NDWI), weaker than the temperature correlation above since a single month's rain total is a noisier proxy for canopy/soil moisture than temperature is."
+  },
+  "note_html": "Every threshold and correlation on this page is a pilot starting point. NDWI/NDMI \"dry\" thresholds (0.10 here) and the cloud-mask kernel sizes are copied from documented defaults, not independently tuned for this plot's species or soil - see the project README before using any number to drive a real decision."
+}
