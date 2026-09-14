@@ -31,13 +31,14 @@ python check_translations.py       # fails loudly if any i18n key is missing in 
 run this after touching anything under `docs/_template/assets/i18n/`.
 
 Every pipeline script takes a required `--client <slug>` (or `--all` for
-`publish_site.py`/`render_true_color.py`):
+`publish_site.py`/`render_true_color.py`/`ingest_sensor_data.py`):
 ```bash
 python pilot_historical_analysis.py --client <slug>    # multi-year pilot deliverable
 python drought_monitor_recent.py --client <slug>       # recent-conditions snapshot
 python build_sector_explorer_data.py --client <slug>   # run AFTER pilot_historical_analysis.py
 python bfast_alert.py --client <slug>                  # independent - own bbox, own download
 python render_true_color.py --client <slug>            # independent - GeoTIFF -> hero photo PNG
+python ingest_sensor_data.py --client <slug>            # independent - sensor_uploads/<slug>/ -> outputs/<slug>/
 python publish_site.py --client <slug>                 # outputs/<slug>/ -> docs/c/<slug>/
 ```
 First run of any script that talks to openEO opens an interactive OIDC device-code login
@@ -100,4 +101,44 @@ hand. It's what a visitor sees before picking a client on `plots.html`.
 **Data isolation is a hosting concern, not a code one**: every client's `docs/c/<slug>/`
 is meant to be access-controlled independently in production (Netlify Edge Function
 Basic Auth today - see `netlify/edge-functions/protect-clients.js`), but nothing in this
-repo enforces that locally.
+repo enforces that locally. This is also why brand assets aren't shared across trees -
+see below.
+
+**Brand logo**: `docs/_template/assets/brand-logo.js` (`initBrandLogo(prefix)`) swaps the
+CSS gradient-box + "Verdantis" text lockup for a real `<prefix>logo-full.png` once one
+exists - safe to call before it does, same probe-then-swap pattern as the intro
+briefing's photo slots. The script itself is loaded cross-tree by the standalone
+briefing pages (same as `_template/assets/style.css` already is), but the actual image
+files are NOT - each of `docs/assets/img/brand/` (briefing pages) and
+`docs/_template/assets/img/brand/` (dashboard template, copied per-client on publish)
+keeps its own copy of `logo-full.png`/`logo-small.png`, so a published `docs/c/<slug>/`
+stays self-contained per the isolation note above. `logo-small.png` also doubles as the
+favicon/apple-touch-icon everywhere. See the `PUT_LOGO_FILES_HERE.txt` in both folders.
+
+**Live sensor data**: a client can have `"live_sensor_feed": true` in
+`clients/<slug>.json` (Devinska today) to show live field-sensor data on the same
+plot-location map. TWO independent feeds, not one combined reading -
+`outputs/<slug>/sensor_track.json` (position tracker, `{time, lat, lon}[]`, no
+temperature) and `sensor_temperature.json` (stationary sensor, `{time, temperature_c,
+soil_moisture?}[]`, no position - its fixed spot is `clients/<slug>.json`'s own
+`sensor_location`, falling back to the plot's center if unset). `publish_site.py` copies
+whichever exist into `docs/c/<slug>/data/`; `docs/_template/index.html`'s map script
+renders each independently and skips cleanly if absent (it only reads `time`/
+`temperature_c` from the temperature feed today - `soil_moisture` is published but not
+yet surfaced on the map). `ingest_sensor_data.py --client <slug>` (or `--all`) produces
+`sensor_temperature.json` from TWO merged sources: it polls the live field-sensor API
+itself (`config.SENSOR_API_BASE_URL` + `/api/v1/temperature` - a separately-run FastAPI
+service documented in `data/verdantis-sensor-infra-reference.md`, not built by this
+repo; auth key resolved per `secrets/README.md`, incrementally via the API's own
+`after_id` "what's new since I last checked" parameter once local history exists), and
+it parses whatever's sitting in `sensor_uploads/<slug>/temperature/` (a git-tracked drop
+zone, unlike gitignored `data/`, for anything dropped in by hand). Every live pull is
+itself saved as a new timestamped file into that same drop zone, so a live reading and a
+hand-dropped export are ingested identically and every pull stays in the audit trail.
+`--no-fetch` skips the live poll and parses local drops only. Deliberately ONE small
+deterministic parser written against a real sample (see `sensor_uploads/devinska/README.md`
+for the exact format(s)), not an LLM-in-the-loop "figure out the format every run" step.
+`track/` isn't ingested yet - no real export has been seen for that sensor, so its
+format (and therefore `sensor_track.json`) is still unwritten; extend
+`ingest_sensor_data.py` with a second parser once one shows up, rather than assuming it
+matches the temperature sensor's format.

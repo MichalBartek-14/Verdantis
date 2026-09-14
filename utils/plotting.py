@@ -151,13 +151,13 @@ def plot_ndwi_precipitation_combo(months, ndwi_values, precip_values, out_path,
 def plot_bfast_breaks(raw_series, trend_index, trend_values, break_dates, out_path,
                        title="NDVI - every available scene, with detected structural breaks"):
     """Raw per-scene NDVI (every available Sentinel-2 acquisition over the
-    alert bbox, not a monthly/weekly composite) as a scatter, the STL
-    trend fitted for break detection as a line, and each detected
-    break marked with a vertical dashed line - the alert branch's core
-    chart."""
+    alert bbox, not a monthly/weekly composite) as a scatter, the
+    harmonic-deseasonalized trend fitted for break detection as a line, and
+    each detected break marked with a vertical dashed line - the alert
+    branch's core chart."""
     fig, ax = plt.subplots(figsize=(11, 4.5))
     ax.scatter(raw_series.index, raw_series.values, s=14, color="#7a8c9e", alpha=0.6, label="Raw scene NDVI")
-    ax.plot(trend_index, trend_values, color="#2c7a3c", linewidth=1.8, label="STL trend")
+    ax.plot(trend_index, trend_values, color="#2c7a3c", linewidth=1.8, label="Deseasonalized trend")
     for i, bd in enumerate(break_dates):
         ax.axvline(bd, color="#c0392b", linestyle="--", linewidth=1.2,
                     label="Detected break" if i == 0 else None)

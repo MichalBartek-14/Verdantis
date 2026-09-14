@@ -5,21 +5,35 @@ A separate, parallel product to the plot/sector moisture monitoring: point
 it at ANY bounding box (not necessarily the client plot - set ALERT_BBOX in
 config.py) and it pulls every available raw Sentinel-2 scene over that area
 (no monthly/weekly compositing - the actual per-acquisition NDVI values),
-plots the resulting irregular time series, and flags likely structural
-breaks - a harvest, dieback, storm damage, land-use change - using a
-BFAST-style decomposition + changepoint search.
+plots the resulting irregular time series, and flags candidate structural
+breaks - possibly a harvest, dieback, storm damage, land-use change, or
+simply a data artefact - using a BFAST-style decomposition + changepoint
+search. These are leads to investigate in the field, not confirmed events;
+the published site's wording (docs/_template/assets/i18n/*/monitoring.json)
+deliberately hedges rather than naming a specific cause.
 
 Not the literal bfast/R package or its GPU-accelerated Python port (`bfast`
 on PyPI hard-requires pyopencl and a working OpenCL runtime - impractical to
 depend on for a pilot script). This reuses the same underlying idea BFAST
 (Verbesselt et al.) is built on - decompose the series into trend + season +
 remainder, then test the trend for structural breaks - using two
-well-supported, GPU-free libraries: statsmodels' STL decomposition and
-ruptures' PELT changepoint search.
+well-supported, GPU-free libraries: statsmodels (harmonic regression, robust
+OLS) and ruptures' PELT changepoint search.
+
+Season is modelled as a FIXED harmonic (Fourier) curve - the same shape every
+year - fit once, robustly, over the whole series, rather than with STL's
+per-cycle-adaptive LOESS season. An adaptive season can warp around a real
+break, and worse: over a short (<5yr) series it can read the sheer month-to-
+month steepness of an ordinary Central-European spring green-up or autumn
+senescence as part of the *trend* rather than the season, producing "breaks"
+that just line up with normal seasonal turns instead of real changes. Fixing
+the season's shape first (see fit_harmonic_season() below) keeps that normal
+swing out of the trend entirely, so PELT is only ever looking at genuine
+level shifts.
 
 Run:    python bfast_alert.py
 Setup:  edit config.py first - ALERT_BBOX (defaults to the client plot's
-        own bbox), ALERT_YEARS, BFAST_PENALTY_SCALE.
+        own bbox), ALERT_YEARS, BFAST_HARMONICS, BFAST_PENALTY_SCALE.
 """
 import json
 import warnings
@@ -28,8 +42,9 @@ from datetime import date
 import numpy as np
 import pandas as pd
 import ruptures as rpt
+import statsmodels.api as sm
 from dateutil.relativedelta import relativedelta
-from statsmodels.tsa.seasonal import STL
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 import config
 from utils.cloud_masking import build_cloud_mask, apply_cloud_mask
@@ -57,6 +72,43 @@ def build_raw_ndvi_cube(connection, bbox, temporal_extent):
     # NetCDF has a named "NDVI" variable, matching every other script's
     # convention - see utils/indices.py's combine_as_bands for the same trick.
     return ndvi_band(masked).add_dimension(name="bands", label="NDVI", type="bands")
+
+
+def fit_harmonic_season(series, period, n_harmonics):
+    """Deseasonalize with a FIXED harmonic (Fourier) curve - the same
+    seasonal shape every year - instead of STL's per-cycle-adaptive LOESS
+    season. n_harmonics=2 (annual + semi-annual sine/cosine pairs) is the
+    standard BFAST-style order for temperate forest/agriculture phenology:
+    enough to capture the asymmetric fast-spring-green-up / slow-autumn-
+    senescence curve typical of Central Europe, without over-fitting a
+    short (<5yr) series. The regression is Huber-robust so a genuine break
+    in the data doesn't drag the fitted seasonal shape toward itself.
+    Returns the deseasonalized series (original level preserved, only the
+    seasonal wiggle removed) - trend + remainder + any real breaks."""
+    t = np.arange(len(series), dtype=float)
+    cols = [np.ones_like(t)]
+    for k in range(1, n_harmonics + 1):
+        cols.append(np.sin(2 * np.pi * k * t / period))
+        cols.append(np.cos(2 * np.pi * k * t / period))
+    design = np.column_stack(cols)
+    fit = sm.RLM(series.values, design, M=sm.robust.norms.HuberT()).fit()
+    seasonal_wiggle = design[:, 1:] @ fit.params[1:]  # harmonics only - keep the fitted level (intercept) in place
+    return pd.Series(series.values - seasonal_wiggle, index=series.index)
+
+
+def smooth_trend(deseasonalized, period):
+    """LOWESS-smooth the (already deseasonalized) series into a trend curve
+    for PELT to search - damping single-scene remainder noise the same way
+    STL's own trend-component LOESS would, but now applied AFTER a fixed
+    seasonal cycle has already been removed above, so the only thing left
+    for this smoother to do is denoise, not re-absorb the seasonal swing.
+    frac is set so each local fit spans roughly one seasonal cycle's worth
+    of points, regardless of the series' overall length."""
+    n = len(deseasonalized)
+    frac = min(0.9, max(period, 3) / n)
+    t = np.arange(n)
+    smoothed = lowess(deseasonalized.values, t, frac=frac, return_sorted=False)
+    return pd.Series(smoothed, index=deseasonalized.index)
 
 
 def run_alert():
@@ -116,8 +168,9 @@ def run_alert():
         return
 
     # Regularise onto a monthly grid (linear interpolation across cloud
-    # gaps) so STL has the fixed-frequency series it needs - the same
-    # irregular -> regular step bfast's own bfastts() does in the R package.
+    # gaps) so the harmonic season fit below has the fixed-frequency series
+    # it needs - the same irregular -> regular step bfast's own bfastts()
+    # does in the R package.
     monthly_index = pd.date_range(
         raw_series.index.min().to_period("M").to_timestamp(),
         raw_series.index.max().to_period("M").to_timestamp(),
@@ -125,15 +178,15 @@ def run_alert():
     )
     if len(monthly_index) < 2 * config.BFAST_SEASONAL_PERIOD:
         print(f"Only {len(monthly_index)} months of coverage (need >= {2 * config.BFAST_SEASONAL_PERIOD} for "
-              f"STL with a {config.BFAST_SEASONAL_PERIOD}-month season) - too short for reliable break "
+              f"a {config.BFAST_SEASONAL_PERIOD}-month harmonic season) - too short for reliable break "
               f"detection. Try a longer ALERT_YEARS.")
         return
 
     combined_index = raw_series.index.union(monthly_index)
     regular = raw_series.reindex(combined_index).interpolate("time", limit_direction="both").reindex(monthly_index)
 
-    stl = STL(regular, period=config.BFAST_SEASONAL_PERIOD, robust=True).fit()
-    trend = stl.trend
+    deseasonalized = fit_harmonic_season(regular, config.BFAST_SEASONAL_PERIOD, config.BFAST_HARMONICS)
+    trend = smooth_trend(deseasonalized, config.BFAST_SEASONAL_PERIOD)
 
     # BIC-style penalty (Killick et al. 2012) scaled to this trend's own
     # variance - see config.BFAST_PENALTY_SCALE for why not a fixed number.
@@ -154,11 +207,11 @@ def run_alert():
         })
 
     # ---------- history-length view: full window + a "last year" zoom -----
-    # STL(period=12) needs >= 2 full seasonal cycles to decompose meaningfully
-    # (guarded above), so a literal 1-year *recomputation* would be invalid -
-    # there just isn't enough data for STL to separate trend from season on
-    # its own. Instead, both views share the ONE trend/break computation
-    # above (fit on the full ALERT_YEARS history) and the "1y" view is a
+    # Fitting the harmonic season needs >= 2 full seasonal cycles to be
+    # meaningful (guarded above), so a literal 1-year *recomputation* would
+    # be invalid - there just isn't enough data to separate a real seasonal
+    # shape from noise on its own. Instead, both views share the ONE
+    # trend/break computation above (fit on the full ALERT_YEARS history) and the "1y" view is a
     # display-only window into it: the same trend line and only the breaks
     # that fall in the last 12 months, scoped for a closer look at recent
     # activity - not a second, shorter-and-shakier model.
@@ -203,6 +256,7 @@ def run_alert():
             "bbox": bbox,
             "years_requested": config.ALERT_YEARS,
             "seasonal_period_months": config.BFAST_SEASONAL_PERIOD,
+            "seasonal_harmonics": config.BFAST_HARMONICS,
             "penalty_scale": config.BFAST_PENALTY_SCALE,
             "penalty_used": round(penalty, 6),
             "n_scenes": len(raw_series),

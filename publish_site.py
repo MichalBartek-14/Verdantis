@@ -163,6 +163,8 @@ def publish_client_site(slug: str) -> None:
             "west": alert_bbox[0], "south": alert_bbox[1],
             "east": alert_bbox[2], "north": alert_bbox[3],
         },
+        "live_sensor_feed": client.get("live_sensor_feed", False),
+        "sensor_location": client.get("sensor_location"),
     }
     with open(data / "client_meta.json", "w") as f:
         json.dump(meta, f, indent=2)
@@ -186,6 +188,34 @@ def publish_client_site(slug: str) -> None:
         print("  true-color bounds (for the plot-location map): copied")
     else:
         print("  true-color bounds: none yet (same as the hero photo above - run render_true_color.py)")
+
+    # 3c. Live sensor feed - optional, only meaningful for a client with
+    #     "live_sensor_feed": true (see clients.py), but copy-if-present
+    #     either way so this never has to be an error state. TWO independent
+    #     feeds from two independent physical sensors, not one combined
+    #     reading - see docs/_template/index.html's map script for exactly
+    #     how each is rendered:
+    #       - sensor_track.json: JSON array of {"time": "<ISO 8601>",
+    #         "lat": <float>, "lon": <float>} - the position tracker, no
+    #         per-reading temperature.
+    #       - sensor_temperature.json: JSON array of {"time": "<ISO 8601>",
+    #         "temperature_c": <float>, "soil_moisture": <float> (optional,
+    #         raw sensor units - unit/calibration undocumented by the API,
+    #         not surfaced on the map yet)} - the stationary temperature
+    #         sensor, no per-reading position (its fixed location is
+    #         clients/<slug>.json's own "sensor_location" instead, copied
+    #         into client_meta.json above).
+    #     Both sorted oldest-first. ingest_sensor_data.py produces
+    #     sensor_temperature.json (live API pull + sensor_uploads/<slug>/
+    #     temperature/ drops merged - see that script). sensor_track.json
+    #     has no producer yet - that sensor's export format is still
+    #     unknown, see sensor_uploads/<slug>/track/'s README.
+    if client.get("live_sensor_feed"):
+        for name in ("sensor_track.json", "sensor_temperature.json"):
+            if _copy(outputs_dir, name, data):
+                print(f"  live sensor feed: copied {name}")
+            else:
+                print(f"  live sensor feed: {name} not published yet - drop outputs/{slug}/{name} in and republish")
 
     # 4. Historical pilot images.
     print("  historical pilot images:")

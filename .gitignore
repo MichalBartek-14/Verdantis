@@ -5,3 +5,6 @@ outputs/*
 data/*
 !data/PUT_CLIENT_SHAPEFILE_HERE.txt
 !data/.gitkeep
+secrets/*
+!secrets/README.md
+!secrets/.gitkeep

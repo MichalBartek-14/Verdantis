@@ -26,14 +26,14 @@
   },
   "alerts": {
     "title": "Upozornenia na zmeny vegetácie",
-    "lede": "Samostatná vetva oproti sledovaniu vlhkosti vyššie: každá dostupná surová snímka Sentinel-2 nad zvoleným ohraničujúcim obdĺžnikom (bez kompozitovania), rozložená pomocou STL (trend + sezónnosť + zvyšok) a prehľadaná na zmeny pomocou PELT z knižnice ruptures - rovnaký princíp, na akom je postavený BFAST (Verbesselt et al.), cez zrelé knižnice bez potreby GPU. Detegované zmeny berte ako kandidátov na preverenie, nie kalibrované upozornenia.",
+    "lede": "Samostatná vetva oproti sledovaniu vlhkosti vyššie: každá dostupná surová snímka Sentinel-2 nad zvoleným ohraničujúcim obdĺžnikom (bez kompozitovania), zbavená sezónnosti pomocou pevného harmonického modelu bežného stredoeurópskeho vegetačného roka (aby sa obyčajné jarné olistenie a jesenné starnutie nezamieňalo za zmenu) a zvyšok prehľadaný na zmeny pomocou PELT z knižnice ruptures - rovnaký princíp, na akom je postavený BFAST (Verbesselt et al.), cez zrelé knižnice bez potreby GPU. Detegované zmeny berte ako kandidátov na terénne preverenie, nie potvrdené udalosti ani kalibrované upozornenia.",
     "loading": "Načítavam detegované zmeny&hellip;",
     "kpi_scenes": "Snímky v okne",
     "kpi_years": "Požadované roky",
     "kpi_breaks": "Detegované zmeny",
     "kpi_penalty": "Použitá penalizácia",
     "table_title": "Tabuľka zmien",
-    "table_lede": "Každý riadok je jedna detegovaná zmena v trendovej zložke: hodnota trendu približne 3 mesiace pred a po, a výsledný rozdiel.",
+    "table_lede": "Každý riadok je jedna kandidátna zmena v trende zbavenom sezónnosti: hodnota trendu približne 3 mesiace pred a po, a výsledný rozdiel. Riadok je podnet na terénne preverenie, nie potvrdená udalosť.",
     "th_date": "Dátum",
     "th_trend_before": "Trend pred",
     "th_trend_after": "Trend po",
@@ -57,8 +57,8 @@
     "no_breaks": "V tomto okne neboli detegované žiadne štrukturálne zmeny.",
     "no_data_yet": "Zatiaľ neboli publikované žiadne dáta.",
     "scale_prefix": "mierka",
-    "vigour_increase": "Nárast vitality",
-    "vigour_decrease": "Pokles vitality - preverte možnú ťažbu alebo odumieranie",
+    "vigour_increase": "Nárast trendu - oplatí sa preveriť",
+    "vigour_decrease": "Pokles trendu - oplatí sa preveriť",
     "chart_alt": "Surové hodnoty NDVI, fitovaný trend a detegované zmeny - {label}"
   }
 }

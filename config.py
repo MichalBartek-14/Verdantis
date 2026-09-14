@@ -99,10 +99,22 @@ ALERT_BBOX = [0.0, 0.0, 0.0, 0.0]
 ALERT_YEARS = 5                 # how far back to pull every available scene from
 
 # After pulling the irregular per-scene series, it's regularised onto a
-# monthly grid (linear interpolation across cloud gaps) so STL decomposition
-# has the fixed-frequency series it needs - this is the same irregular ->
-# regular step bfast's own bfastts() does in the R package.
-BFAST_SEASONAL_PERIOD = 12      # months per seasonal cycle for STL decomposition
+# monthly grid (linear interpolation across cloud gaps) so the harmonic
+# season fit below has the fixed-frequency series it needs - this is the
+# same irregular -> regular step bfast's own bfastts() does in the R package.
+BFAST_SEASONAL_PERIOD = 12      # months per seasonal cycle for the harmonic season fit
+
+# Number of Fourier harmonic pairs (sin/cos) used to model the seasonal
+# cycle as one FIXED shape repeated every year, instead of letting it adapt
+# per-cycle (which is what STL's default LOESS season would do, and what was
+# causing ordinary Central-European spring green-up / autumn senescence to
+# get read as a trend "break"). 2 = annual + semi-annual harmonics - the
+# standard BFAST order for temperate forest/agriculture phenology, enough to
+# capture the asymmetric fast-green-up/slow-senescence curve without
+# over-fitting a short (<5yr) series. Raise only if the seasonal fit still
+# looks visibly off in alert_ndvi_breaks.png; each extra harmonic adds two
+# more parameters the fit has to spend history on.
+BFAST_HARMONICS = 2
 
 # PELT's penalty is computed per-run, not a fixed number: penalty =
 # BFAST_PENALTY_SCALE * trend.var() * log(n) - the standard BIC-style
@@ -112,6 +124,17 @@ BFAST_SEASONAL_PERIOD = 12      # months per seasonal cycle for STL decompositio
 # variance auto-adapts. Higher BFAST_PENALTY_SCALE = fewer, more
 # confident breaks.
 BFAST_PENALTY_SCALE = 1.0
+
+# --- Live sensor API ---------------------------------------------------------------
+# Host for the field-sensor infrastructure documented in
+# data/verdantis-sensor-infra-reference.md - a separately-run FastAPI service
+# (already live, not built by this repo) that ESP32 sensors report into over
+# MQTT. The same host serves every client whose sensor reports into it, so
+# (unlike ALERT_BBOX etc.) this belongs here rather than in clients/<slug>.json
+# - see ingest_sensor_data.py, which is the only script that talks to it.
+# The API key is NOT here (or anywhere else git-tracked) - see
+# secrets/README.md for how ingest_sensor_data.py resolves it locally.
+SENSOR_API_BASE_URL = "https://api.verdantisdata.eu"
 
 # --- Output ----------------------------------------------------------------
 # Fallback only - clients.apply_client_overrides() always repoints this at
