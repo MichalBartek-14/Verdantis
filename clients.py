@@ -68,6 +68,19 @@ def load_client(slug: str) -> dict:
     # explicitly if a client's folder ever holds more than one GeoTIFF and
     # auto-discovery would be ambiguous.
     data.setdefault("true_color_tif", None)
+    # Optional - set True once a client actually has field sensors feeding
+    # outputs/<slug>/sensor_track.json (position tracker) and/or
+    # sensor_temperature.json (stationary temperature sensor) - see
+    # publish_site.py's copy step and docs/_template/index.html's map
+    # script for the expected shape of each. False/omitted just means the
+    # plot-location map skips looking for those files - nothing else
+    # changes, and either file being absent is never an error either way.
+    data.setdefault("live_sensor_feed", False)
+    # Fixed WGS84 {"lat":..., "lon":...} for the STATIONARY temperature
+    # sensor (it doesn't move, unlike the tracker, so this is set once here
+    # rather than read per-reading). Only meaningful when live_sensor_feed
+    # is true; null falls back to the plot's own center in the map script.
+    data.setdefault("sensor_location", None)
     # Optional per-client wording tweaks, applied by publish_site.py AFTER
     # it copies the shared docs/_template/assets/i18n/<lang>/ dictionaries -
     # for when the shared template's phrasing doesn't fit one specific

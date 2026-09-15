@@ -201,8 +201,81 @@ window.VerdantisReady.then(function (ready) {
     }).addTo(map);
     map.fitBounds(latLngBounds, { padding: [40, 40] });
 
-    // Exposed for later per-client work (e.g. streaming live sensor
-    // readings onto this same map) without needing to rebuild it.
+    // Live sensor feeds - TWO independent physical sensors, not one
+    // combined reading (see clients.py's live_sensor_feed/sensor_location
+    // and publish_site.py's copy step for the two file shapes below). Only
+    // clients with live_sensor_feed=true ever have either file published
+    // at all, and each stays skip-cleanly-if-absent, same as the photo/
+    // bounds above. Doesn't widen the fitBounds above - if either sensor
+    // routinely falls outside the plot's own extent, that'll need
+    // revisiting.
+    if (ready.meta.live_sensor_feed) {
+      // Cold blue -> hot amber-red over a FIXED outdoor-temperature range
+      // (not a batch's own min/max) - this colors single "current reading"
+      // markers, which need an absolute scale to mean anything (a relative
+      // one would always render fully saturated for just one value).
+      function tempColor(t) {
+        if (typeof t !== 'number') return '#999';
+        var f = (t - -10) / (35 - -10);
+        f = Math.max(0, Math.min(1, f));
+        var cold = [31, 122, 140], hot = [192, 57, 43];
+        var c = cold.map(function (v, i) { return Math.round(v + (hot[i] - v) * f); });
+        return 'rgb(' + c.join(',') + ')';
+      }
+
+      // Tracker: position only, ~1/minute, no per-reading temperature.
+      // Older points fade into small white dots along a connecting line;
+      // the single most recent point gets its own bigger "current
+      // position" marker, since that's the interesting thing for a tracker.
+      fetch('data/sensor_track.json', { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('no sensor_track.json yet'); return r.json(); })
+        .then(function (points) {
+          points = (points || []).filter(function (p) { return typeof p.lat === 'number' && typeof p.lon === 'number'; });
+          if (!points.length) return;
+
+          L.polyline(points.map(function (p) { return [p.lat, p.lon]; }),
+            { color: '#fff', weight: 2, opacity: 0.6 }).addTo(map);
+          points.slice(0, -1).forEach(function (p) {
+            L.circleMarker([p.lat, p.lon], { radius: 3, color: '#fff', weight: 1, fillColor: '#fff', fillOpacity: 0.5 })
+              .bindPopup(p.time ? String(p.time) : '')
+              .addTo(map);
+          });
+          var last = points[points.length - 1];
+          L.circleMarker([last.lat, last.lon], {
+            radius: 8, color: '#fff', weight: 2, fillColor: ready.meta.accent_color || '#2c7a3c', fillOpacity: 1
+          }).bindPopup('<strong>Current position</strong>' + (last.time ? '<br>' + last.time : '')).addTo(map);
+        })
+        .catch(function () {}); // no track published yet
+
+      // Stationary temperature sensor: one fixed location (sensor_location
+      // from clients/<slug>.json, falling back to the plot's own center if
+      // that hasn't been set yet), marker colored by the latest reading;
+      // popup lists the last few readings as plain text - a handful of
+      // points doesn't need a chart.
+      fetch('data/sensor_temperature.json', { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('no sensor_temperature.json yet'); return r.json(); })
+        .then(function (readings) {
+          readings = (readings || []).filter(function (r) { return typeof r.temperature_c === 'number'; });
+          if (!readings.length) return;
+
+          var loc = ready.meta.sensor_location || {
+            lat: (extent.south + extent.north) / 2,
+            lon: (extent.west + extent.east) / 2,
+          };
+          var latest = readings[readings.length - 1];
+          var recent = readings.slice(-5).reverse()
+            .map(function (r) { return (r.time || '') + ': ' + r.temperature_c + '&deg;C'; })
+            .join('<br>');
+
+          L.circleMarker([loc.lat, loc.lon], {
+            radius: 9, color: '#fff', weight: 2, fillColor: tempColor(latest.temperature_c), fillOpacity: 1
+          }).bindPopup('<strong>Temperature sensor</strong><br>' + recent).addTo(map);
+        })
+        .catch(function () {}); // no temperature feed published yet
+    }
+
+    // Exposed for later per-client work (e.g. driving this same map from
+    // other JS once the sensor feed's real ingestion shape is known).
     window.VerdantisPlotMap = map;
   });
 });

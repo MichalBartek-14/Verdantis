@@ -11,6 +11,8 @@
   "ndmi_dry_threshold": null,
   "accent_color": "#2f9e5c",
   "true_color_tif": null,
+  "live_sensor_feed": true,
+  "sensor_location": null,
   "i18n_overrides": {
     "en": {
       "index": {
