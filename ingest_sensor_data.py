@@ -59,10 +59,26 @@ format yet - see sensor_uploads/<slug>/track/'s README.
 Run:    python ingest_sensor_data.py --client <slug>
         python ingest_sensor_data.py --client <slug> --no-fetch   # local drops only, no network
         python ingest_sensor_data.py --all
+        python ingest_sensor_data.py --client <slug> --watch                  # poll every 20 min, foreground
+        python ingest_sensor_data.py --client <slug> --watch --interval 300   # custom interval (seconds)
+
+--watch runs run() in a loop, sleeping `--interval` seconds (default 1200 = 20 min)
+between polls, until Ctrl-C. Deliberately scoped to exactly what a single manual run
+already does - fetch + reparse local drops + rewrite outputs/<slug>/sensor_temperature.json
+- nothing more: no docs/ copy, no publish_site.py, no git commit/push. Per CLAUDE.md's
+"nothing here runs automatically" note, this is opt-in (you start it, e.g. in a terminal
+or as a Task Scheduler/systemd job) rather than anything wired into the pipeline by
+default - publishing the refreshed data to the live site is still a separate, manual
+`publish_site.py` + commit + push, same as ever. A single iteration's failure (a network
+blip, a malformed drop) is logged and swallowed so the loop keeps running rather than
+dying at 2am over one bad poll - same soft-fail contract as fetch_live_readings() already
+has for a single run.
 """
 import argparse
 import json
 import os
+import time
+import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -275,6 +291,29 @@ def run(client: dict, fetch: bool = True):
     print(f"  saved: {out_path} ({len(readings)} reading(s), {readings[0]['time']} to {readings[-1]['time']})")
 
 
+def watch(slugs: list[str], fetch: bool, interval: int):
+    """Foreground poll loop - run() for every slug, sleep `interval` seconds, repeat.
+    Each slug's clients/<slug>.json is reloaded every iteration (cheap, and picks up
+    edits without a restart). One slug's/iteration's exception is caught so a single
+    bad poll doesn't take the whole loop down - see module docstring's --watch note."""
+    print(f"=== watching {', '.join(slugs)} every {interval}s (Ctrl-C to stop) ===")
+    while True:
+        stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        print(f"\n--- poll @ {stamp} ---")
+        for slug in slugs:
+            try:
+                client = clients.load_client(slug)
+                run(client, fetch=fetch)
+            except Exception:
+                print(f"  {slug}: poll failed, will retry next interval:")
+                traceback.print_exc()
+        try:
+            time.sleep(interval)
+        except KeyboardInterrupt:
+            print("\nstopped.")
+            return
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     group = parser.add_mutually_exclusive_group(required=True)
@@ -282,9 +321,16 @@ if __name__ == "__main__":
     group.add_argument("--all", action="store_true", help="Ingest every client in clients/.")
     parser.add_argument("--no-fetch", action="store_true",
                          help="Skip the live API pull - parse only what's already in sensor_uploads/<slug>/temperature/.")
+    parser.add_argument("--watch", action="store_true",
+                         help="Keep running in the foreground, polling every --interval seconds instead of exiting after one pull.")
+    parser.add_argument("--interval", type=int, default=1200,
+                         help="Seconds between polls under --watch (default 1200 = 20 min).")
     args = parser.parse_args()
 
     slugs = clients.list_clients() if args.all else [args.client]
-    for slug in slugs:
-        client = clients.load_client(slug)  # validates the slug against clients/<slug>.json before touching any files
-        run(client, fetch=not args.no_fetch)
+    if args.watch:
+        watch(slugs, fetch=not args.no_fetch, interval=args.interval)
+    else:
+        for slug in slugs:
+            client = clients.load_client(slug)  # validates the slug against clients/<slug>.json before touching any files
+            run(client, fetch=not args.no_fetch)

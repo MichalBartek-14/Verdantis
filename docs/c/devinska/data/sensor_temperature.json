@@ -498,5 +498,505 @@
     "time": "2026-09-14T19:26:58Z",
     "temperature_c": 24.56,
     "soil_moisture": 2402.0
+  },
+  {
+    "time": "2026-09-20T10:37:01Z",
+    "temperature_c": 22.87,
+    "soil_moisture": 2581.0
+  },
+  {
+    "time": "2026-09-20T10:37:31Z",
+    "temperature_c": 22.87,
+    "soil_moisture": 2593.0
+  },
+  {
+    "time": "2026-09-20T10:38:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-20T10:38:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-20T10:39:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2593.0
+  },
+  {
+    "time": "2026-09-20T10:39:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-20T10:40:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2592.0
+  },
+  {
+    "time": "2026-09-20T10:40:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2588.0
+  },
+  {
+    "time": "2026-09-20T10:41:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2621.0
+  },
+  {
+    "time": "2026-09-20T10:41:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2604.0
+  },
+  {
+    "time": "2026-09-20T10:42:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2582.0
+  },
+  {
+    "time": "2026-09-20T10:42:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:43:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-20T10:43:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2583.0
+  },
+  {
+    "time": "2026-09-20T10:44:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:44:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2613.0
+  },
+  {
+    "time": "2026-09-20T10:45:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-20T10:45:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:46:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2597.0
+  },
+  {
+    "time": "2026-09-20T10:46:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-20T10:47:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-20T10:47:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:48:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2605.0
+  },
+  {
+    "time": "2026-09-20T10:48:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:49:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-20T10:49:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2662.0
+  },
+  {
+    "time": "2026-09-20T10:50:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-20T10:50:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2492.0
+  },
+  {
+    "time": "2026-09-20T10:51:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-20T10:51:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:52:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2583.0
+  },
+  {
+    "time": "2026-09-20T10:52:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-20T10:53:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:53:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2598.0
+  },
+  {
+    "time": "2026-09-20T10:54:01Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-20T10:54:31Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2683.0
+  },
+  {
+    "time": "2026-09-20T10:55:01Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2595.0
+  },
+  {
+    "time": "2026-09-20T10:55:31Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-20T11:12:44Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-20T11:14:07Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2513.0
+  },
+  {
+    "time": "2026-09-20T11:15:22Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2582.0
+  },
+  {
+    "time": "2026-09-20T11:15:55Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2599.0
+  },
+  {
+    "time": "2026-09-20T11:16:19Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2596.0
+  },
+  {
+    "time": "2026-09-20T11:18:03Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2594.0
+  },
+  {
+    "time": "2026-09-20T11:21:07Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-20T11:24:10Z",
+    "temperature_c": 22.94,
+    "soil_moisture": 2579.0
+  },
+  {
+    "time": "2026-09-20T11:27:09Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2606.0
+  },
+  {
+    "time": "2026-09-20T11:30:11Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-20T11:33:14Z",
+    "temperature_c": 23.06,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-20T11:36:13Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-20T11:39:16Z",
+    "temperature_c": 23.0,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-20T11:42:17Z",
+    "temperature_c": 23.06,
+    "soil_moisture": 2594.0
+  },
+  {
+    "time": "2026-09-20T11:45:21Z",
+    "temperature_c": 23.06,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-20T11:48:26Z",
+    "temperature_c": 23.12,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-21T16:30:55Z",
+    "temperature_c": 23.44,
+    "soil_moisture": 2594.0
+  },
+  {
+    "time": "2026-09-21T16:33:58Z",
+    "temperature_c": 23.44,
+    "soil_moisture": 2580.0
+  },
+  {
+    "time": "2026-09-21T16:37:02Z",
+    "temperature_c": 23.44,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-21T16:40:06Z",
+    "temperature_c": 23.5,
+    "soil_moisture": 2592.0
+  },
+  {
+    "time": "2026-09-21T16:43:10Z",
+    "temperature_c": 23.5,
+    "soil_moisture": 2580.0
+  },
+  {
+    "time": "2026-09-21T16:46:14Z",
+    "temperature_c": 23.5,
+    "soil_moisture": 2593.0
+  },
+  {
+    "time": "2026-09-21T16:49:18Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-21T16:52:22Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-21T16:55:26Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2653.0
+  },
+  {
+    "time": "2026-09-21T16:58:30Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-21T17:01:33Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2587.0
+  },
+  {
+    "time": "2026-09-21T17:04:37Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2585.0
+  },
+  {
+    "time": "2026-09-21T17:07:41Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-21T17:10:45Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2590.0
+  },
+  {
+    "time": "2026-09-21T17:13:49Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2582.0
+  },
+  {
+    "time": "2026-09-21T17:16:11Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2594.0
+  },
+  {
+    "time": "2026-09-21T17:19:14Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-21T17:22:18Z",
+    "temperature_c": 23.56,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-21T17:25:13Z",
+    "temperature_c": 24.06,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-21T17:28:17Z",
+    "temperature_c": 24.5,
+    "soil_moisture": 2547.0
+  },
+  {
+    "time": "2026-09-21T17:31:22Z",
+    "temperature_c": 24.81,
+    "soil_moisture": 2593.0
+  },
+  {
+    "time": "2026-09-21T17:34:18Z",
+    "temperature_c": 25.12,
+    "soil_moisture": 2597.0
+  },
+  {
+    "time": "2026-09-21T17:37:22Z",
+    "temperature_c": 25.37,
+    "soil_moisture": 2604.0
+  },
+  {
+    "time": "2026-09-21T17:40:26Z",
+    "temperature_c": 25.5,
+    "soil_moisture": 2607.0
+  },
+  {
+    "time": "2026-09-21T17:43:31Z",
+    "temperature_c": 25.69,
+    "soil_moisture": 2604.0
+  },
+  {
+    "time": "2026-09-21T17:46:34Z",
+    "temperature_c": 25.81,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-21T17:49:39Z",
+    "temperature_c": 25.94,
+    "soil_moisture": 2698.0
+  },
+  {
+    "time": "2026-09-21T17:52:43Z",
+    "temperature_c": 26.0,
+    "soil_moisture": 2599.0
+  },
+  {
+    "time": "2026-09-21T17:55:46Z",
+    "temperature_c": 26.12,
+    "soil_moisture": 2602.0
+  },
+  {
+    "time": "2026-09-21T17:58:51Z",
+    "temperature_c": 26.12,
+    "soil_moisture": 2603.0
+  },
+  {
+    "time": "2026-09-21T18:01:55Z",
+    "temperature_c": 26.31,
+    "soil_moisture": 2615.0
+  },
+  {
+    "time": "2026-09-21T18:04:59Z",
+    "temperature_c": 26.56,
+    "soil_moisture": 2607.0
+  },
+  {
+    "time": "2026-09-21T18:08:02Z",
+    "temperature_c": 26.69,
+    "soil_moisture": 2594.0
+  },
+  {
+    "time": "2026-09-21T18:11:06Z",
+    "temperature_c": 26.62,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-21T18:14:11Z",
+    "temperature_c": 26.5,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-21T18:17:14Z",
+    "temperature_c": 26.31,
+    "soil_moisture": 2598.0
+  },
+  {
+    "time": "2026-09-21T18:19:37Z",
+    "temperature_c": 26.25,
+    "soil_moisture": 2592.0
+  },
+  {
+    "time": "2026-09-21T18:22:41Z",
+    "temperature_c": 26.12,
+    "soil_moisture": 2591.0
+  },
+  {
+    "time": "2026-09-21T18:25:45Z",
+    "temperature_c": 26.0,
+    "soil_moisture": 2595.0
+  },
+  {
+    "time": "2026-09-21T18:28:49Z",
+    "temperature_c": 25.94,
+    "soil_moisture": 2586.0
+  },
+  {
+    "time": "2026-09-21T18:31:53Z",
+    "temperature_c": 25.88,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-21T18:34:56Z",
+    "temperature_c": 25.81,
+    "soil_moisture": 2595.0
+  },
+  {
+    "time": "2026-09-21T18:38:00Z",
+    "temperature_c": 25.75,
+    "soil_moisture": 2559.0
+  },
+  {
+    "time": "2026-09-21T18:41:05Z",
+    "temperature_c": 25.75,
+    "soil_moisture": 2589.0
+  },
+  {
+    "time": "2026-09-21T18:44:09Z",
+    "temperature_c": 25.69,
+    "soil_moisture": 2608.0
+  },
+  {
+    "time": "2026-09-21T18:47:12Z",
+    "temperature_c": 25.44,
+    "soil_moisture": 2590.0
   }
 ]
