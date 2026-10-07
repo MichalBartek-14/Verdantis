@@ -26,21 +26,21 @@
   },
   "alerts": {
     "title": "Vegetation break alerts",
-    "lede": "A separate branch from the moisture monitoring above: every available raw Sentinel-2 scene over a chosen bounding box (no compositing), decomposed with STL (trend + season + remainder) and searched for changepoints with ruptures' PELT - the same conceptual approach BFAST (Verbesselt et al.) is built on, via GPU-free, pip-installable libraries. Treat detected breaks as candidates to investigate, not calibrated alerts.",
+    "lede": "A separate branch from the moisture monitoring above: every available raw Sentinel-2 scene over a chosen bounding box (no compositing), deseasonalized against a fixed harmonic model of the normal Central-European vegetation year (so ordinary spring green-up and autumn senescence aren't mistaken for a break) and searched for changepoints in what's left with ruptures' PELT - the same conceptual approach BFAST (Verbesselt et al.) is built on, via GPU-free, pip-installable libraries. Treat detected breaks as candidates worth a field check, not confirmed events or calibrated alerts.",
     "loading": "Loading detected breaks&hellip;",
     "kpi_scenes": "Scenes in window",
     "kpi_years": "Years requested",
     "kpi_breaks": "Breaks detected",
     "kpi_penalty": "Penalty used",
     "table_title": "Break table",
-    "table_lede": "Each row is one detected changepoint in the trend component: the fitted trend level in the ~3 months before vs. after, and the resulting delta.",
+    "table_lede": "Each row is one candidate changepoint in the deseasonalized trend: the fitted trend level in the ~3 months before vs. after, and the resulting delta.",
     "th_date": "Date",
     "th_trend_before": "Trend before",
     "th_trend_after": "Trend after",
     "th_delta": "Delta",
     "th_read": "Read",
     "loading_row": "Loading&hellip;",
-    "note_html": "Pilot/precursor output across this whole page - none of these thresholds are calibrated against field data yet. BFAST-<em>style</em>, not the literal BFAST/R package. Bounding box, lookback window, and penalty scale are all set in <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>, <code>BFAST_PENALTY_SCALE</code>). Natural next step (see README): turn the recent-conditions feed into a scheduled job that persists each run and diffs against the previous one to generate real alerts."
+    "note_html": "BFAST-<em>style</em>, not the literal BFAST/R package. Bounding box, lookback window, and penalty scale are all set in <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>, <code>BFAST_PENALTY_SCALE</code>). Natural next step (see README): turn the recent-conditions feed into a scheduled job that persists each run and diffs against the previous one to generate real alerts."
   },
   "js": {
     "recent_status": "Composite period: {period} &middot; last published {date}",
@@ -57,8 +57,8 @@
     "no_breaks": "No structural breaks detected in this window.",
     "no_data_yet": "No data published yet.",
     "scale_prefix": "scale",
-    "vigour_increase": "Vigour increase",
-    "vigour_decrease": "Vigour drop - inspect for harvest/dieback",
+    "vigour_increase": "Trend rise - worth a look",
+    "vigour_decrease": "Trend drop - worth a look",
     "chart_alt": "Raw NDVI scatter, fitted trend, and detected breaks - {label}"
   }
 }

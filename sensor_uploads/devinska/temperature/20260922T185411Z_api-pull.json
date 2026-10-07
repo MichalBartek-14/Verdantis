@@ -1,0 +1,806 @@
+{
+  "sensor_type": "tempsensor",
+  "count": 100,
+  "data": [
+    {
+      "id": 1880,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.69,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T13:55:09+00:00"
+    },
+    {
+      "id": 1881,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.69,
+      "soil_moisture": 2604,
+      "date_time": "2026-09-22T13:58:13+00:00"
+    },
+    {
+      "id": 1882,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.62,
+      "soil_moisture": 2604,
+      "date_time": "2026-09-22T14:01:03+00:00"
+    },
+    {
+      "id": 1883,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.62,
+      "soil_moisture": 2606,
+      "date_time": "2026-09-22T14:04:07+00:00"
+    },
+    {
+      "id": 1884,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.56,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T14:07:11+00:00"
+    },
+    {
+      "id": 1885,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.56,
+      "soil_moisture": 2601,
+      "date_time": "2026-09-22T14:10:14+00:00"
+    },
+    {
+      "id": 1886,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.56,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T14:13:18+00:00"
+    },
+    {
+      "id": 1887,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.5,
+      "soil_moisture": 2606,
+      "date_time": "2026-09-22T14:16:22+00:00"
+    },
+    {
+      "id": 1888,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.5,
+      "soil_moisture": 2602,
+      "date_time": "2026-09-22T14:19:09+00:00"
+    },
+    {
+      "id": 1889,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.5,
+      "soil_moisture": 2607,
+      "date_time": "2026-09-22T14:22:10+00:00"
+    },
+    {
+      "id": 1890,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.44,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T14:25:13+00:00"
+    },
+    {
+      "id": 1891,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.44,
+      "soil_moisture": 2600,
+      "date_time": "2026-09-22T14:28:17+00:00"
+    },
+    {
+      "id": 1892,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.44,
+      "soil_moisture": 2594,
+      "date_time": "2026-09-22T14:31:21+00:00"
+    },
+    {
+      "id": 1893,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.37,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T14:34:25+00:00"
+    },
+    {
+      "id": 1894,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.37,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T14:37:28+00:00"
+    },
+    {
+      "id": 1895,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.37,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T14:40:32+00:00"
+    },
+    {
+      "id": 1896,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.37,
+      "soil_moisture": 2606,
+      "date_time": "2026-09-22T14:43:36+00:00"
+    },
+    {
+      "id": 1897,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.31,
+      "soil_moisture": 2598,
+      "date_time": "2026-09-22T14:46:39+00:00"
+    },
+    {
+      "id": 1898,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.31,
+      "soil_moisture": 2608,
+      "date_time": "2026-09-22T14:49:43+00:00"
+    },
+    {
+      "id": 1899,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.25,
+      "soil_moisture": 2605,
+      "date_time": "2026-09-22T14:52:47+00:00"
+    },
+    {
+      "id": 1900,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.25,
+      "soil_moisture": 2609,
+      "date_time": "2026-09-22T14:55:52+00:00"
+    },
+    {
+      "id": 1901,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.19,
+      "soil_moisture": 2602,
+      "date_time": "2026-09-22T14:58:56+00:00"
+    },
+    {
+      "id": 1902,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.19,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T15:01:24+00:00"
+    },
+    {
+      "id": 1903,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.13,
+      "soil_moisture": 2598,
+      "date_time": "2026-09-22T15:04:28+00:00"
+    },
+    {
+      "id": 1904,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.13,
+      "soil_moisture": 2596,
+      "date_time": "2026-09-22T15:07:25+00:00"
+    },
+    {
+      "id": 1905,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.06,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T15:10:29+00:00"
+    },
+    {
+      "id": 1906,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.06,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T15:13:33+00:00"
+    },
+    {
+      "id": 1907,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.06,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T15:16:29+00:00"
+    },
+    {
+      "id": 1908,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.0,
+      "soil_moisture": 2594,
+      "date_time": "2026-09-22T15:19:30+00:00"
+    },
+    {
+      "id": 1909,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 22.0,
+      "soil_moisture": 2605,
+      "date_time": "2026-09-22T15:22:34+00:00"
+    },
+    {
+      "id": 1910,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.94,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T15:25:38+00:00"
+    },
+    {
+      "id": 1911,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.94,
+      "soil_moisture": 2601,
+      "date_time": "2026-09-22T15:28:42+00:00"
+    },
+    {
+      "id": 1912,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.94,
+      "soil_moisture": 2593,
+      "date_time": "2026-09-22T15:31:45+00:00"
+    },
+    {
+      "id": 1913,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.87,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T15:34:49+00:00"
+    },
+    {
+      "id": 1914,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.87,
+      "soil_moisture": 2606,
+      "date_time": "2026-09-22T15:37:53+00:00"
+    },
+    {
+      "id": 1915,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.81,
+      "soil_moisture": 2601,
+      "date_time": "2026-09-22T15:40:57+00:00"
+    },
+    {
+      "id": 1916,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.81,
+      "soil_moisture": 2591,
+      "date_time": "2026-09-22T15:44:00+00:00"
+    },
+    {
+      "id": 1917,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.81,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T15:47:04+00:00"
+    },
+    {
+      "id": 1918,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.75,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T15:50:09+00:00"
+    },
+    {
+      "id": 1919,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.75,
+      "soil_moisture": 2587,
+      "date_time": "2026-09-22T15:53:13+00:00"
+    },
+    {
+      "id": 1920,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.75,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T15:56:17+00:00"
+    },
+    {
+      "id": 1921,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.75,
+      "soil_moisture": 2579,
+      "date_time": "2026-09-22T15:59:21+00:00"
+    },
+    {
+      "id": 1922,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.75,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T16:01:45+00:00"
+    },
+    {
+      "id": 1923,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.69,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T16:04:49+00:00"
+    },
+    {
+      "id": 1924,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.69,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T16:07:54+00:00"
+    },
+    {
+      "id": 1925,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.62,
+      "soil_moisture": 2603,
+      "date_time": "2026-09-22T16:10:58+00:00"
+    },
+    {
+      "id": 1926,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.62,
+      "soil_moisture": 2593,
+      "date_time": "2026-09-22T16:13:50+00:00"
+    },
+    {
+      "id": 1927,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.62,
+      "soil_moisture": 2594,
+      "date_time": "2026-09-22T16:16:55+00:00"
+    },
+    {
+      "id": 1928,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.62,
+      "soil_moisture": 2594,
+      "date_time": "2026-09-22T16:19:59+00:00"
+    },
+    {
+      "id": 1929,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.56,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T16:23:03+00:00"
+    },
+    {
+      "id": 1930,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.56,
+      "soil_moisture": 2608,
+      "date_time": "2026-09-22T16:25:56+00:00"
+    },
+    {
+      "id": 1931,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.56,
+      "soil_moisture": 2598,
+      "date_time": "2026-09-22T16:29:00+00:00"
+    },
+    {
+      "id": 1932,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.5,
+      "soil_moisture": 2602,
+      "date_time": "2026-09-22T16:32:04+00:00"
+    },
+    {
+      "id": 1933,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.5,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T16:34:58+00:00"
+    },
+    {
+      "id": 1934,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.5,
+      "soil_moisture": 2600,
+      "date_time": "2026-09-22T16:38:00+00:00"
+    },
+    {
+      "id": 1935,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.44,
+      "soil_moisture": 2594,
+      "date_time": "2026-09-22T16:41:04+00:00"
+    },
+    {
+      "id": 1936,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.44,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T16:44:08+00:00"
+    },
+    {
+      "id": 1937,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.44,
+      "soil_moisture": 2604,
+      "date_time": "2026-09-22T16:47:12+00:00"
+    },
+    {
+      "id": 1938,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2592,
+      "date_time": "2026-09-22T16:50:04+00:00"
+    },
+    {
+      "id": 1939,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T16:53:05+00:00"
+    },
+    {
+      "id": 1940,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2590,
+      "date_time": "2026-09-22T16:56:09+00:00"
+    },
+    {
+      "id": 1941,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2592,
+      "date_time": "2026-09-22T16:59:13+00:00"
+    },
+    {
+      "id": 1942,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T17:02:18+00:00"
+    },
+    {
+      "id": 1943,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2590,
+      "date_time": "2026-09-22T17:05:11+00:00"
+    },
+    {
+      "id": 1944,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.5,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T17:08:14+00:00"
+    },
+    {
+      "id": 1945,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.5,
+      "soil_moisture": 2596,
+      "date_time": "2026-09-22T17:11:18+00:00"
+    },
+    {
+      "id": 1946,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.5,
+      "soil_moisture": 2588,
+      "date_time": "2026-09-22T17:14:14+00:00"
+    },
+    {
+      "id": 1947,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.44,
+      "soil_moisture": 2590,
+      "date_time": "2026-09-22T17:17:15+00:00"
+    },
+    {
+      "id": 1948,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2598,
+      "date_time": "2026-09-22T17:20:18+00:00"
+    },
+    {
+      "id": 1949,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T17:23:16+00:00"
+    },
+    {
+      "id": 1950,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T17:26:20+00:00"
+    },
+    {
+      "id": 1951,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.37,
+      "soil_moisture": 2587,
+      "date_time": "2026-09-22T17:29:24+00:00"
+    },
+    {
+      "id": 1952,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.31,
+      "soil_moisture": 2589,
+      "date_time": "2026-09-22T17:32:28+00:00"
+    },
+    {
+      "id": 1953,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.31,
+      "soil_moisture": 2587,
+      "date_time": "2026-09-22T17:35:32+00:00"
+    },
+    {
+      "id": 1954,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.31,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T17:38:36+00:00"
+    },
+    {
+      "id": 1955,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.31,
+      "soil_moisture": 2607,
+      "date_time": "2026-09-22T17:41:40+00:00"
+    },
+    {
+      "id": 1956,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.25,
+      "soil_moisture": 2587,
+      "date_time": "2026-09-22T17:44:44+00:00"
+    },
+    {
+      "id": 1957,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.25,
+      "soil_moisture": 2592,
+      "date_time": "2026-09-22T17:47:47+00:00"
+    },
+    {
+      "id": 1958,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.25,
+      "soil_moisture": 2592,
+      "date_time": "2026-09-22T17:50:51+00:00"
+    },
+    {
+      "id": 1959,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.19,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T17:53:56+00:00"
+    },
+    {
+      "id": 1960,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.19,
+      "soil_moisture": 2598,
+      "date_time": "2026-09-22T17:56:59+00:00"
+    },
+    {
+      "id": 1961,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.19,
+      "soil_moisture": 2593,
+      "date_time": "2026-09-22T18:00:04+00:00"
+    },
+    {
+      "id": 1962,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.12,
+      "soil_moisture": 2599,
+      "date_time": "2026-09-22T18:03:08+00:00"
+    },
+    {
+      "id": 1963,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.12,
+      "soil_moisture": 2597,
+      "date_time": "2026-09-22T18:06:11+00:00"
+    },
+    {
+      "id": 1964,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.06,
+      "soil_moisture": 2589,
+      "date_time": "2026-09-22T18:08:34+00:00"
+    },
+    {
+      "id": 1965,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.12,
+      "soil_moisture": 2593,
+      "date_time": "2026-09-22T18:11:38+00:00"
+    },
+    {
+      "id": 1966,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.12,
+      "soil_moisture": 2591,
+      "date_time": "2026-09-22T18:14:42+00:00"
+    },
+    {
+      "id": 1967,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.06,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T18:17:46+00:00"
+    },
+    {
+      "id": 1968,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.06,
+      "soil_moisture": 2616,
+      "date_time": "2026-09-22T18:20:38+00:00"
+    },
+    {
+      "id": 1969,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.06,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T18:23:43+00:00"
+    },
+    {
+      "id": 1970,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.0,
+      "soil_moisture": 2608,
+      "date_time": "2026-09-22T18:26:47+00:00"
+    },
+    {
+      "id": 1971,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.0,
+      "soil_moisture": 2591,
+      "date_time": "2026-09-22T18:29:42+00:00"
+    },
+    {
+      "id": 1972,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 21.0,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T18:32:46+00:00"
+    },
+    {
+      "id": 1973,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.94,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T18:35:50+00:00"
+    },
+    {
+      "id": 1974,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.94,
+      "soil_moisture": 2595,
+      "date_time": "2026-09-22T18:38:54+00:00"
+    },
+    {
+      "id": 1975,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.94,
+      "soil_moisture": 2591,
+      "date_time": "2026-09-22T18:41:58+00:00"
+    },
+    {
+      "id": 1976,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.88,
+      "soil_moisture": 2593,
+      "date_time": "2026-09-22T18:45:01+00:00"
+    },
+    {
+      "id": 1977,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.88,
+      "soil_moisture": 2598,
+      "date_time": "2026-09-22T18:47:48+00:00"
+    },
+    {
+      "id": 1978,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.88,
+      "soil_moisture": 2592,
+      "date_time": "2026-09-22T18:50:52+00:00"
+    },
+    {
+      "id": 1979,
+      "sensor_id": "sensor02",
+      "location": "dnv",
+      "temperature": 20.88,
+      "soil_moisture": 2602,
+      "date_time": "2026-09-22T18:53:56+00:00"
+    }
+  ]
+}

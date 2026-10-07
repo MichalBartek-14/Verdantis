@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <title data-i18n="title">Sector Explorer - Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="icon" href="assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="assets/img/brand/logo-small.png">
 <link rel="stylesheet" href="assets/style.css">
 <style>
   /* Sector explorer - functional styling only; palette below is pinned to
@@ -27,10 +28,13 @@
     --seq-low:      #e8f0e6;
     --seq-high:     #1c4d27;
     --accent:       #2c7a3c;
-    --card-shadow:  0 6px 24px rgba(20, 35, 26, 0.08);
   }
 
-  .app { max-width: 1180px; margin: 0 auto; padding: 6px clamp(20px, 5vw, 56px) 60px; }
+  /* Top/bottom padding matches the shared .section rhythm (style.css) used
+     by historical.html/monitoring.html, so the spacing under .page-hero is
+     consistent across all three subpages - this page just keeps its own
+     distinct 2-column grid below instead of using .section itself. */
+  .app { max-width: 1180px; margin: 0 auto; padding: var(--space-8) clamp(20px, 5vw, 56px) var(--space-8); }
 
   main {
     display: grid;
@@ -42,12 +46,11 @@
     main { grid-template-columns: 1fr; }
   }
 
+  /* Card chrome (background/border/radius/shadow) now comes from the
+     shared .card rule in style.css - this only adds this page's own
+     positioning/padding delta. */
   .card {
     position: relative;
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    box-shadow: var(--card-shadow);
     padding: 18px;
   }
 
@@ -90,7 +93,7 @@
     background: var(--surface-1);
     border: 1px solid var(--border);
     border-radius: 6px;
-    box-shadow: var(--card-shadow);
+    box-shadow: var(--shadow);
     padding: 7px 10px;
     font-size: 12px;
     line-height: 1.5;
@@ -129,7 +132,7 @@
     background: var(--surface-1);
     border: 1px solid var(--border);
     border-radius: 6px;
-    box-shadow: var(--card-shadow);
+    box-shadow: var(--shadow);
     padding: 6px 10px;
     font-size: 12px;
     color: var(--text-primary);
@@ -649,5 +652,7 @@ window.VerdantisReady.then(function (ready) {
 });
 </script>
 
+<script src="assets/brand-logo.js"></script>
+<script>initBrandLogo('assets/img/brand/');</script>
 </body>
 </html>

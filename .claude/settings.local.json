@@ -6,7 +6,19 @@
       "Bash(python -u \"C:\\\\Users\\\\misko\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-misko-Documents-Michal-MyWork-FiguliJanko-forestry-pilot\\\\184fa294-48db-40f1-8a6c-9bf2b8495782\\\\scratchpad\\\\test_crs_fix.py\")",
       "Bash(python -c \"print\\('ok'\\)\")",
       "Bash(.venv/Scripts/python.exe -c \"import openeo,geopandas,rioxarray,ruptures,statsmodels; print\\('deps import fine'\\)\")",
-      "Bash(.venv/Scripts/python.exe -c ' *)"
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Bash(.venv/Scripts/python.exe render_true_color.py --all)",
+      "Bash(.venv/Scripts/python.exe publish_site.py --all)",
+      "Bash(\"/c/Users/misko/Documents/Michal/MyWork/Verdantis/forestry_pilot/.venv/Scripts/python.exe\" -m http.server 8123)",
+      "Bash(gh --version)",
+      "Bash(python check_translations.py)",
+      "Bash(./.venv/Scripts/python.exe -)",
+      "Bash(sed -i 's/page1\\\\.png/page1.jpg/g' docs/index.html docs/sk/index.html)",
+      "Bash(sed -i 's/page2-rgb\\\\.png/page2-rgb.jpg/g; s/page2-nir\\\\.png/page2-nir.jpg/g' docs/intro-2.html docs/sk/intro-2.html)",
+      "Bash(git add *)",
+      "Bash(git status *)",
+      "Bash(timeout 12 python -u ingest_sensor_data.py --client devinska --watch --interval 5 --no-fetch)",
+      "Bash(echo \"exit code: $?\")"
     ]
   }
 }

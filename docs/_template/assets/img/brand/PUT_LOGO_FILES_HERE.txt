@@ -1,0 +1,26 @@
+Drop the two Verdantis logo files in this folder, with these exact names:
+
+  logo-full.png    Full logo (icon + wordmark together) - shown top-left in
+                    every dashboard page's header, replacing the
+                    gradient-box + "Verdantis" text placeholder.
+                    Recommended: transparent background PNG, exported tall
+                    enough for retina (displayed at ~26px tall).
+
+  logo-small.png    Icon-only mark (no wordmark). Used as the browser tab
+                     favicon and mobile "add to home screen" icon for every
+                     client dashboard. Recommended: square, transparent
+                     background PNG, at least 512x512px.
+
+Both are picked up automatically once present - no code change needed.
+
+This copy is for the shared dashboard template - `publish_site.py` copies
+this whole assets/ folder verbatim into every docs/c/<slug>/assets/ on
+each publish, so add the files here (once) and re-run
+`python publish_site.py --all` to push them out to every client.
+
+The standalone briefing pages (docs/index.html etc., outside docs/c/) use
+a SEPARATE copy at docs/assets/img/brand/ (same two filenames) - see the
+matching PUT_LOGO_FILES_HERE.txt there. The two copies are kept apart
+deliberately so a published docs/c/<slug>/ stays fully self-contained if
+it's ever deployed independently of the rest of the site - add the same
+files to both folders.

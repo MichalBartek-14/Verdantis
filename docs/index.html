@@ -5,7 +5,8 @@
 <title>Verdantis - Satellite Intelligence Briefing</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Verdantis - what satellite land monitoring is, and what it can tell you about a forestry plot.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="icon" href="assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="assets/img/brand/logo-small.png">
 <link rel="stylesheet" href="_template/assets/style.css">
 <style>
   /* Standalone 3-page briefing shown before the client picker (plots.html).
@@ -56,7 +57,7 @@
     background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
     border-radius: 12px; padding: 16px 18px;
   }
-  .intro-card .icon { font-size: 1.3rem; line-height: 1; margin-top: 2px; }
+  .intro-card .icon { line-height: 1; margin-top: 2px; }
   .intro-card h3 { margin: 0 0 4px; font-size: 0.98rem; color: #f4f8f2; }
   .intro-card p { margin: 0; font-size: 0.88rem; color: rgba(244,248,242,0.75); }
 
@@ -92,25 +93,24 @@
     <h1>Your land, seen from <span>orbit</span>.</h1>
     <p class="tagline">
       Before you open a plot's dashboard, three short pages on what satellite
-      monitoring actually does: what it sees, how it sees things your own eyes
-      can't, and what that's good for when weather turns against you.
+      monitoring actually does.
     </p>
 
     <div class="card-row">
       <div class="intro-card">
-        <span class="icon">🛰️</span>
+        <span class="icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3a9 9 0 0 1 8 8"/><path d="M13 7a5 5 0 0 1 4 4"/><rect x="2.5" y="14.5" width="6" height="6" rx="1" transform="rotate(-45 5.5 17.5)"/><path d="M9.5 13.5 13 10"/><path d="m6 20-2 2"/></svg></span>
         <div><h3>A photo, but wider</h3>
           <p>One pass of the Sentinel-2 satellites images your entire plot boundary in a single
             frame - not just the tree line you can see from the access road.</p></div>
       </div>
       <div class="intro-card">
-        <span class="icon">🔁</span>
+        <span class="icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 19v-4h-4"/></svg></span>
         <div><h3>A photo, but repeated</h3>
           <p>The same plot gets re-imaged automatically every few days, for free, building a
             continuous record instead of a single site-visit snapshot.</p></div>
       </div>
       <div class="intro-card">
-        <span class="icon">👁️</span>
+        <span class="icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
         <div><h3>A photo, but deeper</h3>
           <p>The satellite doesn't just record colour - it measures light your eyes never
             register at all. That's page two.</p></div>
@@ -165,5 +165,7 @@
 })();
 </script>
 
+<script src="_template/assets/brand-logo.js"></script>
+<script>initBrandLogo('assets/img/brand/');</script>
 </body>
 </html>

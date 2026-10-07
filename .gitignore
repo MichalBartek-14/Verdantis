@@ -8,3 +8,4 @@ data/*
 secrets/*
 !secrets/README.md
 !secrets/.gitkeep
+.idea/

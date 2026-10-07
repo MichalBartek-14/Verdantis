@@ -11,5 +11,7 @@
     "south": 48.653452,
     "east": 19.792704,
     "north": 48.694045
-  }
+  },
+  "live_sensor_feed": false,
+  "sensor_location": null
 }

@@ -33,14 +33,14 @@
     "kpi_breaks": "Detegované zmeny",
     "kpi_penalty": "Použitá penalizácia",
     "table_title": "Tabuľka zmien",
-    "table_lede": "Každý riadok je jedna kandidátna zmena v trende zbavenom sezónnosti: hodnota trendu približne 3 mesiace pred a po, a výsledný rozdiel. Riadok je podnet na terénne preverenie, nie potvrdená udalosť.",
+    "table_lede": "Každý riadok je jedna kandidátna zmena v trende zbavenom sezónnosti: hodnota trendu približne 3 mesiace pred a po, a výsledný rozdiel.",
     "th_date": "Dátum",
     "th_trend_before": "Trend pred",
     "th_trend_after": "Trend po",
     "th_delta": "Rozdiel",
     "th_read": "Interpretácia",
     "loading_row": "Načítavam&hellip;",
-    "note_html": "Pilotný/predbežný výstup na celej tejto stránke - žiadna z týchto prahových hodnôt zatiaľ nie je kalibrovaná voči terénnym dátam. Ide o štýl <em>BFAST</em>, nie doslovný balík BFAST/R. Ohraničujúci obdĺžnik, dĺžka spätného obdobia a mierka penalizácie sa nastavujú v <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>, <code>BFAST_PENALTY_SCALE</code>). Prirodzený ďalší krok (pozri README): premeniť tok aktuálnych podmienok na naplánovanú úlohu, ktorá uchováva každý beh a porovnáva ho s predchádzajúcim, aby vznikli skutočné upozornenia."
+    "note_html": "Ide o štýl <em>BFAST</em>, nie doslovný balík BFAST/R. Ohraničujúci obdĺžnik, dĺžka spätného obdobia a mierka penalizácie sa nastavujú v <code>config.py</code> (<code>ALERT_BBOX</code>, <code>ALERT_YEARS</code>, <code>BFAST_PENALTY_SCALE</code>). Prirodzený ďalší krok (pozri README): premeniť tok aktuálnych podmienok na naplánovanú úlohu, ktorá uchováva každý beh a porovnáva ho s predchádzajúcim, aby vznikli skutočné upozornenia."
   },
   "js": {
     "recent_status": "Perióda kompozitu: {period} &middot; naposledy publikované {date}",

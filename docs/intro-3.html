@@ -5,7 +5,8 @@
 <title>From signal to warning - Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Verdantis - how satellite vegetation and moisture indices flag drought, flood, and storm damage on a forestry plot.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
+<link rel="icon" href="assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="assets/img/brand/logo-small.png">
 <link rel="stylesheet" href="_template/assets/style.css">
 <style>
   /* See docs/index.html's top-of-file comment for how this 3-page briefing
@@ -46,8 +47,11 @@
   }
   .scenario .icon {
     width: 52px; height: 52px; border-radius: 12px; background: var(--bg-alt);
-    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    display: flex; align-items: center; justify-content: center;
   }
+  .scenario:nth-child(1) .icon { color: var(--amber); }
+  .scenario:nth-child(2) .icon { color: var(--teal); }
+  .scenario:nth-child(3) .icon { color: var(--green-dark); }
   .scenario h3 { margin: 0 0 6px; font-size: 1.05rem; }
   .scenario p { margin: 0; color: var(--text-muted); font-size: 0.92rem; }
 
@@ -88,11 +92,11 @@
   <span class="eyebrow">Satellite intelligence briefing &middot; 3 of 3</span>
   <h1>From signal to warning</h1>
   <p class="lede">Tracked continuously across an entire plot, the vigour and moisture signals from
-    page two stop being curiosities and start being an early-warning system.</p>
+    page two become an early-warning system.</p>
 
   <div class="scenario-list">
     <div class="scenario">
-      <span class="icon">🌵</span>
+      <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M3.5 12h3M17.5 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></span>
       <div>
         <h3>Drought</h3>
         <p>Canopy and soil moisture (NDWI/NDMI) start dropping weeks before a tree visibly wilts.
@@ -101,7 +105,7 @@
       </div>
     </div>
     <div class="scenario">
-      <span class="icon">🌊</span>
+      <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11Z"/></svg></span>
       <div>
         <h3>Flood &amp; waterlogging</h3>
         <p>A sudden shift in the moisture indices, localised to specific sectors of the plot,
@@ -110,7 +114,7 @@
       </div>
     </div>
     <div class="scenario">
-      <span class="icon">⛈️</span>
+      <span class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span>
       <div>
         <h3>Storms &amp; severe weather</h3>
         <p>Structural break detection in the vigour record (BFAST-style) flags a real, lasting
@@ -123,7 +127,7 @@
   <div class="closing">
     <p>Everything on the next pages - the <strong>Historical Pilot</strong>, the
       <strong>Sector Explorer</strong>, and <strong>Monitoring &amp; Alerts</strong> - is built
-      from exactly these signals, for your plot specifically.</p>
+      from exactly these signals.</p>
   </div>
 </div>
 
@@ -135,5 +139,7 @@
   <a class="btn btn-primary" href="plots.html" style="margin-left:6px;">Choose your plot &rarr;</a>
 </div>
 
+<script src="_template/assets/brand-logo.js"></script>
+<script>initBrandLogo('assets/img/brand/');</script>
 </body>
 </html>
