@@ -93,10 +93,12 @@ JSON patch template wording without touching the shared template (e.g. "forestry
 `client_meta.json`'s `plot_bounds` (plain bbox, always present) so the map itself is
 never gated on the separate true-color-photo pipeline having run yet.
 
-**The 3-page intro briefing** (`docs/index.html` + `intro-2.html` + `intro-3.html`,
-Slovak translation under `docs/sk/`) is deliberately outside `_template/` - hand-written,
-no per-client data, no i18n system, one copy per language kept structurally in sync by
-hand. It's what a visitor sees before picking a client on `plots.html`.
+**The 3-page intro briefing** (`docs/briefing/index.html` + `intro-2.html` +
+`intro-3.html`, Slovak translation under `docs/briefing/sk/`) is deliberately outside
+`_template/` - hand-written, no per-client data, no i18n system, one copy per language
+kept structurally in sync by hand. It's one of three sections linked from the
+`docs/index.html` hub (alongside `docs/clients/` - the client picker - and
+`docs/sensors/`), reachable before picking a client on `docs/clients/index.html`.
 
 **Data isolation is a hosting concern, not a code one**: every client's `docs/c/<slug>/`
 is meant to be access-controlled independently in production (Netlify Edge Function

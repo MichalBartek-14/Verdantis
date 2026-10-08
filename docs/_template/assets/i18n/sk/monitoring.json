@@ -2,7 +2,7 @@
   "title": "Monitoring a upozornenia - Verdantis",
   "hero": {
     "h1": "Aktuálne podmienky &amp; upozornenia na zmeny vegetácie",
-    "intro_html": "Všetko, čo nie je súčasťou viacročného historického prehľadu, je tu: najnovší týždenný záznam podmienok, posúvateľný mesačný pohľad na posledný rok a detekcia štrukturálnych zmien v surovom (nekompozitnom) rade NDVI. Všetky tri sú dátové zdroje, nie hotové produkty upozornení - čísla nižšie sa publikujú ručne vždy, keď sa po čerstvom lokálnom behu znovu spustí <code>publish_site.py</code>, nejde o priame načítanie z backendu."
+    "intro_html": "Najnovší týždenný záznam podmienok, mapy sucha/straty vody parcely z historickej analýzy, a detekcia štrukturálnych zmien v surovom (nekompozitnom) rade NDVI. Žiadne z toho nie sú hotové produkty upozornení - čísla nižšie sa publikujú ručne vždy, keď sa po čerstvom lokálnom behu znovu spustí <code>publish_site.py</code>, nejde o priame načítanie z backendu."
   },
   "recent": {
     "title": "Aktuálne podmienky",
@@ -19,10 +19,15 @@
     "ndwi_caption": "Ukazovateľ vlhkosti, široké NIR.",
     "ndmi_caption": "Ukazovateľ vlhkosti, úzke NIR."
   },
-  "imagery": {
-    "title": "Mesačné snímky, posledný rok",
-    "lede": "Kompozity NDVI/NDWI/NDMI za celú parcelu, posúvanie mesiac po mesiaci - rovnaké 12-mesačné okno ako možnosť \"Posledný rok\" v Prieskumníkovi sektorov, presunuté sem, keďže ide o jeden časový rad, nie rozpad po sektoroch.",
-    "loading": "Načítavam mesačné snímky&hellip;"
+  "dryness": {
+    "title": "Kde parcela najviac stráca vodu",
+    "lede": "Frekvencia sucha na úrovni pixelov (% mesiacov pod prahovou hodnotou) a intenzita deficitu (ako výrazné bolo sucho v mesiacoch, keď nastalo) - mapa frekvencie dopĺňa mapu intenzity: sektor môže byť suchý často, no mierne, alebo zriedka, no výrazne.",
+    "freq_title": "Frekvencia sucha (NDWI)",
+    "freq_desc": "% platných mesiacov, kedy bol daný pixel klasifikovaný ako \"suchý\".",
+    "ndwi_map_title": "Mapa straty vody (NDWI)",
+    "ndwi_map_desc": "Frekvencia + priemerná intenzita deficitu, vedľa seba.",
+    "ndmi_map_title": "Mapa straty vody (NDMI)",
+    "ndmi_map_desc": "Rovnaká analýza, index s úzkym NIR pásmom - porovnajte s verziou NDWI."
   },
   "alerts": {
     "title": "Upozornenia na zmeny vegetácie",
@@ -47,9 +52,6 @@
     "recent_error": "Nepodarilo sa načítať najnovší prehľad (data/drought_summary_latest.json) - spustite publish_site.py po ďalšom behu drought_monitor_recent.py.",
     "period_week": "týždeň",
     "threshold_prefix": "Prah NDWI",
-    "imagery_status": "{count} mesiacov, {first} až {last}",
-    "imagery_error": "Nepodarilo sa načítať data/monthly_imagery.json - spustite build_sector_explorer_data.py a následne publish_site.py.",
-    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"],
     "window_full": "Celá história",
     "window_last_year": "Posledný rok",
     "alert_status": "{label} &middot; bbox [{bbox}]",

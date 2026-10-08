@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sensors &amp; Services - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Verdantis - a live field-sensor capability demo, alongside the satellite-based monitoring pilot.">
+<link rel="icon" href="../assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="../assets/img/brand/logo-small.png">
+<link rel="stylesheet" href="../_template/assets/style.css">
+<!-- Leaflet, for the plot-location map below (see #plotMap) - same tags/
+     SRI hashes as docs/_template/index.html's own copy of this map. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+  /* Hand-written placeholder page, like docs/briefing/ - deliberately NOT
+     wired through _template/assets/client.js (that script's whole
+     contract assumes a real per-client tree; faking a client_meta.json +
+     i18n page for this one standalone page would be unnecessary
+     plumbing). Hardcodes Devinska's own already-public plot_bounds/
+     accent_color below instead - see the script at the bottom. */
+  body { background: var(--bg); }
+  .sensors-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px clamp(20px, 5vw, 56px);
+  }
+  .sensors-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
+  .sensors-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
+  .sensors-body { max-width: 900px; margin: 0 auto; padding: 10px clamp(20px, 5vw, 56px) 60px; }
+  .sensors-body .eyebrow { display: block; margin-bottom: 10px; }
+  .sensors-body h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 14px; }
+  .sensors-body > p.lede { color: var(--text-muted); max-width: 68ch; font-size: 1.05rem; margin: 0 0 30px; }
+</style>
+</head>
+<body>
+
+<div class="sensors-topbar">
+  <a class="brand" href="../index.html"><span class="mark"></span> Verdantis</a>
+</div>
+
+<div class="sensors-body">
+  <span class="eyebrow">Verdantis</span>
+  <h1>Sensors &amp; Services</h1>
+  <p class="lede">A live field-sensor reading from the Devinska Nova Ves pilot plot, shown
+    here as a public demo of the capability - more services for this section are planned.</p>
+
+  <div id="plotMap" class="plot-map" style="display:none;"></div>
+  <p class="note" id="plotMapFallback">The live sensor map isn't available right now.</p>
+</div>
+
+<script>
+(function () {
+  // Hardcoded, not fetched from docs/c/devinska/ - that tree is Basic-Auth
+  // protected (netlify/edge-functions/protect-clients.js, prefix "/c/*"),
+  // so this page carries its own public copy/values, fully decoupled from
+  // the protected client dashboard. Values match clients/devinska.json +
+  // docs/c/devinska/data/client_meta.json as of this writing.
+  var PLOT_BOUNDS = { west: 16.976556, south: 48.218328, east: 16.991429, north: 48.227495 };
+  var ACCENT = '#2f9e5c';
+  var SENSOR_LOCATION = null; // falls back to the plot-bbox center, same as production
+
+  var latLngBounds = [[PLOT_BOUNDS.south, PLOT_BOUNDS.west], [PLOT_BOUNDS.north, PLOT_BOUNDS.east]];
+
+  document.getElementById('plotMapFallback').style.display = 'none';
+  document.getElementById('plotMap').style.display = '';
+
+  var map = L.map('plotMap', { scrollWheelZoom: false });
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  L.rectangle(latLngBounds, { color: ACCENT, weight: 2, fill: true, fillOpacity: 0.12, dashArray: '6 4' }).addTo(map);
+  map.fitBounds(latLngBounds, { padding: [40, 40] });
+
+  // Cold blue -> hot amber-red over a FIXED outdoor-temperature range, same
+  // gradient as docs/_template/index.html's live-sensor marker.
+  function tempColor(t) {
+    if (typeof t !== 'number') return '#999';
+    var f = (t - -10) / (35 - -10);
+    f = Math.max(0, Math.min(1, f));
+    var cold = [31, 122, 140], hot = [192, 57, 43];
+    var c = cold.map(function (v, i) { return Math.round(v + (hot[i] - v) * f); });
+    return 'rgb(' + c.join(',') + ')';
+  }
+
+  // No sensor_track.json published for Devinska yet - fetch omitted here
+  // entirely (same skip-cleanly-if-absent outcome docs/_template/index.html
+  // gets via a 404-tolerant fetch, just without the extra request).
+
+  fetch('data/sensor_temperature.json', { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('no sensor_temperature.json'); return r.json(); })
+    .then(function (readings) {
+      readings = (readings || []).filter(function (r) { return typeof r.temperature_c === 'number'; });
+      if (!readings.length) return;
+
+      var loc = SENSOR_LOCATION || {
+        lat: (PLOT_BOUNDS.south + PLOT_BOUNDS.north) / 2,
+        lon: (PLOT_BOUNDS.west + PLOT_BOUNDS.east) / 2,
+      };
+      var latest = readings[readings.length - 1];
+      var recent = readings.slice(-5).reverse()
+        .map(function (r) { return (r.time || '') + ': ' + r.temperature_c + '&deg;C'; })
+        .join('<br>');
+
+      L.circleMarker([loc.lat, loc.lon], {
+        radius: 9, color: '#fff', weight: 2, fillColor: tempColor(latest.temperature_c), fillOpacity: 1
+      }).bindPopup('<strong>Temperature sensor</strong><br>' + recent).addTo(map);
+    })
+    .catch(function () {}); // no temperature feed published - map still shows the plot outline
+})();
+</script>
+
+<script src="../_template/assets/brand-logo.js"></script>
+<script>initBrandLogo('../assets/img/brand/');</script>
+</body>
+</html>

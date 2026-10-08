@@ -2,7 +2,7 @@
   "title": "Historical Pilot - Verdantis",
   "hero": {
     "h1": "The client-facing pilot deliverable",
-    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a two-panel dryness map (frequency + magnitude) for both NDWI and NDMI, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
+    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a scrubbable month-by-month imagery view of the last year, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
   },
   "timeseries": {
     "title": "Time series (plot-average, monthly)",
@@ -14,15 +14,10 @@
     "ndmi_title": "NDMI",
     "ndmi_desc": "Moisture proxy, narrow-NIR (Sentinel Hub standard) formulation."
   },
-  "dryness": {
-    "title": "Where the plot loses water most",
-    "lede": "Per-pixel dryness frequency (% of months below threshold) and deficit magnitude (how badly, on the months it was dry) - the frequency map complements the magnitude map: a sector can be dry often but mildly, or rarely but severely.",
-    "freq_title": "Dryness frequency (NDWI)",
-    "freq_desc": "% of valid months each pixel was classified \"dry\".",
-    "ndwi_map_title": "Water-loss map (NDWI)",
-    "ndwi_map_desc": "Frequency + average deficit magnitude, side by side.",
-    "ndmi_map_title": "Water-loss map (NDMI)",
-    "ndmi_map_desc": "Same analysis, narrow-NIR index - compare against the NDWI version."
+  "imagery": {
+    "title": "Monthly imagery, last year",
+    "lede": "Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same 12-month window as the Sector Explorer's \"Last year\" option, shown here since it's a single time series rather than a per-sector breakdown.",
+    "loading": "Loading monthly imagery&hellip;"
   },
   "weather": {
     "title": "Moisture vs. weather",
@@ -32,5 +27,10 @@
     "precip_title": "NDWI &amp; ERA5 precipitation, monthly",
     "precip_desc": "Pearson r &asymp; 0.32 (NDWI) and &asymp; 0.33 (NDMI) vs. total monthly precipitation over the full history - positive as expected (wetter months, higher NDWI), weaker than the temperature correlation above since a single month's rain total is a noisier proxy for canopy/soil moisture than temperature is."
   },
-  "note_html": "Every threshold and correlation on this page is a pilot starting point. NDWI/NDMI \"dry\" thresholds (0.10 here) and the cloud-mask kernel sizes are copied from documented defaults, not independently tuned for this plot's species or soil - see the project README before using any number to drive a real decision."
+  "note_html": "Every threshold and correlation on this page is a pilot starting point. NDWI/NDMI \"dry\" thresholds (0.10 here) and the cloud-mask kernel sizes are copied from documented defaults, not independently tuned for this plot's species or soil - see the project README before using any number to drive a real decision.",
+  "js": {
+    "imagery_status": "{count} months, {first} to {last}",
+    "imagery_error": "Could not load data/monthly_imagery.json - run build_sector_explorer_data.py then publish_site.py.",
+    "month_names": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+  }
 }

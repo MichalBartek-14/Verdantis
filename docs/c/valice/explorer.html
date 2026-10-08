@@ -7,6 +7,17 @@
 <link rel="icon" href="assets/img/brand/logo-small.png">
 <link rel="apple-touch-icon" href="assets/img/brand/logo-small.png">
 <link rel="stylesheet" href="assets/style.css">
+<!-- Leaflet, for the geographic sector-grid overlay further down this page
+     (see #sectorMap below) - same tags/SRI hashes as docs/_template/index.html's
+     plot-location map, but this page only ever shows the plain OSM basemap
+     (no true-color photo layer) with the sector grid drawn semi-transparent
+     on top of it. Only instantiated when the published sector_explorer_data.json
+     carries a grid.bounds field (see the hasGeoBounds check in the script below);
+     harmless to load unconditionally otherwise. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
   /* Sector explorer - functional styling only; palette below is pinned to
      the site's light theme (docs/assets/style.css) rather than following
@@ -83,6 +94,27 @@
 
   #gridWrap { position: relative; width: 100%; }
   #sectorCanvas { width: 100%; height: auto; display: block; border-radius: 6px; cursor: pointer; }
+  /* Geo mode (grid.bounds present in sector_explorer_data.json): #sectorMap
+     hosts the plain Leaflet/OSM basemap underneath, and the canvas switches
+     to absolute positioning so initGeoMode() can pin it exactly over
+     grid.bounds' on-screen projection (see the script below) - everything
+     else about the canvas (drawGrid/cellFromEvent/tooltips/click) is
+     unchanged, it just reads its size/position from different CSS rules
+     once geo mode is on, and drawGrid() fills cells semi-transparently
+     (GEO_CELL_ALPHA) so the basemap stays visible underneath.
+
+     z-index is NOT optional here: #sectorMap and #gridWrap are both plain
+     position:relative with no z-index of their own, so neither establishes
+     a stacking context - which means Leaflet's internal .leaflet-map-pane
+     (z-index:400, and itself stacking-context-forming via its own pan
+     transform) escapes straight past both of them and would otherwise
+     outrank the canvas's implicit z-index:auto regardless of DOM order,
+     burying the sectors under the tiles. 500 clears every Leaflet pane
+     (tile 200, overlay/map-pane 400, shadow 500, marker 600) while staying
+     under the control layer (1000) so the zoom +/- buttons stay clickable
+     if the canvas ever overlaps that corner. */
+  #sectorMap { border-radius: 6px; }
+  #gridWrap.geo-mode #sectorCanvas { position: absolute; width: auto; height: auto; aspect-ratio: auto; z-index: 500; }
 
   .legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 11.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .legend .ramp { flex: 1; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--seq-low), var(--seq-high)); }
@@ -155,7 +187,7 @@
 
 <header class="site-header">
   <div class="brand-group">
-    <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+    <a class="brand" href="../../index.html"><span class="mark"></span> Verdantis</a>
     <span class="client-badge" data-client-display-name data-i18n="badge.default">Pilot</span>
   </div>
   <nav class="site-nav">
@@ -163,7 +195,7 @@
     <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
     <a href="explorer.html" aria-current="page" data-i18n="nav.explorer">Sector Explorer</a>
     <a href="monitoring.html" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
-    <a href="../../index.html" class="nav-briefing" data-briefing-link data-i18n="nav.briefing">Satellite Briefing</a>
+    <a href="../../briefing/index.html" class="nav-briefing" data-briefing-link data-i18n="nav.briefing">Satellite Briefing</a>
   </nav>
 </header>
 
@@ -194,6 +226,7 @@
         </div>
       </div>
       <div id="gridWrap">
+        <div id="sectorMap" class="plot-map" style="display:none;"></div>
         <canvas id="sectorCanvas"></canvas>
         <div class="cell-tooltip" id="cellTooltip"></div>
       </div>
@@ -255,6 +288,9 @@ window.VerdantisReady.then(function (ready) {
   var t = ready.t;
   fetch("data/sector_explorer_data.json").then(function (r) { return r.json(); }).then(function (DATA) {
   var grid = DATA.grid;
+  var hasGeoBounds = grid.bounds &&
+    typeof grid.bounds.west === "number" && typeof grid.bounds.south === "number" &&
+    typeof grid.bounds.east === "number" && typeof grid.bounds.north === "number";
 
   // ---------- shared state ----------
   var currentMetric = "freq_pct";
@@ -346,6 +382,8 @@ window.VerdantisReady.then(function (ready) {
   var tooltipEl = document.getElementById("cellTooltip");
   var selected = null; // {row, col} or null = whole plot
   var CELL = 20; // logical px per sector cell
+  var geoMode = false; // true once initGeoMode() runs - see drawGrid()'s fill branch below
+  var GEO_CELL_ALPHA = 0.3; // 70% transparent, so the basemap underneath stays legible
 
   function metricLabel(metric) {
     return metric === "freq_pct" ? t("js.metric_freq_unit") : t("js.metric_deficit", { index: currentIndex.toUpperCase() });
@@ -376,9 +414,12 @@ window.VerdantisReady.then(function (ready) {
         var x = col * CELL, y = row * CELL;
         // null covers both "no sector here at all" and "sector exists but has
         // no valid pixel in the currently-selected time window" - both render
-        // the same (blank) way, since neither has a value to color by.
+        // the same way: opaque white on the abstract (no-map) grid, or fully
+        // see-through in geo mode so the basemap shows through untouched
+        // where there's nothing to color.
         var v = s ? s[key] : null;
         if (v === null || v === undefined) {
+          if (geoMode) continue;
           ctx.fillStyle = t.surface1;
           ctx.fillRect(x, y, CELL, CELL);
           continue;
@@ -386,7 +427,12 @@ window.VerdantisReady.then(function (ready) {
         var norm = range[1] > range[0] ? (v - range[0]) / (range[1] - range[0]) : 0;
         norm = Math.max(0, Math.min(1, norm));
         ctx.fillStyle = lerpColor(t.seqLow, t.seqHigh, norm);
+        // Geo mode: 70% transparent so the basemap underneath (roads, place
+        // names, the plot's real surroundings) stays visible through the
+        // sector color, rather than fully hiding it as on the abstract grid.
+        ctx.globalAlpha = geoMode ? GEO_CELL_ALPHA : 1;
         ctx.fillRect(x, y, CELL, CELL);
+        ctx.globalAlpha = 1;
       }
     }
 
@@ -635,6 +681,61 @@ window.VerdantisReady.then(function (ready) {
     renderDetail(selected ? sectorByKey[selected.row + "," + selected.col] : null);
   }
 
+  // ---------- geo mode: plain Leaflet/OSM basemap under the existing
+  // canvas (no true-color photo layer - just the default basemap), with
+  // the canvas repositioned (not redrawn) to match grid.bounds' on-screen
+  // projection and its cells drawn semi-transparent (see drawGrid's
+  // geoMode branch) so the basemap underneath stays legible through the
+  // sector colors. Only runs when the published sector_explorer_data.json
+  // carries a grid.bounds field - see hasGeoBounds above; older data with
+  // no bounds key leaves this unused and the page behaves exactly as it
+  // did before geo mode existed. ----------
+  function initGeoMode(bounds) {
+    geoMode = true;
+    wrap.classList.add("geo-mode");
+    var mapEl = document.getElementById("sectorMap");
+    mapEl.style.display = "";
+
+    var map = L.map("sectorMap", { scrollWheelZoom: false });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors"
+    }).addTo(map);
+    // mapEl was display:none until just above - Leaflet can cache a stale/zero
+    // container size from construction time in that case, which would throw
+    // off fitBounds' zoom AND every latLngToContainerPoint() call below it.
+    // invalidateSize() forces Leaflet to re-measure the now-visible container
+    // before any of that math runs (same fix _template/index.html's plot map
+    // doesn't need, since it isn't repositioning a sibling element by pixel
+    // coordinates the way positionCanvasOverlay() below does).
+    map.invalidateSize();
+
+    var gridLatLngBounds = [[bounds.south, bounds.west], [bounds.north, bounds.east]];
+    // animate:false - this is the map's first (and only programmatic) view
+    // change, so there's nothing to transition from; keeping it synchronous
+    // means latLngToContainerPoint below reflects the final view immediately
+    // rather than racing a pan/zoom CSS transition.
+    map.fitBounds(gridLatLngBounds, { padding: [20, 20], animate: false });
+
+    function positionCanvasOverlay() {
+      var nw = map.latLngToContainerPoint([bounds.north, bounds.west]);
+      var se = map.latLngToContainerPoint([bounds.south, bounds.east]);
+      canvas.style.left = nw.x + "px";
+      canvas.style.top = nw.y + "px";
+      canvas.style.width = (se.x - nw.x) + "px";
+      canvas.style.height = (se.y - nw.y) + "px";
+    }
+    positionCanvasOverlay();
+    // Belt-and-suspenders: re-run once more after the browser's next paint,
+    // in case anything (tile images loading in, font metrics, scrollbar
+    // appearing) nudged the container's layout a frame later than
+    // fitBounds/invalidateSize already accounted for.
+    requestAnimationFrame(positionCanvasOverlay);
+    map.on("move zoom resize", positionCanvasOverlay);
+    window.addEventListener("resize", function () { map.invalidateSize(); positionCanvasOverlay(); });
+    drawGrid(); // redraw now that geoMode is true, so cell fills switch to the transparent variant
+  }
+
   rebuildSectorIndex();
   rebuildMetricRange();
   layout();
@@ -644,6 +745,7 @@ window.VerdantisReady.then(function (ready) {
   renderDetail(null);
 
   window.addEventListener("resize", function () { layout(); drawGrid(); });
+  if (hasGeoBounds) initGeoMode(grid.bounds);
   }).catch(function (err) {
     document.getElementById("tabSector").innerHTML =
       '<p class="empty-state">' + t("js.load_error") + '</p>';

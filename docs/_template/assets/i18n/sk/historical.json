@@ -2,7 +2,7 @@
   "title": "Historický prehľad - Verdantis",
   "hero": {
     "h1": "Výstup pilotného projektu pre klienta",
-    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, dvojpanelová mapa sucha (frekvencia + intenzita) pre NDWI aj NDMI, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
+    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, posúvateľný mesačný pohľad na posledný rok, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
   },
   "timeseries": {
     "title": "Časové rady (priemer za parcelu, mesačne)",
@@ -14,15 +14,10 @@
     "ndmi_title": "NDMI",
     "ndmi_desc": "Ukazovateľ vlhkosti, formulácia s úzkym NIR pásmom (štandard Sentinel Hub)."
   },
-  "dryness": {
-    "title": "Kde parcela najviac stráca vodu",
-    "lede": "Frekvencia sucha na úrovni pixelov (% mesiacov pod prahovou hodnotou) a intenzita deficitu (ako výrazné bolo sucho v mesiacoch, keď nastalo) - mapa frekvencie dopĺňa mapu intenzity: sektor môže byť suchý často, no mierne, alebo zriedka, no výrazne.",
-    "freq_title": "Frekvencia sucha (NDWI)",
-    "freq_desc": "% platných mesiacov, kedy bol daný pixel klasifikovaný ako \"suchý\".",
-    "ndwi_map_title": "Mapa straty vody (NDWI)",
-    "ndwi_map_desc": "Frekvencia + priemerná intenzita deficitu, vedľa seba.",
-    "ndmi_map_title": "Mapa straty vody (NDMI)",
-    "ndmi_map_desc": "Rovnaká analýza, index s úzkym NIR pásmom - porovnajte s verziou NDWI."
+  "imagery": {
+    "title": "Mesačné snímky, posledný rok",
+    "lede": "Kompozity NDVI/NDWI/NDMI za celú parcelu, posúvanie mesiac po mesiaci - rovnaké 12-mesačné okno ako možnosť \"Posledný rok\" v Prieskumníkovi sektorov, zobrazené tu, keďže ide o jeden časový rad, nie rozpad po sektoroch.",
+    "loading": "Načítavam mesačné snímky&hellip;"
   },
   "weather": {
     "title": "Vlhkosť vs. počasie",
@@ -32,5 +27,10 @@
     "precip_title": "NDWI &amp; zrážky ERA5, mesačne",
     "precip_desc": "Pearsonovo r &asymp; 0,32 (NDWI) a &asymp; 0,33 (NDMI) voči mesačnému úhrnu zrážok za celú históriu - pozitívne, ako sa dalo očakávať (vlhkejšie mesiace, vyššie NDWI), slabšie ako korelácia s teplotou vyššie, keďže úhrn zrážok za jeden mesiac je zašumenejším ukazovateľom vlhkosti korún/pôdy než teplota."
   },
-  "note_html": "Každá prahová hodnota a korelácia na tejto stránke je iba pilotný východiskový bod. Prahové hodnoty \"sucha\" pre NDWI/NDMI (tu 0,10) aj veľkosti jadier pre maskovanie oblačnosti sú prevzaté z dokumentovaných predvolených hodnôt, nie samostatne kalibrované pre druhové zloženie či pôdu tejto parcely - pred použitím akéhokoľvek čísla na reálne rozhodovanie si pozrite README projektu."
+  "note_html": "Každá prahová hodnota a korelácia na tejto stránke je iba pilotný východiskový bod. Prahové hodnoty \"sucha\" pre NDWI/NDMI (tu 0,10) aj veľkosti jadier pre maskovanie oblačnosti sú prevzaté z dokumentovaných predvolených hodnôt, nie samostatne kalibrované pre druhové zloženie či pôdu tejto parcely - pred použitím akéhokoľvek čísla na reálne rozhodovanie si pozrite README projektu.",
+  "js": {
+    "imagery_status": "{count} mesiacov, {first} až {last}",
+    "imagery_error": "Nepodarilo sa načítať data/monthly_imagery.json - spustite build_sector_explorer_data.py a následne publish_site.py.",
+    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"]
+  }
 }

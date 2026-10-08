@@ -26,6 +26,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from rasterio.warp import transform_bounds
 
 import config
 from utils.plot_geometry import load_plot
@@ -96,6 +97,18 @@ def build():
     ds = open_cube(config.OUTPUT_DIR / "monthly_ndvi_ndwi_ndmi.nc")
     plot_gdf = load_plot(config.PLOT_SHAPEFILE)
     ds_clipped = clip_to_geometry(ds, plot_gdf)
+
+    # WGS84 bounds of the CLIPPED cube's own raster grid (the plot bbox +
+    # buffer the cube was downloaded over - NOT the tighter plot-polygon
+    # envelope, since .clip(drop=False) keeps the full array shape and only
+    # masks outside-polygon pixels to NaN). Mirrors render_true_color.py's
+    # own transform_bounds pattern, so the sector grid gets its own
+    # ground-truth placement independent of true_color_bounds.json's
+    # unrelated source GeoTIFF - the two are not guaranteed to cover the
+    # same extent, so neither should be used to infer the other's.
+    grid_west, grid_south, grid_east, grid_north = transform_bounds(
+        ds_clipped.rio.crs, "EPSG:4326", *ds_clipped.rio.bounds(), densify_pts=21
+    )
 
     n_t, n_y, n_x = ds_clipped["NDWI"].values.shape
     months = [str(m)[:7] for m in ds_clipped[TIME_DIM].values]
@@ -187,7 +200,10 @@ def build():
         imagery["ndmi"].append(png_data_uri(ds_clipped["NDMI"].values[i], "BrBG", -0.3, 0.3, f"NDMI - {m}", "NDMI"))
 
     payload = {
-        "grid": {"rows": n_rows, "cols": n_cols, "block": BLOCK, "y_size": n_y, "x_size": n_x},
+        "grid": {
+            "rows": n_rows, "cols": n_cols, "block": BLOCK, "y_size": n_y, "x_size": n_x,
+            "bounds": {"west": grid_west, "south": grid_south, "east": grid_east, "north": grid_north},
+        },
         "months": months,
         "temp": [_num_or_none(t, 2) for t in era5_series],
         "last_year_months": LAST_YEAR_MONTHS,

@@ -137,7 +137,7 @@ img { max-width: 100%; display: block; }
 
 /* "Back to the 3-page satellite briefing" link - the one nav item that
    doesn't point at another tab of THIS client's dashboard but back out to
-   the shared docs/index.html (+intro-2/3.html) briefing pages one level up
+   the shared docs/briefing/index.html (+intro-2/3.html) briefing pages two levels up
    from docs/c/<slug>/. Styled as a filled pill rather than a plain nav
    link so it doesn't get mistaken for a fifth dashboard tab; its exact
    href (en vs. sk) is set at runtime by client.js from client_meta.json's
@@ -478,7 +478,7 @@ table.data-table tr:last-child td { border-bottom: none; }
 .plot-map { height: min(60vh, 560px); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); background: var(--bg-alt); }
 @media (max-width: 640px) { .plot-map { height: 360px; } }
 
-/* --- Monthly imagery slider (docs/monitoring.html) -----------------------
+/* --- Monthly imagery slider (docs/historical.html) -----------------------
    Ported from the sector explorer's former "Monthly Imagery" tab, restyled
    to the site palette. Data: data/monthly_imagery.json (published by
    publish_site.py from outputs/sector_explorer_data.json's "imagery" key). */

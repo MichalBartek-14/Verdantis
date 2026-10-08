@@ -6,14 +6,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Verdantis - satellite moisture and vegetation monitoring, client dashboards.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232c7a3c%22/><path d=%22M50 18 L78 62 H22 Z%22 fill=%22%23f4f8f2%22/></svg>">
-<link rel="stylesheet" href="_template/assets/style.css">
+<link rel="stylesheet" href="../_template/assets/style.css">
 <style>
-  /* This picker page isn't itself a client dashboard - it's the one place
-     in the site that's genuinely shared, so it lives at docs/ root rather
-     than inside _template/ (which publish_site.py copies byte-identical
-     into every docs/c/<slug>/). Reuses the template's stylesheet directly
-     rather than a forked copy, so both stay visually in sync for free. */
-  body { background: var(--bg); }
+  /* This picker page isn't itself a client dashboard - it's one of the
+     site's shared top-level sections (docs/clients/, alongside
+     docs/briefing/ and docs/sensors/, all linked from the docs/index.html
+     hub), so it lives in its own folder rather than inside _template/
+     (which publish_site.py copies byte-identical into every
+     docs/c/<slug>/). Reuses the template's stylesheet directly rather
+     than a forked copy, so both stay visually in sync for free. */
+  /* Faded satellite-photo backdrop instead of a flat --bg fill - same
+     page1.jpg already used by the hub/briefing hero photos, washed out
+     under a tint matching --bg (#f6f4ee) so the white client-row cards on
+     top keep full contrast/legibility. fixed attachment gives it a subtle
+     parallax feel while scrolling the client list; if the file is ever
+     missing this just silently falls back to the plain --bg color (no
+     broken-image artifact, unlike an <img> tag). */
+  body {
+    background-color: var(--bg);
+    background-image: linear-gradient(rgba(246,244,238,0.72), rgba(246,244,238,0.72)), url('../assets/img/intro/page1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
+  @media (max-width: 760px) { body { background-attachment: scroll; } }
   .picker-wrap { max-width: 720px; margin: 0 auto; padding: 70px clamp(20px, 5vw, 56px) 90px; }
   .picker-wrap h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 10px; }
   .picker-wrap > p { color: var(--text-muted); margin: 0 0 34px; max-width: 60ch; }
@@ -36,7 +52,7 @@
 <body>
 
 <div class="picker-wrap">
-  <a class="back-link" href="index.html">&larr; Back to the satellite intelligence briefing</a>
+  <a class="back-link" href="../index.html">&larr; Back to Verdantis</a>
   <span class="eyebrow" style="display:block;margin-bottom:10px;">Verdantis</span>
   <h1>Client dashboards</h1>
   <p>Satellite-based moisture &amp; vegetation monitoring, one dashboard per plot. Each
@@ -57,7 +73,7 @@ fetch('clients.json', { cache: 'no-store' })
       return;
     }
     el.innerHTML = list.map(function (c) {
-      return '<a class="client-row" href="c/' + c.slug + '/index.html">' +
+      return '<a class="client-row" href="../c/' + c.slug + '/index.html">' +
         '<span><span class="name">' + c.display_name + '</span>' +
         '<div class="loc">' + c.location + '</div></span>' +
         '<span class="go">Open dashboard &rarr;</span></a>';

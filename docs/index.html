@@ -2,26 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Verdantis - Satellite Intelligence Briefing</title>
+<title>Verdantis - Satellite Monitoring Pilot</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Verdantis - what satellite land monitoring is, and what it can tell you about a forestry plot.">
+<meta name="description" content="Verdantis - satellite-based moisture, vegetation and live field-sensor monitoring for forestry, agriculture and greenery plots.">
 <link rel="icon" href="assets/img/brand/logo-small.png">
 <link rel="apple-touch-icon" href="assets/img/brand/logo-small.png">
 <link rel="stylesheet" href="_template/assets/style.css">
 <style>
-  /* Standalone 3-page briefing shown before the client picker (plots.html).
-     Not part of _template/ - it has no per-client data, so it's plain
-     hand-written text (one copy per language - this file is English, the
-     Slovak translation lives at sk/index.html and is otherwise identical
-     markup/CSS). Reuses the template stylesheet + its dark topographic
-     .hero look so the briefing feels like the front cover of the same
-     product, not a bolted-on slide deck.
+  /* Site hub/landing page - the one page in docs/ that isn't part of any
+     of the three sections below it. Reuses _template/assets/style.css's
+     dark topographic .hero look (same visual language as briefing/
+     index.html) and the exact same probe-then-swap photo pattern/image
+     (assets/img/intro/page1.jpg) so the hub reads as "the cover of the
+     same product" the briefing's first page used to be, rather than a
+     new fourth visual style. No EN/SK toggle here - language choice
+     happens once a visitor picks the Briefing or a specific client.
 
-     CUSTOMIZING: edit the headline/paragraph/card text below directly -
-     it's plain HTML, no build step. For the photo slot on the right, see
-     the "CUSTOM PHOTO SLOT" comment further down. Adding a language:
-     duplicate sk/ as <lang>/, translate the three files, and add a toggle
-     link for it next to the EN/SK pair in .intro-topbar below. */
+     The 3 section cards below live in their OWN centered .section/
+     .feature-grid, not inside the hero's 640px text column - same shared
+     pattern _template/index.html's dashboard feature grid already uses
+     (.section centers+caps width at 1180px, .feature-grid's auto-fit grid
+     gives equal-width columns), so all 3 end up equal size, side by side,
+     centered on the page, with zero new CSS of their own. */
   body { background: var(--bg); }
 
   .intro-topbar {
@@ -30,127 +32,74 @@
   }
   .intro-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
   .intro-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
-  .intro-topbar-right { display: flex; align-items: center; gap: 18px; }
-  .intro-skip {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 0.9rem; font-weight: 700;
-    color: #fff; background: var(--green);
-    padding: 11px 20px; border-radius: 999px;
-    text-decoration: none;
-  }
-  .intro-skip:hover { background: var(--green-dark); }
-  .lang-switch { display: flex; gap: 4px; font-size: 0.8rem; font-weight: 700; }
-  .lang-switch a, .lang-switch span { padding: 3px 8px; border-radius: 6px; text-decoration: none; }
-  .lang-switch span { background: var(--bg-alt); color: var(--text); }
-  .lang-switch a { color: var(--text-muted); }
-  .lang-switch a:hover { color: var(--green-dark); }
 
-  /* Single column now - the photo (once added) is the section's own
-     background rather than a boxed panel, so the text keeps its own
-     width and the picture shows through on the right via the gradient
-     set in JS below instead of sitting in a separate grid column. */
   .intro-hero { grid-template-columns: 1fr; }
-  .intro-hero .hero-inner { max-width: 620px; }
-  .intro-hero .card-row { display: flex; flex-direction: column; gap: 14px; margin-top: 36px; }
-  .intro-card {
-    display: flex; gap: 14px; align-items: flex-start;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
-    border-radius: 12px; padding: 16px 18px;
-  }
-  .intro-card .icon { line-height: 1; margin-top: 2px; }
-  .intro-card h3 { margin: 0 0 4px; font-size: 0.98rem; color: #f4f8f2; }
-  .intro-card p { margin: 0; font-size: 0.88rem; color: rgba(244,248,242,0.75); }
+  .intro-hero .hero-inner { max-width: 640px; }
 
-  .intro-next {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    padding: 30px clamp(20px, 5vw, 56px) 60px; background: var(--bg-alt); border-top: 1px solid var(--border);
-  }
-  .step-dot { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
-  .step-dot.current { background: var(--green-dark); color: #fff; }
-  .step-dot.link { color: var(--text-muted); border: 1px solid var(--border); }
+  /* Force exactly 3 equal columns on wide screens (auto-fit alone would
+     allow a 4th/5th if the viewport were wide enough) while still
+     collapsing to fewer, still-equal columns on narrow ones. */
+  .hub-cards .feature-grid { grid-template-columns: repeat(3, minmax(220px, 1fr)); justify-content: center; }
+  @media (max-width: 760px) { .hub-cards .feature-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
 <!-- ============================================================
-     EDITING THIS PAGE: the headline, tagline and the three cards
-     below are plain text - change them freely. The photo panel on
-     the right (a placeholder until you add a real image) is marked
-     "CUSTOM PHOTO SLOT" further down, with the size that fits it best.
+     EDITING THIS PAGE: headline/tagline and the three card labels
+     below are plain HTML - change them freely. The photo panel on
+     the right is the same file as briefing/index.html's hero photo,
+     see "CUSTOM PHOTO SLOT" there for the file path/recommended size.
      ============================================================ -->
 
 <div class="intro-topbar">
   <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
-  <div class="intro-topbar-right">
-    <span class="lang-switch"><span>EN</span><a href="sk/index.html">SK</a></span>
-    <a class="intro-skip" href="plots.html">Skip the briefing, go to dashboards &rarr;</a>
-  </div>
 </div>
 
-<section class="hero intro-hero" id="introHero" style="min-height:auto; padding-top:50px; padding-bottom:70px;">
+<section class="hero intro-hero" id="hubHero" style="min-height:auto; padding-top:50px; padding-bottom:70px;">
   <div class="hero-inner">
-    <span class="eyebrow">Satellite intelligence briefing &middot; 1 of 3</span>
-    <h1>Your land, seen from <span>orbit</span>.</h1>
+    <span class="eyebrow">Verdantis</span>
+    <h1>Satellite &amp; sensor intelligence for your <span>land</span>.</h1>
     <p class="tagline">
-      Before you open a plot's dashboard, three short pages on what satellite
-      monitoring actually does.
+      Free Copernicus Sentinel-2 imagery and live field sensors, turned into a
+      plot-level view of moisture, vegetation vigour, and structural change.
     </p>
-
-    <div class="card-row">
-      <div class="intro-card">
-        <span class="icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3a9 9 0 0 1 8 8"/><path d="M13 7a5 5 0 0 1 4 4"/><rect x="2.5" y="14.5" width="6" height="6" rx="1" transform="rotate(-45 5.5 17.5)"/><path d="M9.5 13.5 13 10"/><path d="m6 20-2 2"/></svg></span>
-        <div><h3>A photo, but wider</h3>
-          <p>One pass of the Sentinel-2 satellites images your entire plot boundary in a single
-            frame - not just the tree line you can see from the access road.</p></div>
-      </div>
-      <div class="intro-card">
-        <span class="icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5M20 19v-4h-4"/></svg></span>
-        <div><h3>A photo, but repeated</h3>
-          <p>The same plot gets re-imaged automatically every few days, for free, building a
-            continuous record instead of a single site-visit snapshot.</p></div>
-      </div>
-      <div class="intro-card">
-        <span class="icon"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
-        <div><h3>A photo, but deeper</h3>
-          <p>The satellite doesn't just record colour - it measures light your eyes never
-            register at all. That's page two.</p></div>
-      </div>
-    </div>
   </div>
 
-  <!-- CUSTOM PHOTO SLOT - page 1 hero, full-bleed background behind the
-       text panel (photo shows through on the right, fades to the dark
-       green panel on the left so the text stays readable - see the JS
-       below, which paints it as a background rather than a boxed image).
-       Drop a file at docs/assets/img/intro/page1.jpg (repo-relative; same
-       file is shared by the EN and SK versions of this page). Recommended
-       size: at least 1920x1080px, landscape (16:9 or wider) and high-
-       resolution - this can render as large as the full section width on
-       a wide monitor. Keep the main subject in the right half/two-thirds
-       of the frame, since the left side sits under the darkest part of the
-       overlay and the text panel. Until the file exists, the section keeps
-       its default dark topographic background and nothing looks broken. -->
+  <!-- CUSTOM PHOTO SLOT - same file/mechanics as briefing/index.html's hero
+       photo (docs/assets/img/intro/page1.jpg, repo-relative, shared). -->
 </section>
 
-<div class="intro-next">
-  <span class="step-dot current">1</span>
-  <a class="step-dot link" href="intro-2.html">2</a>
-  <a class="step-dot link" href="intro-3.html">3</a>
-  <a class="btn btn-primary" href="intro-2.html" style="margin-left:16px;">See how &rarr;</a>
-  <a class="intro-skip" href="plots.html" style="margin-left:auto;">Skip the briefing, go to dashboards &rarr;</a>
-</div>
+<section class="section hub-cards">
+  <div class="feature-grid">
+    <a class="card feature-card" href="clients/index.html">
+      <span class="icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+      <h3>Clients</h3>
+      <p>Open a client's dashboard - historical pilot, sector explorer, and
+        monitoring &amp; alerts, one per plot.</p>
+      <span class="go">Browse clients &rarr;</span>
+    </a>
+    <a class="card feature-card" href="briefing/index.html">
+      <span class="icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 3a9 9 0 0 1 8 8"/><path d="M13 7a5 5 0 0 1 4 4"/><rect x="2.5" y="14.5" width="6" height="6" rx="1" transform="rotate(-45 5.5 17.5)"/><path d="M9.5 13.5 13 10"/><path d="m6 20-2 2"/></svg></span>
+      <h3>Briefing</h3>
+      <p>A short 3-page explainer on what satellite monitoring is and what it
+        can tell you, before you open a dashboard.</p>
+      <span class="go">Read the briefing &rarr;</span>
+    </a>
+    <a class="card feature-card" href="sensors/index.html">
+      <span class="icon"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v6M12 22v-6M4.9 4.9l4.2 4.2M19.1 19.1l-4.2-4.2M4.9 19.1l4.2-4.2M19.1 4.9l-4.2 4.2"/><circle cx="12" cy="12" r="3.5"/></svg></span>
+      <h3>Sensors &amp; Services</h3>
+      <p>Live field-sensor readings on the ground, alongside the satellite
+        view - more services to come.</p>
+      <span class="go">Open sensors &amp; services &rarr;</span>
+    </a>
+  </div>
+</section>
 
 <script>
 (function () {
   var PHOTO = 'assets/img/intro/page1.jpg';
-  var hero = document.getElementById('introHero');
-  // Same probe-before-use trick as _template/index.html's title-page photo:
-  // load into a throwaway Image() first so a missing file just leaves the
-  // section's default dark topographic background in place instead of a
-  // broken-image icon. Once confirmed, paint the photo as the section's
-  // own background - a left-to-right dark overlay on top of it (opaque
-  // over the text panel, fading out toward the right) is what makes the
-  // picture read as "behind the text" rather than a separate box.
+  var hero = document.getElementById('hubHero');
   var probe = new Image();
   probe.onload = function () {
     hero.style.backgroundImage =

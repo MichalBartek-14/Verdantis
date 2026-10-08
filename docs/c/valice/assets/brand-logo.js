@@ -3,7 +3,7 @@
 // logo image once one exists at <prefix>logo-full.png. Shared by both
 // asset trees in this repo - docs/_template/assets/ (copied verbatim into
 // every docs/c/<slug>/assets/ by publish_site.py) AND the standalone
-// briefing pages under docs/ (docs/index.html etc. already reference
+// hub/briefing/clients/sensors pages under docs/ (docs/index.html etc. already reference
 // _template/assets/style.css the same cross-tree way - see README/
 // CLAUDE.md). The actual image file is NOT shared the same way: each
 // tree keeps its own docs/<...>/assets/img/brand/logo-full.png copy, so
@@ -22,7 +22,9 @@
 //   <script>initBrandLogo('assets/img/brand/');</script>
 // `prefix` must resolve to wherever THIS page's own assets/img/brand/
 // lives (e.g. 'assets/img/brand/' from docs/_template/*.html or
-// docs/index.html, '../assets/img/brand/' from docs/sk/*.html).
+// docs/index.html, '../assets/img/brand/' from docs/briefing/*.html or
+// docs/sensors/index.html, '../../assets/img/brand/' from
+// docs/briefing/sk/*.html).
 function initBrandLogo(prefix) {
   document.querySelectorAll('.brand').forEach(function (brand) {
     var mark = brand.querySelector('.mark');

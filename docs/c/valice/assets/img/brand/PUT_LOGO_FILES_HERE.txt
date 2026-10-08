@@ -18,8 +18,9 @@ this whole assets/ folder verbatim into every docs/c/<slug>/assets/ on
 each publish, so add the files here (once) and re-run
 `python publish_site.py --all` to push them out to every client.
 
-The standalone briefing pages (docs/index.html etc., outside docs/c/) use
-a SEPARATE copy at docs/assets/img/brand/ (same two filenames) - see the
+The standalone hub/briefing/clients/sensors pages (docs/index.html,
+docs/briefing/, docs/clients/, docs/sensors/, outside docs/c/) use a
+SEPARATE copy at docs/assets/img/brand/ (same two filenames) - see the
 matching PUT_LOGO_FILES_HERE.txt there. The two copies are kept apart
 deliberately so a published docs/c/<slug>/ stays fully self-contained if
 it's ever deployed independently of the rest of the site - add the same

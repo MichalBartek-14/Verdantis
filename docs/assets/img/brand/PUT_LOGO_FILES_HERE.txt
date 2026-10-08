@@ -15,8 +15,9 @@ Both are picked up automatically once present - no code change needed,
 and nothing breaks in the meantime (the current gradient-box brand mark
 and default favicon just keep showing).
 
-This copy covers the standalone briefing pages (docs/index.html,
-intro-2/3.html, docs/sk/). The per-client dashboard pages need their OWN
+This copy covers the standalone hub/briefing/clients/sensors pages
+(docs/index.html, docs/briefing/, docs/clients/, docs/sensors/). The
+per-client dashboard pages need their OWN
 copy at docs/_template/assets/img/brand/ (same two filenames) - see the
 matching PUT_LOGO_FILES_HERE.txt there - so that each published
 docs/c/<slug>/ stays fully self-contained. Add the files to BOTH folders,

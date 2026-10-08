@@ -5,9 +5,9 @@
 <title>Svetlo, ktoré nevidíte - Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Verdantis - ako pásma blízkeho a krátkovlnného infračerveného žiarenia odhaľujú stav rastlín, ktorý je okom neviditeľný.">
-<link rel="icon" href="../assets/img/brand/logo-small.png">
-<link rel="apple-touch-icon" href="../assets/img/brand/logo-small.png">
-<link rel="stylesheet" href="../_template/assets/style.css">
+<link rel="icon" href="../../assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="../../assets/img/brand/logo-small.png">
+<link rel="stylesheet" href="../../_template/assets/style.css">
 <style>
   /* Slovak translation of ../intro-2.html - see that file (and
      ../index.html's top-of-file comment) for structure/customization. */
@@ -119,10 +119,10 @@
      ============================================================ -->
 
 <div class="intro-topbar">
-  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+  <a class="brand" href="../../index.html"><span class="mark"></span> Verdantis</a>
   <div class="intro-topbar-right">
     <span class="lang-switch"><a href="../intro-2.html">EN</a><span>SK</span></span>
-    <a class="intro-skip" href="../plots.html">Preskočiť brífing, prejsť na prehľady &rarr;</a>
+    <a class="intro-skip" href="../../clients/index.html">Preskočiť brífing, prejsť na prehľady &rarr;</a>
   </div>
 </div>
 
@@ -206,7 +206,7 @@
   <span class="step-dot current">2</span>
   <a class="step-dot link" href="intro-3.html">3</a>
   <a class="btn btn-primary" href="intro-3.html" style="margin-left:6px;">Na čo to je &rarr;</a>
-  <a class="intro-skip" href="../plots.html" style="margin-left:auto;">Preskočiť brífing, prejsť na prehľady &rarr;</a>
+  <a class="intro-skip" href="../../clients/index.html" style="margin-left:auto;">Preskočiť brífing, prejsť na prehľady &rarr;</a>
 </div>
 
 <script>
@@ -240,22 +240,22 @@ function initCompareSlider(rgbSrc, nirSrc) {
   probeNir.onerror = function () {};
   probeNir.src = nirSrc;
 }
-initCompareSlider('../assets/img/intro/page2-rgb.jpg', '../assets/img/intro/page2-nir.jpg');
+initCompareSlider('../../assets/img/intro/page2-rgb.jpg', '../../assets/img/intro/page2-nir.jpg');
 
 (function () {
   var wrap = document.getElementById('photoSlot2');
   var img = document.getElementById('photoImg2');
   var probe = new Image();
   probe.onload = function () {
-    img.src = '../assets/img/intro/page3.jpg';
+    img.src = '../../assets/img/intro/page3.jpg';
     wrap.classList.add('has-photo');
   };
   probe.onerror = function () {};
-  probe.src = '../assets/img/intro/page3.jpg';
+  probe.src = '../../assets/img/intro/page3.jpg';
 })();
 </script>
 
-<script src="../_template/assets/brand-logo.js"></script>
-<script>initBrandLogo('../assets/img/brand/');</script>
+<script src="../../_template/assets/brand-logo.js"></script>
+<script>initBrandLogo('../../assets/img/brand/');</script>
 </body>
 </html>

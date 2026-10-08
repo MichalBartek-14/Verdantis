@@ -2,7 +2,7 @@
   "title": "Monitoring & Alerts - Verdantis",
   "hero": {
     "h1": "Current conditions &amp; vegetation alerts",
-    "intro_html": "Everything that isn't the multi-year historical pilot deliverable lives here: the latest weekly conditions snapshot, a scrubbable month-by-month view of the last year, and structural-break detection over the raw (uncomposited) NDVI series. All three are data feeds, not finished alert products - the numbers below are published by hand whenever <code>publish_site.py</code> is re-run after a fresh local pass, not fetched live from the backend."
+    "intro_html": "The latest weekly conditions snapshot, the plot's dryness/water-loss maps from the historical analysis, and structural-break detection over the raw (uncomposited) NDVI series. None of these are finished alert products - the numbers below are published by hand whenever <code>publish_site.py</code> is re-run after a fresh local pass, not fetched live from the backend."
   },
   "recent": {
     "title": "Current conditions",
@@ -19,10 +19,15 @@
     "ndwi_caption": "Moisture proxy, broad NIR.",
     "ndmi_caption": "Moisture proxy, narrow NIR."
   },
-  "imagery": {
-    "title": "Monthly imagery, last year",
-    "lede": "Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same 12-month window as the Sector Explorer's \"Last year\" option, moved here since it's a single time series rather than a per-sector breakdown.",
-    "loading": "Loading monthly imagery&hellip;"
+  "dryness": {
+    "title": "Where the plot loses water most",
+    "lede": "Per-pixel dryness frequency (% of months below threshold) and deficit magnitude (how badly, on the months it was dry) - the frequency map complements the magnitude map: a sector can be dry often but mildly, or rarely but severely.",
+    "freq_title": "Dryness frequency (NDWI)",
+    "freq_desc": "% of valid months each pixel was classified \"dry\".",
+    "ndwi_map_title": "Water-loss map (NDWI)",
+    "ndwi_map_desc": "Frequency + average deficit magnitude, side by side.",
+    "ndmi_map_title": "Water-loss map (NDMI)",
+    "ndmi_map_desc": "Same analysis, narrow-NIR index - compare against the NDWI version."
   },
   "alerts": {
     "title": "Vegetation break alerts",
@@ -47,9 +52,6 @@
     "recent_error": "Could not load the latest summary (data/drought_summary_latest.json) - run publish_site.py after the next drought_monitor_recent.py pass.",
     "period_week": "week",
     "threshold_prefix": "NDWI threshold",
-    "imagery_status": "{count} months, {first} to {last}",
-    "imagery_error": "Could not load data/monthly_imagery.json - run build_sector_explorer_data.py then publish_site.py.",
-    "month_names": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     "window_full": "Full history",
     "window_last_year": "Last year",
     "alert_status": "{label} &middot; bbox [{bbox}]",

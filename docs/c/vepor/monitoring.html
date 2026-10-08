@@ -13,7 +13,7 @@
 
 <header class="site-header">
   <div class="brand-group">
-    <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+    <a class="brand" href="../../index.html"><span class="mark"></span> Verdantis</a>
     <span class="client-badge" data-client-display-name data-i18n="badge.default">Pilot</span>
   </div>
   <nav class="site-nav">
@@ -21,19 +21,18 @@
     <a href="historical.html" data-i18n="nav.historical">Historical Pilot</a>
     <a href="explorer.html" data-i18n="nav.explorer">Sector Explorer</a>
     <a href="monitoring.html" aria-current="page" data-i18n="nav.monitoring">Monitoring &amp; Alerts</a>
-    <a href="../../index.html" class="nav-briefing" data-briefing-link data-i18n="nav.briefing">Satellite Briefing</a>
+    <a href="../../briefing/index.html" class="nav-briefing" data-briefing-link data-i18n="nav.briefing">Satellite Briefing</a>
   </nav>
 </header>
 
 <div class="page-hero">
-  <span class="eyebrow">drought_monitor_recent.py &middot; build_sector_explorer_data.py &middot; bfast_alert.py</span>
+  <span class="eyebrow">drought_monitor_recent.py &middot; pilot_historical_analysis.py &middot; bfast_alert.py</span>
   <h1 data-i18n-html="hero.h1">Current conditions &amp; vegetation alerts</h1>
-  <p data-i18n-html="hero.intro_html">Everything that isn't the multi-year historical pilot deliverable lives here: the latest
-    weekly conditions snapshot, a scrubbable month-by-month view of the last year, and
-    structural-break detection over the raw (uncomposited) NDVI series. All three are data
-    feeds, not finished alert products - the numbers below are published by hand whenever
-    <code>publish_site.py</code> is re-run after a fresh local pass, not fetched live from
-    the backend.</p>
+  <p data-i18n-html="hero.intro_html">The latest weekly conditions snapshot, the plot's dryness/water-loss maps from the
+    historical analysis, and structural-break detection over the raw (uncomposited) NDVI
+    series. None of these are finished alert products - the numbers below are published by
+    hand whenever <code>publish_site.py</code> is re-run after a fresh local pass, not
+    fetched live from the backend.</p>
 </div>
 
 <section class="section">
@@ -70,28 +69,23 @@
 </section>
 
 <section class="section">
-  <h2 data-i18n="imagery.title">Monthly imagery, last year</h2>
-  <p class="lede" data-i18n="imagery.lede">Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same
-    12-month window as the Sector Explorer's "Last year" option, moved here since it's a
-    single time series rather than a per-sector breakdown.</p>
-
-  <p class="status-line" id="imagery-status"><span class="dot"></span><span data-i18n="imagery.loading">Loading monthly imagery&hellip;</span></p>
-
-  <div class="control-row" style="margin-bottom:14px;">
-    <div class="segmented" role="group" aria-label="Imagery index" id="imagery-index-group">
-      <button type="button" data-index="ndvi" aria-pressed="true">NDVI</button>
-      <button type="button" data-index="ndwi" aria-pressed="false">NDWI</button>
-      <button type="button" data-index="ndmi" aria-pressed="false">NDMI</button>
-    </div>
-  </div>
-  <div class="imagery-viewer">
-    <img id="imageryImg" alt="Monthly index composite">
-  </div>
-  <div class="imagery-controls">
-    <button type="button" id="imageryPrev" aria-label="Previous month">&larr;</button>
-    <input type="range" id="imagerySlider" min="0" max="11" step="1" value="11" aria-label="Month">
-    <button type="button" id="imageryNext" aria-label="Next month">&rarr;</button>
-    <span id="imageryMonthLabel" class="imagery-month"></span>
+  <h2 data-i18n="dryness.title">Where the plot loses water most</h2>
+  <p class="lede" data-i18n="dryness.lede">Per-pixel dryness frequency (% of months below threshold) and deficit
+    magnitude (how badly, on the months it was dry) - the frequency map complements the
+    magnitude map: a sector can be dry often but mildly, or rarely but severely.</p>
+  <div class="figure-grid">
+    <figure class="card">
+      <img src="assets/img/dryness_heatmap.png" alt="Dryness frequency heatmap, NDWI-based" loading="lazy">
+      <figcaption><h3 data-i18n="dryness.freq_title">Dryness frequency (NDWI)</h3><p data-i18n="dryness.freq_desc">% of valid months each pixel was classified "dry".</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/water_loss_map.png" alt="Water loss map, NDWI frequency and magnitude" loading="lazy">
+      <figcaption><h3 data-i18n="dryness.ndwi_map_title">Water-loss map (NDWI)</h3><p data-i18n="dryness.ndwi_map_desc">Frequency + average deficit magnitude, side by side.</p></figcaption>
+    </figure>
+    <figure class="card">
+      <img src="assets/img/water_loss_map_ndmi.png" alt="Water loss map, NDMI frequency and magnitude" loading="lazy">
+      <figcaption><h3 data-i18n="dryness.ndmi_map_title">Water-loss map (NDMI)</h3><p data-i18n="dryness.ndmi_map_desc">Same analysis, narrow-NIR index - compare against the NDWI version.</p></figcaption>
+    </figure>
   </div>
 </section>
 
@@ -184,60 +178,6 @@ async function loadRecent(t) {
   }
 }
 
-async function loadImagery(t) {
-  const statusEl = document.getElementById('imagery-status');
-  const slider = document.getElementById('imagerySlider');
-  const img = document.getElementById('imageryImg');
-  const monthLabelEl = document.getElementById('imageryMonthLabel');
-  const MONTH_NAMES = t('js.month_names');
-  function monthLabel(m) {
-    const parts = m.split('-');
-    return MONTH_NAMES[parseInt(parts[1], 10) - 1] + ' ' + parts[0];
-  }
-
-  try {
-    const res = await fetch('data/monthly_imagery.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const imagery = await res.json();
-    const months = imagery.months;
-    let index = 'ndvi';
-
-    slider.max = months.length - 1;
-    slider.value = months.length - 1;
-
-    function update() {
-      const i = parseInt(slider.value, 10);
-      img.src = imagery[index][i];
-      img.alt = index.toUpperCase() + ' composite for ' + monthLabel(months[i]);
-      monthLabelEl.textContent = monthLabel(months[i]);
-    }
-
-    slider.addEventListener('input', update);
-    document.getElementById('imageryPrev').addEventListener('click', () => {
-      slider.value = Math.max(0, parseInt(slider.value, 10) - 1);
-      update();
-    });
-    document.getElementById('imageryNext').addEventListener('click', () => {
-      slider.value = Math.min(months.length - 1, parseInt(slider.value, 10) + 1);
-      update();
-    });
-    document.querySelectorAll('#imagery-index-group button').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#imagery-index-group button').forEach((b) => b.setAttribute('aria-pressed', 'false'));
-        btn.setAttribute('aria-pressed', 'true');
-        index = btn.getAttribute('data-index');
-        update();
-      });
-    });
-
-    update();
-    statusEl.innerHTML = '<span class="dot"></span>' + t('js.imagery_status', { count: months.length, first: months[0], last: months[months.length - 1] });
-  } catch (err) {
-    statusEl.textContent = t('js.imagery_error');
-    console.error(err);
-  }
-}
-
 async function loadAlerts(t) {
   const statusEl = document.getElementById('alerts-status');
   const tbody = document.getElementById('breaks-tbody');
@@ -316,7 +256,6 @@ async function loadAlerts(t) {
 
 window.VerdantisReady.then(({ t }) => {
   loadRecent(t);
-  loadImagery(t);
   loadAlerts(t);
 });
 </script>

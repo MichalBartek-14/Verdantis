@@ -38,7 +38,7 @@ import clients
 DOCS = Path("docs")
 TEMPLATE = DOCS / "_template"
 CLIENTS_ROOT = DOCS / "c"
-CLIENTS_MANIFEST = DOCS / "clients.json"
+CLIENTS_MANIFEST = DOCS / "clients" / "clients.json"
 
 # Historical pilot charts/maps referenced by _template/historical.html -
 # copied as-is, they're already client-ready PNGs.
@@ -278,10 +278,10 @@ def publish_client_site(slug: str) -> None:
 
 
 def update_manifest() -> None:
-    """docs/clients.json - the root picker page's (docs/index.html) only
-    data source. Rebuilt from the client registry filtered to whoever has
-    actually been published (has a docs/c/<slug>/ folder), not just
-    whoever's configured - so a client added to clients/ but never
+    """docs/clients/clients.json - the client-picker page's (docs/clients/
+    index.html) only data source. Rebuilt from the client registry filtered
+    to whoever has actually been published (has a docs/c/<slug>/ folder),
+    not just whoever's configured - so a client added to clients/ but never
     published doesn't show up as a dead link."""
     manifest = []
     for slug in clients.list_clients():
@@ -293,6 +293,7 @@ def update_manifest() -> None:
             "display_name": client["display_name"],
             "location": client["location"],
         })
+    CLIENTS_MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     with open(CLIENTS_MANIFEST, "w") as f:
         json.dump(manifest, f, indent=2)
     print(f"Updated {CLIENTS_MANIFEST} ({len(manifest)} published client(s))")

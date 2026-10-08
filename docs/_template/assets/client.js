@@ -83,7 +83,7 @@
     // which LANGUAGE of it depends on this client - docs/sk/ is the only
     // non-English briefing today, so this is a plain either/or rather than
     // a lang -> path lookup; extend it if a third briefing language shows up.
-    var briefingHref = meta.language === "sk" ? "../../sk/index.html" : "../../index.html";
+    var briefingHref = meta.language === "sk" ? "../../briefing/sk/index.html" : "../../briefing/index.html";
     document.querySelectorAll("[data-briefing-link]").forEach(function (el) { el.href = briefingHref; });
   }
 

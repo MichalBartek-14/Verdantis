@@ -5,11 +5,11 @@
 <title>Light you can't see - Verdantis</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Verdantis - how near-infrared and short-wave infrared bands reveal plant health invisible to the naked eye.">
-<link rel="icon" href="assets/img/brand/logo-small.png">
-<link rel="apple-touch-icon" href="assets/img/brand/logo-small.png">
-<link rel="stylesheet" href="_template/assets/style.css">
+<link rel="icon" href="../assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="../assets/img/brand/logo-small.png">
+<link rel="stylesheet" href="../_template/assets/style.css">
 <style>
-  /* See docs/index.html's top-of-file comment for how this 3-page briefing
+  /* See docs/briefing/index.html's top-of-file comment for how this 3-page briefing
      is organized (languages, customizing text/photos). This is page 2/EN;
      the Slovak translation is sk/intro-2.html. */
   body { background: var(--bg); }
@@ -129,10 +129,10 @@
      ============================================================ -->
 
 <div class="intro-topbar">
-  <a class="brand" href="index.html"><span class="mark"></span> Verdantis</a>
+  <a class="brand" href="../index.html"><span class="mark"></span> Verdantis</a>
   <div class="intro-topbar-right">
     <span class="lang-switch"><span>EN</span><a href="sk/intro-2.html">SK</a></span>
-    <a class="intro-skip" href="plots.html">Skip the briefing, go to dashboards &rarr;</a>
+    <a class="intro-skip" href="../clients/index.html">Skip the briefing, go to dashboards &rarr;</a>
   </div>
 </div>
 
@@ -222,7 +222,7 @@
   <span class="step-dot current">2</span>
   <a class="step-dot link" href="intro-3.html">3</a>
   <a class="btn btn-primary" href="intro-3.html" style="margin-left:6px;">What that's for &rarr;</a>
-  <a class="intro-skip" href="plots.html" style="margin-left:auto;">Skip the briefing, go to dashboards &rarr;</a>
+  <a class="intro-skip" href="../clients/index.html" style="margin-left:auto;">Skip the briefing, go to dashboards &rarr;</a>
 </div>
 
 <script>
@@ -261,23 +261,23 @@ function initCompareSlider(rgbSrc, nirSrc) {
   probeNir.onerror = function () {};
   probeNir.src = nirSrc;
 }
-initCompareSlider('assets/img/intro/page2-rgb.jpg', 'assets/img/intro/page2-nir.jpg');
+initCompareSlider('../assets/img/intro/page2-rgb.jpg', '../assets/img/intro/page2-nir.jpg');
 
 (function () {
   var wrap = document.getElementById('photoSlot2');
   var img = document.getElementById('photoImg2');
   var probe = new Image();
   probe.onload = function () {
-    img.src = 'assets/img/intro/page3.jpg';
+    img.src = '../assets/img/intro/page3.jpg';
     wrap.classList.add('has-photo');
   };
   probe.onerror = function () {};
-  probe.src = 'assets/img/intro/page3.jpg';
+  probe.src = '../assets/img/intro/page3.jpg';
 })();
 </script>
 
-<script src="_template/assets/brand-logo.js"></script>
-<script>initBrandLogo('assets/img/brand/');</script>
+<script src="../_template/assets/brand-logo.js"></script>
+<script>initBrandLogo('../assets/img/brand/');</script>
 
 </body>
 </html>
