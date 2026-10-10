@@ -1998,5 +1998,10 @@
     "time": "2026-09-23T18:47:22Z",
     "temperature_c": 20.69,
     "soil_moisture": 2585.0
+  },
+  {
+    "time": "2026-09-23T18:50:15Z",
+    "temperature_c": 20.62,
+    "soil_moisture": 2592.0
   }
 ]

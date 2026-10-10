@@ -5,17 +5,17 @@
    one product, not a report bolted onto a generic template. */
 
 :root {
-  --bg: #f6f4ee;
-  --bg-alt: #edf0e6;
-  --card-bg: #ffffff;
-  --text: #182420;
-  --text-muted: #57655c;
-  --border: #dde3d6;
+  --bg: #0f1a15;
+  --bg-alt: #16241c;
+  --card-bg: #1b2b21;
+  --text: #eef5f0;
+  --text-muted: #aec4b4;
+  --border: #2d4436;
   --green: #2c7a3c;
-  --green-dark: #1c4d27;
+  --green-dark: #8fd9a0;
   --teal: #1f7a8c;
   --amber: #c07a20;
-  --shadow: 0 6px 24px rgba(20, 35, 26, 0.08);
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
   --radius: 14px;
 
   /* Spacing scale - replaces ad hoc px values that had drifted into several
@@ -67,7 +67,7 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: space-between;
   padding: 14px clamp(20px, 5vw, 56px);
-  background: rgba(246, 244, 238, 0.92);
+  background: rgba(15, 26, 21, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
 }
@@ -294,6 +294,23 @@ table.data-table tr:last-child td { border-bottom: none; }
   margin-right: 6px;
 }
 
+/* Shared baseline for the "segmented toggle" control used by historical.html
+   (imagery index) and monitoring.html (alert window) - explorer.html's own
+   denser, dark-app-styled .segmented rule (loaded after this stylesheet in
+   its <head>) overrides this for that one page only; this is just the
+   default so the other two pages aren't left with completely unstyled
+   native <button>s. */
+.segmented { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.segmented button {
+  font: inherit; font-size: var(--text-sm); font-weight: 600;
+  padding: 8px 14px; border: none; background: var(--card-bg); color: var(--text-muted); cursor: pointer;
+}
+.segmented button + button { border-left: 1px solid var(--border); }
+.segmented button[aria-pressed="true"] { background: var(--green); color: #fff; }
+.segmented button:hover { background: var(--bg-alt); }
+.segmented button[aria-pressed="true"]:hover { background: var(--green-dark); }
+@media (max-width: 768px) { .segmented button { min-height: 44px; padding: 10px 16px; } }
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -510,3 +527,80 @@ table.data-table tr:last-child td { border-bottom: none; }
 .imagery-controls button:hover { background: var(--bg-alt); }
 #imagerySlider { flex: 1; accent-color: var(--green); }
 .imagery-month { font-size: var(--text-sm); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; color: var(--text); }
+
+/* --- Trust strip + pilot enquiry form (docs/index.html) --------------- */
+.trust-section p { color: var(--text-muted); max-width: 70ch; }
+.trust-section p + p { margin-top: var(--space-4); }
+
+.enquiry-form { max-width: 520px; display: flex; flex-direction: column; gap: var(--space-4); }
+.enquiry-form label { display: flex; flex-direction: column; gap: 6px; font-size: var(--text-sm); font-weight: 600; color: var(--text); }
+.enquiry-form input, .enquiry-form textarea {
+  font: inherit; font-size: var(--text-base);
+  padding: 11px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+  min-height: 44px;
+}
+.enquiry-form textarea { min-height: 96px; resize: vertical; }
+.enquiry-form input:focus, .enquiry-form textarea:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+.enquiry-form .form-error {
+  color: #b0442f; font-size: var(--text-sm); font-weight: 600; margin: 0;
+  padding: 10px 14px; border-radius: 8px; background: rgba(176, 68, 47, 0.1);
+}
+.enquiry-form .btn { align-self: flex-start; border: none; cursor: pointer; }
+.enquiry-form .sent-note { color: var(--green-dark); font-size: var(--text-sm); font-weight: 600; margin: 0; }
+
+/* --- Live weather grid (docs/index.html) ------------------------------
+   One card per client, fetched from Open-Meteo via assets/weather.js -
+   see that file's module comment. Three states per card: skeleton (while
+   the fetch is in flight), populated, or "Weather unavailable" (any
+   network/HTTP/parse failure) - all three share this one card shell so
+   nothing reflows/jumps once real data (or the error) arrives. */
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-6);
+}
+.weather-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: var(--space-5);
+}
+.weather-card .wc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.weather-card .wc-name { font-weight: 700; font-size: var(--text-md); }
+.weather-card .wc-loc { font-size: var(--text-sm); color: var(--text-muted); margin-top: 2px; }
+.weather-card .wc-now { display: flex; align-items: center; gap: 12px; margin: var(--space-4) 0; }
+.weather-card .wc-icon { font-size: 2.2rem; line-height: 1; }
+.weather-card .wc-temp { font-size: 1.9rem; font-weight: 800; color: var(--green-dark); font-variant-numeric: tabular-nums; }
+.weather-card .wc-label { font-size: var(--text-sm); color: var(--text-muted); }
+.weather-card .wc-meta { display: flex; gap: 14px; font-size: var(--text-sm); color: var(--text-muted); flex-wrap: wrap; }
+.weather-card .wc-updated { font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-2); }
+.weather-card .wc-forecast { display: flex; gap: 10px; margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border); }
+.weather-card .wc-day { flex: 1; text-align: center; font-size: var(--text-xs); color: var(--text-muted); }
+.weather-card .wc-day .wc-day-name { font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.weather-card .wc-day .wc-day-icon { font-size: 1.3rem; }
+.weather-card .wc-day .wc-day-range { font-variant-numeric: tabular-nums; color: var(--text); }
+.weather-card .wc-error { color: var(--text-muted); font-size: var(--text-sm); }
+.weather-section .attribution { margin-top: var(--space-5); font-size: var(--text-xs); color: var(--text-muted); }
+
+/* Skeleton loading state - plain pulse opacity, gated behind
+   prefers-reduced-motion so a vestibular-sensitive visitor just sees a
+   static muted block instead. */
+.wc-skeleton-line { height: 14px; border-radius: 6px; background: var(--bg-alt); margin-bottom: 8px; }
+@media (prefers-reduced-motion: no-preference) {
+  .wc-skeleton-line { animation: wc-pulse 1.4s ease-in-out infinite; }
+}
+@keyframes wc-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* --- Mobile tap-target / legibility pass (375-768px) ------------------
+   Nothing above changes size on desktop; this is purely the "at least
+   44x44px tap targets, at least 16px for text that's meant to be read
+   rather than a small meta label" audit pass for phones. */
+@media (max-width: 768px) {
+  .site-nav a {
+    min-height: 44px; display: inline-flex; align-items: center;
+    font-size: var(--text-base);
+  }
+  .btn { min-height: 44px; font-size: var(--text-base); }
+  .back-link { min-height: 44px; display: inline-flex; align-items: center; }
+  .site-footer, .empty-note, .error-note { font-size: var(--text-base); }
+  .imagery-controls button { width: 44px; height: 44px; }
+}

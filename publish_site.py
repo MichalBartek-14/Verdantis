@@ -292,6 +292,8 @@ def update_manifest() -> None:
             "slug": slug,
             "display_name": client["display_name"],
             "location": client["location"],
+            "lat": client.get("lat"),
+            "lon": client.get("lon"),
         })
     CLIENTS_MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     with open(CLIENTS_MANIFEST, "w") as f:

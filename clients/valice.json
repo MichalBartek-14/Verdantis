@@ -3,6 +3,8 @@
   "display_name": "Valice Fruit tree Plot",
   "client_name": "Frantisek Toth",
   "location": "Valice, Slovakia",
+  "lat": 48.44834,
+  "lon": 20.20393,
   "plot_shapefile": "data/valice/Client_Valice_Plot.shp",
   "plot_area_ha": 59.71,
   "language": "sk",

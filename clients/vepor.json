@@ -3,6 +3,8 @@
   "display_name": "Vepor Forest Plot",
   "client_name": "Vepor Forest Plot",
   "location": "Vepor, Slovakia",
+  "lat": 48.67375,
+  "lon": 19.75879,
   "plot_shapefile": "data/vepor/Client_Vepor.shp",
   "plot_area_ha": 1810.26,
   "language": "sk",

@@ -96,6 +96,41 @@
   </div>
 </section>
 
+<section class="section weather-section" id="weather">
+  <h2>Live conditions near each plot</h2>
+  <p class="lede">Current weather and a 3-day outlook for every client's plot - not a forecast for the satellite data itself, just useful on-the-ground context.</p>
+  <div class="weather-grid" id="weatherGrid">
+    <p class="wc-error">Loading weather&hellip;</p>
+  </div>
+  <p class="attribution">Source: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a></p>
+</section>
+
+<section class="section trust-section" id="trust">
+  <h2>Where the data comes from</h2>
+  <p>Satellite imagery is free Copernicus Sentinel-2 data, pulled via the Copernicus Data Space Ecosystem / openEO - Verdantis doesn't operate any satellites or sensors itself. <a href="https://dataspace.copernicus.eu/" target="_blank" rel="noopener">About Copernicus Sentinel-2 &rarr;</a></p>
+  <p>Your plot's imagery and any field-sensor readings are processed for this pilot only. <a href="privacy/index.html">Read our privacy note (draft) &rarr;</a></p>
+</section>
+
+<section class="section contact-section" id="contact">
+  <h2>Interested in a pilot for your plot?</h2>
+  <p class="lede">Tell us a little about your land and we'll follow up by email - this is only used to respond to your enquiry, nothing is stored beyond that.</p>
+  <form class="enquiry-form" id="enquiryForm" novalidate>
+    <label>Name<input name="name" required autocomplete="name"></label>
+    <label>Email<input type="email" name="email" required autocomplete="email"></label>
+    <label>Plot location<input name="location" required placeholder="e.g. town, region, country"></label>
+    <label>Message (optional)<textarea name="message" rows="4"></textarea></label>
+    <p class="form-error" id="enquiryError" role="alert" hidden></p>
+    <p class="sent-note" id="enquirySent" hidden>Thanks - your email app should have opened with your enquiry pre-filled. Just hit send there.</p>
+    <button type="submit" class="btn btn-primary">Send enquiry</button>
+  </form>
+</section>
+
+<footer class="site-footer">
+  Verdantis pilot &middot; satellite data: Copernicus Sentinel-2 &middot; weather: Open-Meteo &middot;
+  <a href="privacy/index.html">privacy note (draft)</a> &middot;
+  <a href="https://github.com/MichalBartek-14/Verdantis" target="_blank" rel="noopener">source on GitHub</a>
+</footer>
+
 <script>
 (function () {
   var PHOTO = 'assets/img/intro/page1.jpg';
@@ -116,5 +151,147 @@
 
 <script src="_template/assets/brand-logo.js"></script>
 <script>initBrandLogo('assets/img/brand/');</script>
+
+<script src="assets/weather.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  function skeletonCard() {
+    var el = document.createElement('div');
+    el.className = 'weather-card';
+    el.innerHTML =
+      '<div class="wc-skeleton-line" style="width:55%"></div>' +
+      '<div class="wc-skeleton-line" style="width:35%;height:28px;margin-top:14px"></div>' +
+      '<div class="wc-skeleton-line" style="width:80%"></div>';
+    return el;
+  }
+
+  function errorCard(client) {
+    var el = document.createElement('div');
+    el.className = 'weather-card';
+    el.innerHTML =
+      '<div class="wc-head"><div><div class="wc-name"></div><div class="wc-loc"></div></div></div>' +
+      '<p class="wc-error">Weather unavailable.</p>';
+    el.querySelector('.wc-name').textContent = client.display_name;
+    el.querySelector('.wc-loc').textContent = client.location;
+    return el;
+  }
+
+  function formatUpdatedAt(isoTime, timezone) {
+    try {
+      var d = new Date(isoTime);
+      return d.toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', timeZone: timezone });
+    } catch (e) {
+      return isoTime;
+    }
+  }
+
+  function formatDayName(dateStr) {
+    try {
+      return new Date(dateStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short' });
+    } catch (e) {
+      return dateStr;
+    }
+  }
+
+  function populatedCard(client, forecast) {
+    var el = document.createElement('div');
+    el.className = 'weather-card';
+    var c = forecast.current;
+    var daysHtml = forecast.days.map(function (d) {
+      return '<div class="wc-day">' +
+        '<div class="wc-day-name">' + formatDayName(d.date) + '</div>' +
+        '<div class="wc-day-icon" aria-hidden="true">' + d.weather.icon + '</div>' +
+        '<div class="wc-day-range">' + Math.round(d.tempMax) + '&deg;/' + Math.round(d.tempMin) + '&deg;</div>' +
+        (d.precipitationChance != null ? '<div>' + Math.round(d.precipitationChance) + '% rain</div>' : '') +
+        '</div>';
+    }).join('');
+    el.innerHTML =
+      '<div class="wc-head"><div><div class="wc-name"></div><div class="wc-loc"></div></div></div>' +
+      '<div class="wc-now">' +
+        '<span class="wc-icon" aria-hidden="true">' + c.weather.icon + '</span>' +
+        '<div><div class="wc-temp">' + Math.round(c.temperature) + '&deg;C</div><div class="wc-label"></div></div>' +
+      '</div>' +
+      '<div class="wc-meta"><span>Humidity ' + Math.round(c.humidity) + '%</span><span>Wind ' + Math.round(c.windSpeed) + ' km/h</span></div>' +
+      '<div class="wc-updated"></div>' +
+      '<div class="wc-forecast">' + daysHtml + '</div>';
+    el.querySelector('.wc-name').textContent = client.display_name;
+    el.querySelector('.wc-loc').textContent = client.location;
+    el.querySelector('.wc-label').textContent = c.weather.label;
+    el.querySelector('.wc-updated').textContent = 'Updated ' + formatUpdatedAt(c.time, forecast.timezone) + ' local time';
+    return el;
+  }
+
+  function loadWeatherGrid() {
+    var grid = document.getElementById('weatherGrid');
+    fetch('clients/clients.json', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (list) {
+        grid.innerHTML = '';
+        var withCoords = list.filter(function (c) { return typeof c.lat === 'number' && typeof c.lon === 'number'; });
+        if (!withCoords.length) {
+          grid.innerHTML = '<p class="wc-error">No client coordinates configured yet.</p>';
+          return;
+        }
+        withCoords.forEach(function (client) {
+          var slot = skeletonCard();
+          grid.appendChild(slot);
+          window.VerdantisWeather.getForecast(client.lat, client.lon)
+            .then(function (forecast) { grid.replaceChild(populatedCard(client, forecast), slot); })
+            .catch(function (err) {
+              console.warn('Weather fetch failed for ' + client.slug, err);
+              grid.replaceChild(errorCard(client), slot);
+            });
+        });
+      })
+      .catch(function (err) {
+        grid.innerHTML = '<p class="wc-error">Weather unavailable.</p>';
+        console.error('Could not load clients/clients.json for the weather grid.', err);
+      });
+  }
+
+  loadWeatherGrid();
+})();
+</script>
+
+<script>
+(function () {
+  "use strict";
+  // Placeholder inbox - replace with a real monitored address before this
+  // goes live; nothing else in the repo reads this constant, so it's safe
+  // to edit here directly (no secret, no build step).
+  var CONTACT_EMAIL = "pilot-enquiries@verdantis.example";
+
+  var form = document.getElementById('enquiryForm');
+  if (!form) return;
+  var errorEl = document.getElementById('enquiryError');
+  var sentEl = document.getElementById('enquirySent');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    sentEl.hidden = true;
+    if (!form.checkValidity()) {
+      errorEl.textContent = 'Please fill in your name, a valid email address, and your plot location.';
+      errorEl.hidden = false;
+      var firstInvalid = form.querySelector(':invalid');
+      if (firstInvalid) firstInvalid.focus();
+      return;
+    }
+    errorEl.hidden = true;
+
+    var data = new FormData(form);
+    var subject = encodeURIComponent('Verdantis pilot enquiry - ' + data.get('location'));
+    var body = encodeURIComponent(
+      'Name: ' + data.get('name') + '\n' +
+      'Email: ' + data.get('email') + '\n' +
+      'Plot location: ' + data.get('location') + '\n\n' +
+      (data.get('message') || '')
+    );
+    window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + subject + '&body=' + body;
+    sentEl.hidden = false;
+  });
+})();
+</script>
 </body>
 </html>

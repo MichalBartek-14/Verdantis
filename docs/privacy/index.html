@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Privacy note (draft) - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Verdantis - draft privacy note covering plot and sensor data handling.">
+<link rel="icon" href="../_template/assets/img/brand/logo-small.png">
+<link rel="stylesheet" href="../_template/assets/style.css">
+<style>
+  /* Same minimal "shared top-level page" pattern as docs/clients/index.html
+     and docs/briefing/ - its own folder rather than inside _template/ (not
+     a per-client dashboard page), reusing the template stylesheet directly. */
+  .privacy-wrap { max-width: 720px; margin: 0 auto; padding: 70px clamp(20px, 5vw, 56px) 90px; }
+  .privacy-wrap h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 10px; }
+  .privacy-wrap > p.lede { color: var(--text-muted); margin: 0 0 20px; max-width: 64ch; }
+  .draft-badge {
+    display: inline-block; font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #fff; background: var(--amber);
+    padding: 3px 10px; border-radius: 999px; margin-bottom: 18px;
+  }
+  .privacy-wrap h2 { font-size: var(--text-lg); margin: var(--space-7) 0 10px; }
+  .privacy-wrap p, .privacy-wrap li { color: var(--text); max-width: 68ch; }
+  .back-link { display: inline-block; margin-bottom: 22px; font-size: 0.86rem; font-weight: 600; color: var(--text-muted); text-decoration: none; }
+  .back-link:hover { color: var(--green-dark); }
+</style>
+</head>
+<body>
+
+<div class="privacy-wrap">
+  <a class="back-link" href="../index.html">&larr; Back to Verdantis</a>
+  <span class="draft-badge">Draft - not yet legally reviewed</span>
+  <h1>Privacy note</h1>
+  <p class="lede">What Verdantis collects about your plot and how it's used, in plain language. This is a
+    pilot-stage draft, not a finished policy - ask us anything it doesn't cover.</p>
+
+  <h2>What we collect</h2>
+  <ul>
+    <li>Your plot's boundary (the shapefile you provide) and the free Copernicus Sentinel-2 imagery over it.</li>
+    <li>Vegetation and moisture indices (NDVI, NDWI, NDMI) and structural-change flags derived from that imagery.</li>
+    <li>If you've connected one, readings from your own field sensor(s) (temperature, position, soil moisture).</li>
+    <li>If you send a pilot enquiry, whatever you type into that form (name, email, plot location, message).</li>
+  </ul>
+
+  <h2>Why</h2>
+  <p>Solely to run and improve your monitoring pilot, and to respond to enquiries about joining it. We don't sell,
+    advertise against, or otherwise use this data for anything else.</p>
+
+  <h2>Who can see it</h2>
+  <p>Your dashboard is published at its own address and is meant to be access-restricted to you (Basic Auth today).
+    Pipeline runs and data processing happen locally, by hand - there's no always-on server holding your data.</p>
+
+  <h2>Enquiry form</h2>
+  <p>Submitting the homepage's enquiry form opens a pre-filled email in your own mail client - the content is sent
+    directly to us by email, not stored by this website itself.</p>
+
+  <h2>Questions</h2>
+  <p>Contact us about this note at <a href="mailto:pilot-enquiries@verdantis.example">pilot-enquiries@verdantis.example</a>
+    (placeholder address pending a reviewed policy).</p>
+</div>
+
+</body>
+</html>

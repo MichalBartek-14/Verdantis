@@ -3,6 +3,8 @@
   "display_name": "Devinska Nova Ves Urban Greenery Plot",
   "client_name": "Devinska Nova Ves Urban Greenery Plot",
   "location": "Devinska Nova Ves, Bratislava, Slovakia",
+  "lat": 48.22291,
+  "lon": 16.98399,
   "plot_shapefile": "data/devinska/Client_Devinska.shp",
   "plot_area_ha": 57.57,
   "language": "en",

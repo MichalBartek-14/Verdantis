@@ -2,16 +2,22 @@
   {
     "slug": "devinska",
     "display_name": "Devinska Nova Ves Urban Greenery Plot",
-    "location": "Devinska Nova Ves, Bratislava, Slovakia"
+    "location": "Devinska Nova Ves, Bratislava, Slovakia",
+    "lat": 48.22291,
+    "lon": 16.98399
   },
   {
     "slug": "valice",
     "display_name": "Valice Fruit tree Plot",
-    "location": "Valice, Slovakia"
+    "location": "Valice, Slovakia",
+    "lat": 48.44834,
+    "lon": 20.20393
   },
   {
     "slug": "vepor",
     "display_name": "Vepor Forest Plot",
-    "location": "Vepor, Slovakia"
+    "location": "Vepor, Slovakia",
+    "lat": 48.67375,
+    "lon": 19.75879
   }
 ]
