@@ -17,14 +17,14 @@
      than a forked copy, so both stay visually in sync for free. */
   /* Faded satellite-photo backdrop instead of a flat --bg fill - same
      page1.jpg already used by the hub/briefing hero photos, washed out
-     under a tint matching --bg (#0f1a15) so the client-row cards on
+     under a tint matching --bg (#f6f4ee) so the white client-row cards on
      top keep full contrast/legibility. fixed attachment gives it a subtle
      parallax feel while scrolling the client list; if the file is ever
      missing this just silently falls back to the plain --bg color (no
      broken-image artifact, unlike an <img> tag). */
   body {
     background-color: var(--bg);
-    background-image: linear-gradient(rgba(15,26,21,0.82), rgba(15,26,21,0.82)), url('../assets/img/intro/page1.jpg');
+    background-image: linear-gradient(rgba(246,244,238,0.72), rgba(246,244,238,0.72)), url('../assets/img/intro/page1.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

@@ -24,16 +24,15 @@
 
   var DEFAULT_LANG = "en";
 
-  function lighten(hex, amount) {
-    // Cheap, dependency-free lighten for the accent's "-dark" hover/heading/
-    // kpi-value shade - not real color-space math, just scales each channel
-    // toward white. Lightens (rather than darkens) because this value is
-    // used as a TEXT/border color against the site's dark --card-bg - a
-    // darkened accent would be dark-on-dark and fail contrast.
+  function darken(hex, amount) {
+    // Cheap, dependency-free darken for the accent's "-dark" hover/heading
+    // shade - not real color-space math, just scales each channel toward
+    // black. Good enough for a UI accent; swap for something fancier if a
+    // client's brand color needs perceptual accuracy.
     hex = hex.replace("#", "");
     var r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
-    var toHex = function (v) { return Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0"); };
-    r = r + (255 - r) * amount; g = g + (255 - g) * amount; b = b + (255 - b) * amount;
+    var f = 1 - amount;
+    var toHex = function (v) { return Math.round(v * f).toString(16).padStart(2, "0"); };
     return "#" + toHex(r) + toHex(g) + toHex(b);
   }
 
@@ -70,7 +69,7 @@
     var root = document.documentElement.style;
     var accent = meta.accent_color || "#2c7a3c";
     root.setProperty("--green", accent);
-    root.setProperty("--green-dark", lighten(accent, 0.35));
+    root.setProperty("--green-dark", darken(accent, 0.35));
 
     document.querySelectorAll("[data-client-name]").forEach(function (el) { el.textContent = meta.client_name; });
     document.querySelectorAll("[data-client-location]").forEach(function (el) { el.textContent = meta.location; });

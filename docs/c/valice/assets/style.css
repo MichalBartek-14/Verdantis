@@ -5,17 +5,17 @@
    one product, not a report bolted onto a generic template. */
 
 :root {
-  --bg: #0f1a15;
-  --bg-alt: #16241c;
-  --card-bg: #1b2b21;
-  --text: #eef5f0;
-  --text-muted: #aec4b4;
-  --border: #2d4436;
+  --bg: #f6f4ee;
+  --bg-alt: #edf0e6;
+  --card-bg: #ffffff;
+  --text: #182420;
+  --text-muted: #57655c;
+  --border: #dde3d6;
   --green: #2c7a3c;
-  --green-dark: #8fd9a0;
+  --green-dark: #1c4d27;
   --teal: #1f7a8c;
   --amber: #c07a20;
-  --shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  --shadow: 0 6px 24px rgba(20, 35, 26, 0.08);
   --radius: 14px;
 
   /* Spacing scale - replaces ad hoc px values that had drifted into several
@@ -67,7 +67,7 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: space-between;
   padding: 14px clamp(20px, 5vw, 56px);
-  background: rgba(15, 26, 21, 0.92);
+  background: rgba(246, 244, 238, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
 }
