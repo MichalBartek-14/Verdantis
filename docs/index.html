@@ -41,6 +41,14 @@
      collapsing to fewer, still-equal columns on narrow ones. */
   .hub-cards .feature-grid { grid-template-columns: repeat(3, minmax(220px, 1fr)); justify-content: center; }
   @media (max-width: 760px) { .hub-cards .feature-grid { grid-template-columns: 1fr; } }
+
+  /* Narrow dark-green outline on just these 3 entry cards (Clients/
+     Briefing/Sensors) - the shared .card base only gives a faint
+     var(--border) hairline, easy to lose against the page background;
+     this page's own 3 "pick where to go" cards benefit from reading as
+     more clearly separate/clickable than that. Everywhere else on the
+     site keeps the shared .card border untouched. */
+  .hub-cards .feature-card { border: 1.5px solid var(--green-dark); }
 </style>
 </head>
 <body>
