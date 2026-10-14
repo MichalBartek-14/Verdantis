@@ -1,0 +1,40 @@
+{
+  "_comment": "Fake-API input config - the two inputs the brief asked for (area bbox, and crop/season-coded critical drought values) plus the sensor registry needed to place 7 synthetic sensors on it. Bbox matches clients/devinska.json's real alert_bbox, so the simulation sits over real, already-public plot geometry rather than an arbitrary rectangle. Edit freely - nothing here is read by the main pipeline (config.py/clients.py), this folder is self-contained.",
+
+  "bbox": { "west": 16.976556, "south": 48.218328, "east": 16.991429, "north": 48.227495 },
+
+  "update_interval_seconds": 30,
+  "backfill_days": 10,
+  "backfill_interval_seconds": 900,
+
+  "require_api_key": false,
+  "api_key": "demo-key-change-me",
+
+  "static_sensors": [
+    { "sensor_id": "sensor01", "location": "dnv-a", "lat": 48.22062,  "lon": 16.978787, "baseline_temp_c": 23.5, "baseline_soil_moisture": 2550, "soil_moisture_noise": 35 },
+    { "sensor_id": "sensor02", "location": "dnv-b", "lat": 48.22062,  "lon": 16.983992, "baseline_temp_c": 23.6, "baseline_soil_moisture": 2480, "soil_moisture_noise": 40 },
+    { "sensor_id": "sensor03", "location": "dnv-c", "lat": 48.22062,  "lon": 16.989198, "baseline_temp_c": 23.4, "baseline_soil_moisture": 2180, "soil_moisture_noise": 45 },
+    { "sensor_id": "sensor04", "location": "dnv-d", "lat": 48.225203, "lon": 16.978787, "baseline_temp_c": 23.7, "baseline_soil_moisture": 2600, "soil_moisture_noise": 30 },
+    { "sensor_id": "sensor05", "location": "dnv-e", "lat": 48.225203, "lon": 16.983992, "baseline_temp_c": 23.5, "baseline_soil_moisture": 2300, "soil_moisture_noise": 50 },
+    { "sensor_id": "sensor06", "location": "dnv-f", "lat": 48.225203, "lon": 16.989198, "baseline_temp_c": 23.3, "baseline_soil_moisture": 2420, "soil_moisture_noise": 40 }
+  ],
+
+  "moving_sensor": {
+    "sensor_id": "tractor01",
+    "location": "dnv-mobile",
+    "waypoint_a": { "lat": 48.219703, "lon": 16.978043 },
+    "waypoint_b": { "lat": 48.22612,  "lon": 16.989942 },
+    "traverse_minutes": 18,
+    "altitude_m": 172,
+    "comment": "Linear back-and-forth (triangle wave) between the two waypoints, one full A->B->A cycle every traverse_minutes - simulates a tractor/vehicle working the plot. Position is a pure function of elapsed time, not a random walk, so it's reproducible and always lands inside the bbox."
+  },
+
+  "crop_seasonal_critical_soil_moisture": {
+    "_comment": "Deterministic 'critically low' soil-moisture thresholds (raw sensor units, same unlabelled scale the real API reports - see data/verdantis-sensor-infra-reference.md). One row per crop, one column per season. Swap active_crop/active_season below, or add rows, to change what counts as drought-critical for the dashboard's status bar - no code change needed.",
+    "urban_greenery": { "spring": 2300, "summer": 2400, "autumn": 2250, "winter": 2100 },
+    "orchard":        { "spring": 2350, "summer": 2450, "autumn": 2300, "winter": 2150 },
+    "maize":          { "spring": 2150, "summer": 2500, "autumn": 2200, "winter": 1950 }
+  },
+  "active_crop": "urban_greenery",
+  "active_season": "autumn"
+}

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live Sensor Network Simulation - Verdantis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Verdantis - a synthetic 7-sensor network demo (6 static + 1 moving), built against a fake API that mirrors the real sensor service's shape.">
+<link rel="icon" href="../assets/img/brand/logo-small.png">
+<link rel="apple-touch-icon" href="../assets/img/brand/logo-small.png">
+<link rel="stylesheet" href="../_template/assets/style.css">
+<!-- Leaflet + Lightweight Charts: same CDN tags/SRI hashes as
+     docs/sensors/index.html and docs/_template/index.html's own copies -
+     see those files' comments for why these two libraries specifically. -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"
+  integrity="sha384-JZigAjwiaZtkUbA44CWkPaT3iBb/mU5pO6QOANp+OqHd4q+1+7MG1kzp2OOP9ZfP" crossorigin="anonymous"></script>
+<style>
+  /* Hand-written standalone page, same treatment as docs/sensors/index.html
+     (deliberately not wired through _template/assets/client.js - there's
+     no per-client data here, it's one shared demo). */
+  body { background: var(--bg); }
+  .sim-topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px clamp(20px, 5vw, 56px);
+  }
+  .sim-topbar .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; color: var(--text); text-decoration: none; }
+  .sim-topbar .brand .mark { width: 24px; height: 24px; border-radius: 7px; background: linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); flex-shrink: 0; }
+  .sim-body { max-width: 1080px; margin: 0 auto; padding: 10px clamp(20px, 5vw, 56px) 60px; }
+  .sim-body .eyebrow { display: block; margin-bottom: 10px; }
+  .sim-body h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 14px; }
+  .sim-body > p.lede { color: var(--text-muted); max-width: 72ch; font-size: 1.05rem; margin: 0 0 20px; }
+
+  .demo-badge {
+    display: inline-block; font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #fff; background: var(--teal);
+    padding: 3px 10px; border-radius: 999px; margin-bottom: var(--space-4);
+  }
+
+  /* Backend connection status pill - the one thing on this page that
+     genuinely varies run to run, since it depends on whether
+     sensor_fake_api/ happens to be running locally right now. */
+  .backend-status {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: var(--text-sm); font-weight: 600; margin-bottom: var(--space-5);
+    padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--card-bg);
+  }
+  .backend-status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); flex-shrink: 0; }
+  .backend-status.ok { color: var(--green-dark); border-color: rgba(47,158,92,0.35); }
+  .backend-status.ok .dot { background: var(--green); }
+  .backend-status.down { color: #b0442f; border-color: rgba(176,68,47,0.3); }
+  .backend-status.down .dot { background: #b0442f; }
+
+  .sim-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--space-6);
+    align-items: start;
+  }
+  @media (max-width: 860px) { .sim-grid { grid-template-columns: minmax(0, 1fr); } }
+
+  .sim-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: var(--space-5);
+  }
+  .sim-card h2 { font-size: var(--text-md); margin: 0 0 4px; }
+  .sim-card .sub { font-size: var(--text-sm); color: var(--text-muted); margin: 0 0 var(--space-4); }
+
+  #simMap { height: 420px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-alt); }
+  @media (max-width: 640px) { #simMap { height: 300px; } }
+  .map-legend { display: flex; gap: var(--space-5); margin-top: var(--space-3); font-size: var(--text-xs); color: var(--text-muted); flex-wrap: wrap; }
+  .map-legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+  .side-stack { display: flex; flex-direction: column; gap: var(--space-5); }
+
+  .moisture-chart-wrap { width: 100%; height: 260px; }
+  .chart-legend { display: flex; gap: 10px 16px; margin-top: var(--space-3); font-size: var(--text-xs); color: var(--text-muted); flex-wrap: wrap; }
+  .chart-legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
+
+  /* Critical-threshold status bars - one horizontal bar per static sensor,
+     filled proportionally to its latest soil-moisture reading against a
+     fixed display range, with the crop/season critical value marked as a
+     tick. Plain CSS rather than a charting lib - this is a simple
+     comparison widget, not a time series. */
+  .status-rows { display: flex; flex-direction: column; gap: 10px; }
+  .status-row { display: grid; grid-template-columns: 60px 1fr 56px; align-items: center; gap: 10px; font-size: var(--text-sm); }
+  .status-row .loc { color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .status-row .val { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .bar-track { position: relative; height: 14px; border-radius: 7px; background: var(--bg-alt); border: 1px solid var(--border); overflow: visible; }
+  .bar-fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 7px 0 0 7px; transition: width 0.4s ease, background 0.4s ease; }
+  .bar-threshold-tick { position: absolute; top: -3px; bottom: -3px; width: 2px; background: #b0442f; }
+  .status-summary { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--border); font-size: var(--text-sm); color: var(--text-muted); }
+  .status-summary strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="sim-topbar">
+  <a class="brand" href="../index.html"><span class="mark"></span> Verdantis</a>
+</div>
+
+<div class="sim-body">
+  <span class="eyebrow">Sensors &amp; Services</span>
+  <h1>Live sensor network simulation</h1>
+  <p class="lede">
+    A synthetic 7-sensor network over the Devinska pilot plot - 6 fixed soil-moisture/temperature
+    sensors and 1 moving sensor simulating a tractor crossing the field - served by a small fake API
+    (<code>sensor_fake_api/</code>) built to the exact shape of the real field-sensor service while it's
+    offline. Nothing below is real-world data; it's a deterministic simulation, ready to switch over
+    to the real API with a one-line change once it's live again.
+  </p>
+
+  <span class="demo-badge">Demo &middot; synthetic data, requires the fake API running locally</span>
+  <div id="backendStatus" class="backend-status">
+    <span class="dot"></span><span id="backendStatusText">Checking for the fake API&hellip;</span>
+  </div>
+
+  <div class="sim-grid">
+    <div class="sim-card">
+      <h2>Sensor map</h2>
+      <p class="sub">6 fixed sensors, 1 moving sensor (updates its position every poll).</p>
+      <div id="simMap"></div>
+      <div class="map-legend">
+        <span><span class="swatch" style="background:#2f9e5c"></span>Above critical threshold</span>
+        <span><span class="swatch" style="background:#c07a20"></span>Within warning margin</span>
+        <span><span class="swatch" style="background:#b0442f"></span>Below critical threshold</span>
+        <span><span class="swatch" style="background:#1f7a8c"></span>Moving sensor (tractor01)</span>
+      </div>
+    </div>
+
+    <div class="side-stack">
+      <div class="sim-card">
+        <h2>Soil moisture &middot; past 10 days</h2>
+        <p class="sub">One line per static sensor &middot; dashed line = active critical threshold.</p>
+        <div class="moisture-chart-wrap" id="moistureChart"></div>
+        <div class="chart-legend" id="chartLegend"></div>
+        <p class="note" id="chartFallback" style="display:none;">Can't reach the fake API - see
+          <code>sensor_fake_api/README.md</code> to start it.</p>
+      </div>
+
+      <div class="sim-card">
+        <h2>Critical soil-moisture status</h2>
+        <p class="sub" id="thresholdSub">Loading threshold&hellip;</p>
+        <div class="status-rows" id="statusRows"></div>
+        <div class="status-summary" id="statusSummary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // Change this (and nothing else on the page) to point at the real
+  // sensor API once it's live again - see sensor_fake_api/README.md's
+  // "Swapping to the real API later" section.
+  var API_BASE = 'http://localhost:8000';
+
+  var SERIES_COLORS = ['#2f9e5c', '#1f7a8c', '#c07a20', '#a35fc0', '#4f7fd1', '#c0486b'];
+  var STATUS_OK = '#2f9e5c', STATUS_WARN = '#c07a20', STATUS_CRITICAL = '#b0442f';
+  var WARNING_MARGIN = 80;      // within this many raw units above threshold -> amber, not green
+  var BAR_DISPLAY_MIN = 1800, BAR_DISPLAY_MAX = 2800; // fixed display range for the status bars
+
+  var statusEl = document.getElementById('backendStatus');
+  var statusTextEl = document.getElementById('backendStatusText');
+  function setBackendStatus(ok, text) {
+    statusEl.className = 'backend-status ' + (ok ? 'ok' : 'down');
+    statusTextEl.textContent = text;
+  }
+
+  function fetchJson(path) {
+    return fetch(API_BASE + path, { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    });
+  }
+
+  function statusColor(value, threshold) {
+    if (typeof value !== 'number') return '#999';
+    if (value < threshold) return STATUS_CRITICAL;
+    if (value < threshold + WARNING_MARGIN) return STATUS_WARN;
+    return STATUS_OK;
+  }
+
+  var map = null, markers = {}, movingMarker = null, movingIcon = null;
+  function initMap(cfg) {
+    var b = cfg.bbox;
+    var bounds = [[b.south, b.west], [b.north, b.east]];
+    map = L.map('simMap', { scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    L.rectangle(bounds, { color: '#2f9e5c', weight: 2, fill: true, fillOpacity: 0.08, dashArray: '6 4' }).addTo(map);
+    map.fitBounds(bounds, { padding: [30, 30] });
+
+    cfg.static_sensors.forEach(function (s) {
+      markers[s.sensor_id] = L.circleMarker([s.lat, s.lon], {
+        radius: 9, color: '#fff', weight: 2, fillColor: '#999', fillOpacity: 1
+      }).bindPopup(s.sensor_id).addTo(map);
+    });
+
+    movingIcon = L.divIcon({
+      className: '', html: '<div style="width:16px;height:16px;border-radius:4px;background:#1f7a8c;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>',
+      iconSize: [16, 16], iconAnchor: [8, 8],
+    });
+    movingMarker = L.marker([(b.south + b.north) / 2, (b.west + b.east) / 2], { icon: movingIcon })
+      .bindPopup(cfg.moving_sensor.sensor_id).addTo(map);
+  }
+
+  function updateMapMarker(sensorId, value, threshold) {
+    var m = markers[sensorId];
+    if (!m) return;
+    m.setStyle({ fillColor: statusColor(value, threshold) });
+    m.setPopupContent(sensorId + '<br>' + (typeof value === 'number' ? value.toFixed(0) : '?') + ' (threshold ' + threshold + ')');
+  }
+
+  function updateMovingMarker(lat, lon) {
+    if (movingMarker) movingMarker.setLatLng([lat, lon]);
+  }
+
+  // --- Chart (Lightweight Charts) ----------------------------------------
+  var chart = null, seriesBySensor = {}, thresholdLineDrawn = false;
+  function initChart(cfg) {
+    var container = document.getElementById('moistureChart');
+    chart = LightweightCharts.createChart(container, {
+      width: container.clientWidth, height: 260,
+      layout: { background: { type: 'solid', color: 'transparent' }, textColor: '#182420' },
+      grid: { vertLines: { color: '#edf0e6' }, horzLines: { color: '#edf0e6' } },
+      rightPriceScale: { borderColor: '#dde3d6' },
+      timeScale: { borderColor: '#dde3d6', timeVisible: false },
+    });
+    window.addEventListener('resize', function () { chart.applyOptions({ width: container.clientWidth }); });
+
+    var legend = document.getElementById('chartLegend');
+    cfg.static_sensors.forEach(function (s, i) {
+      var color = SERIES_COLORS[i % SERIES_COLORS.length];
+      seriesBySensor[s.sensor_id] = chart.addLineSeries({ color: color, lineWidth: 2 });
+      var sw = document.createElement('span');
+      sw.innerHTML = '<span class="swatch" style="background:' + color + '"></span>' + s.location;
+      legend.appendChild(sw);
+    });
+  }
+
+  function dedupeSortedPoints(readings) {
+    var byTime = {};
+    readings.forEach(function (r) {
+      if (typeof r.soil_moisture !== 'number' || !r.date_time) return;
+      var seconds = Math.floor(new Date(r.date_time).getTime() / 1000);
+      if (isNaN(seconds)) return;
+      byTime[seconds] = r.soil_moisture;
+    });
+    return Object.keys(byTime).map(Number).sort(function (a, b) { return a - b; })
+      .map(function (t) { return { time: t, value: byTime[t] }; });
+  }
+
+  function loadTenDayHistory(cfg) {
+    // Mirrors the real API's own constraints: `last` is capped at 1000
+    // (data/verdantis-sensor-infra-reference.md section 6), so a single
+    // unfiltered call can't return 10 days x 6 sensors. Filtering by
+    // sensor_id (one request per sensor, each well under the cap) is the
+    // same approach a real client would have to take.
+    var calls = cfg.static_sensors.map(function (s) {
+      return fetchJson('/api/v1/temperature?sensor_id=' + encodeURIComponent(s.sensor_id) + '&last=1000')
+        .then(function (resp) { return { sensor_id: s.sensor_id, points: dedupeSortedPoints(resp.data || []) }; });
+    });
+    return Promise.all(calls);
+  }
+
+  // --- Status bars ---------------------------------------------------------
+  function renderStatusBars(cfg, latestBySensor) {
+    var threshold = cfg.critical_soil_moisture;
+    document.getElementById('thresholdSub').textContent =
+      cfg.active_crop + ' / ' + cfg.active_season + ' critical threshold: ' + threshold + ' (raw units)';
+
+    var rows = document.getElementById('statusRows');
+    rows.innerHTML = '';
+    var belowCount = 0, haveAny = false;
+    var tickPct = Math.max(0, Math.min(100, (threshold - BAR_DISPLAY_MIN) / (BAR_DISPLAY_MAX - BAR_DISPLAY_MIN) * 100));
+
+    cfg.static_sensors.forEach(function (s) {
+      var value = latestBySensor[s.sensor_id];
+      var row = document.createElement('div');
+      row.className = 'status-row';
+      var fillPct = typeof value === 'number'
+        ? Math.max(2, Math.min(100, (value - BAR_DISPLAY_MIN) / (BAR_DISPLAY_MAX - BAR_DISPLAY_MIN) * 100))
+        : 0;
+      var color = typeof value === 'number' ? statusColor(value, threshold) : '#999';
+      if (typeof value === 'number') {
+        haveAny = true;
+        if (value < threshold) belowCount++;
+      }
+      row.innerHTML =
+        '<span class="loc">' + s.location + '</span>' +
+        '<span class="bar-track"><span class="bar-fill" style="width:' + fillPct + '%;background:' + color + '"></span>' +
+        '<span class="bar-threshold-tick" style="left:' + tickPct + '%"></span></span>' +
+        '<span class="val">' + (typeof value === 'number' ? value.toFixed(0) : '&ndash;') + '</span>';
+      rows.appendChild(row);
+    });
+
+    var summary = document.getElementById('statusSummary');
+    summary.innerHTML = haveAny
+      ? '<strong>' + belowCount + ' / ' + cfg.static_sensors.length + '</strong> sensors currently below the critical threshold.'
+      : 'Waiting for readings&hellip;';
+  }
+
+  // --- Poll loop -------------------------------------------------------------
+  var latestTempId = 0, latestGeoId = 0;
+  var latestBySensor = {};
+
+  function applyNewTempReadings(rows) {
+    rows.forEach(function (r) {
+      if (r.id > latestTempId) latestTempId = r.id;
+      latestBySensor[r.sensor_id] = r.soil_moisture;
+      var series = seriesBySensor[r.sensor_id];
+      if (series && typeof r.soil_moisture === 'number' && r.date_time) {
+        var seconds = Math.floor(new Date(r.date_time).getTime() / 1000);
+        series.update({ time: seconds, value: r.soil_moisture });
+      }
+    });
+  }
+
+  function pollOnce(cfg) {
+    var path = latestTempId
+      ? '/api/v1/temperature?after_id=' + latestTempId
+      : '/api/v1/temperature?last=' + cfg.static_sensors.length;
+    var geoPath = latestGeoId
+      ? '/api/v1/location-data?after_id=' + latestGeoId
+      : '/api/v1/location-data?last=1';
+
+    Promise.all([fetchJson(path), fetchJson(geoPath)]).then(function (results) {
+      setBackendStatus(true, 'Live — fake API reachable (polling every ' + cfg.update_interval_seconds + 's)');
+      applyNewTempReadings(results[0].data || []);
+      renderStatusBars(cfg, latestBySensor);
+      cfg.static_sensors.forEach(function (s) { updateMapMarker(s.sensor_id, latestBySensor[s.sensor_id], cfg.critical_soil_moisture); });
+
+      var geoRows = results[1].data || [];
+      geoRows.forEach(function (g) { if (g.id > latestGeoId) latestGeoId = g.id; });
+      var lastGeo = geoRows[geoRows.length - 1];
+      if (lastGeo) updateMovingMarker(lastGeo.latitude, lastGeo.longitude);
+    }).catch(function () {
+      setBackendStatus(false, 'Fake API not reachable — start it with sensor_fake_api/README.md, then reload.');
+    });
+  }
+
+  function boot() {
+    fetchJson('/api/v1/sim/config').then(function (cfg) {
+      setBackendStatus(true, 'Connected — polling every ' + cfg.update_interval_seconds + 's');
+      initMap(cfg);
+      initChart(cfg);
+
+      loadTenDayHistory(cfg).then(function (results) {
+        results.forEach(function (r) {
+          var series = seriesBySensor[r.sensor_id];
+          if (series && r.points.length) series.setData(r.points);
+          if (r.points.length) latestBySensor[r.sensor_id] = r.points[r.points.length - 1].value;
+        });
+        if (seriesBySensor[cfg.static_sensors[0].sensor_id]) {
+          seriesBySensor[cfg.static_sensors[0].sensor_id].createPriceLine({
+            price: cfg.critical_soil_moisture, color: STATUS_CRITICAL, lineWidth: 2,
+            lineStyle: LightweightCharts.LineStyle.Dashed, axisLabelVisible: true,
+            title: 'critical (' + cfg.active_crop + '/' + cfg.active_season + ')',
+          });
+        }
+        chart.timeScale().fitContent();
+        renderStatusBars(cfg, latestBySensor);
+        cfg.static_sensors.forEach(function (s) { updateMapMarker(s.sensor_id, latestBySensor[s.sensor_id], cfg.critical_soil_moisture); });
+      }).catch(function () {
+        document.getElementById('moistureChart').style.display = 'none';
+        document.getElementById('chartFallback').style.display = '';
+      });
+
+      pollOnce(cfg);
+      setInterval(function () { pollOnce(cfg); }, cfg.update_interval_seconds * 1000);
+    }).catch(function () {
+      setBackendStatus(false, 'Fake API not reachable at ' + API_BASE + ' — see sensor_fake_api/README.md to start it.');
+      document.getElementById('moistureChart').style.display = 'none';
+      document.getElementById('chartFallback').style.display = '';
+      document.getElementById('thresholdSub').textContent = 'Unavailable - fake API not running.';
+    });
+  }
+
+  boot();
+})();
+</script>
+
+<script src="../_template/assets/brand-logo.js"></script>
+<script>initBrandLogo('../assets/img/brand/');</script>
+</body>
+</html>

@@ -144,3 +144,25 @@ for the exact format(s)), not an LLM-in-the-loop "figure out the format every ru
 format (and therefore `sensor_track.json`) is still unwritten; extend
 `ingest_sensor_data.py` with a second parser once one shows up, rather than assuming it
 matches the temperature sensor's format.
+
+**Fake sensor API (`sensor_fake_api/`)**: a standalone FastAPI service, independent of
+the rest of this repo (`config.py`/`clients.py` never import it, it writes nothing into
+`outputs/`/`docs/`), that mirrors the real field-sensor API's exact contract - same
+`/api/v1/temperature` and `/api/v1/location-data` endpoints, same query params
+(`sensor_id`/`location`/`from`/`to`/`last`/`after_id`), same `{"data": [...]}` envelope -
+while that real API is offline. Simulates 7 sensors over Devinska's real `alert_bbox`: 6
+static tempsensors (`simulator.py`'s diurnal-temperature + noisy-soil-moisture functions)
+and 1 moving geosensor whose position is a deterministic triangle-wave interpolation
+between two waypoints (a tractor crossing the plot), ticking one new reading per sensor
+every `update_interval_seconds` (`sensor_fake_api/config.json`). Also serves one
+fake-only endpoint, `/api/v1/sim/config` (deliberately `/sim/`-namespaced so it's never
+mistaken for part of the real contract), exposing the bbox, static sensor
+id->lat/lon registry, and a deterministic crop/season "critically low soil moisture"
+threshold table - config.json's `crop_seasonal_critical_soil_moisture` - that a real
+deployment would instead source from somewhere like `clients/<slug>.json`'s
+`sensor_location`. `docs/sensors/simulation.html` polls it (defaulting to
+`http://localhost:8000`) to drive a live Leaflet map + a 10-day soil-moisture chart +
+a critical-threshold status readout; run `uvicorn app:app --port 8000` from inside
+`sensor_fake_api/` to see it live (see that folder's own README for the swap-to-real-API
+path). Entirely a local dev/demo tool - nothing here is deployed, and the static
+dashboard page degrades to a "fake API not reachable" note if it isn't running.
