@@ -18,6 +18,45 @@ Nothing here runs automatically - there is no CI/cron pulling new imagery. Refre
 client's dashboard is always: run the relevant script(s) -> `publish_site.py` -> commit
 `docs/` -> push.
 
+## Security: this repo is public - treat every commit accordingly
+
+**This GitHub repo (`MichalBartek-14/Verdantis`) is public.** `netlify/edge-functions/
+protect-clients.js` gates `docs/c/<slug>/*` behind per-client Basic Auth on the
+Netlify-served URL, but that protects *nothing* against the repo itself - every committed
+file is readable straight from GitHub (web UI or `raw.githubusercontent.com`) by anyone,
+auth or not. This already happened once: `clients/valice.json`'s `client_name` carried a
+real client's full name, tied directly to his plot's exact GPS boundary, sitting in a
+public repo for multiple commits before it was caught and anonymized. Don't let it happen
+again - before any commit that touches `clients/*.json`, `docs/c/*`, `sensor_uploads/*`,
+or anything under `secrets/`, check it against this list:
+
+- **Real personal names** - `client_name`/`display_name`/i18n overrides must read as a
+  business/plot name (`_example.json.template`'s own convention - "Acme Forestry Ltd.",
+  not a person), never an individual's name. If a client only has a personal name, use a
+  placeholder like `"<Plot> Orchard"`/`"<Plot> Client"` instead.
+- **API keys, tokens, passwords, credentials of any kind** - these belong in
+  `secrets/<slug>_sensor_api_key.txt` (gitignored) or an env var, per `secrets/README.md`
+  - never hardcoded in a committed file, never in a commit message. `.gitignore` already
+  blocks `secrets/*`, `.env*`, `*.pem`, `*.key`, `*_api_key.txt` as defense-in-depth, but
+  that only stops a file from being staged in the first place - it doesn't catch a key
+  pasted inline into a `.py`/`.json`/`.md` file that isn't one of those patterns.
+- **Precise personal addresses or contact info** beyond what the product genuinely needs
+  (a plot's own geolocation is the product - that's fine; a client's home address, phone
+  number, or personal email is not, unless they gave it specifically to be published).
+- **Anything from `data/verdantis-sensor-infra-reference.md`'s §7-§10** (network/firewall
+  topology, credential-rotation specifics) - that file is about *our own* infra, treat it
+  with the same care as a credential even though it isn't one.
+
+If you find something that shouldn't be there: fix the current file/anonymize it, but do
+**not** unilaterally rewrite git history (`git filter-repo`, force-push) - that's
+destructive and irreversible, and it doesn't undo exposure that already happened while the
+repo was public anyway. Flag it to the user and let them decide (make the repo private
+first, almost always) before touching history.
+
+See also: `README.md`'s "Client access control" section (the Basic Auth / public-repo
+caveat in detail) and `.claude/settings.json`'s pre-commit hook, which runs an automated
+check for exactly this list before any `git commit` goes through.
+
 ## Commands
 
 Setup:

@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "agent",
+            "if": "Bash(git commit*)",
+            "model": "claude-haiku-4-5-20251001",
+            "timeout": 90,
+            "statusMessage": "Checking staged changes for sensitive data (Haiku)...",
+            "prompt": "A `git commit` is about to run in this repo, which is PUBLIC on GitHub - anything committed here is readable by anyone, regardless of the site's own Basic Auth (see CLAUDE.md's \"Security: this repo is public\" section for the full policy and the incident that prompted this check: a real client's name + exact property GPS boundary was committed and only caught in manual review).\n\nRun `git diff --cached` to see exactly what is staged (use `git diff --cached --stat` first if it looks large, then inspect the actual content of any changed text file - skip binary/image diffs, they're not the concern here). Check it against this policy:\n\n1. Real personal names as a `client_name`/`display_name`/i18n value, or anywhere else - these must read as a business/plot name (e.g. \"Acme Forestry Ltd.\", \"Valice Orchard\"), never an individual's name.\n2. API keys, tokens, passwords, or credentials of any kind, hardcoded anywhere (not read from an env var or a gitignored secrets/ file).\n3. Precise personal contact info beyond what the product needs - a client's home address, personal phone number, or personal email. A plot's own geolocation (lat/lon, bbox, shapefile-derived boundary) is fine - that IS the product.\n4. Infra credential-rotation specifics from data/verdantis-sensor-infra-reference.md section 7-10 being copied out into a new committed file.\n\nIf nothing staged violates this policy, end your response with the single word ALLOW on its own line. If you find a violation, end your response with the single word BLOCK on its own line, followed by exactly what you found and in which file(s), so it can be fixed before retrying the commit. Err toward ALLOW for ordinary plot/business data (coordinates, NDVI values, generic location names) - this check is for names/secrets/contact info specifically, not a general data-sensitivity review.\n\nTool call info: $ARGUMENTS"
+          }
+        ]
+      }
+    ]
+  }
+}
