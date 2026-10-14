@@ -21,7 +21,7 @@ Run:  pip install -r sensor_fake_api/requirements.txt
       uvicorn app:app --reload --port 8000        (from inside sensor_fake_api/)
 """
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -41,21 +41,17 @@ STATE = {"temperature": [], "location": [], "next_temp_id": 1, "next_geo_id": 1}
 
 
 def build_backfill(now: datetime) -> None:
-    """Seed STATE with backfill_days of history at backfill_interval_seconds
-    resolution, oldest first, ids assigned in chronological order - run
-    once at startup so the dashboard's "past 10 days" chart has something
-    to show immediately rather than waiting ~10 days for live ticks to
-    accumulate it."""
-    start = now - timedelta(days=CONFIG["backfill_days"])
-    interval = CONFIG["backfill_interval_seconds"]
-    t = start
-    while t <= now:
-        for cfg in CONFIG["static_sensors"]:
-            STATE["temperature"].append(simulator.make_temp_reading(cfg, t, STATE["next_temp_id"]))
-            STATE["next_temp_id"] += 1
-        STATE["location"].append(simulator.make_geo_reading(CONFIG["moving_sensor"], t, STATE["next_geo_id"]))
-        STATE["next_geo_id"] += 1
-        t += timedelta(seconds=interval)
+    """Seed STATE with backfill_days of history - run once at startup so
+    the dashboard's "past 10 days" chart has something to show
+    immediately rather than waiting ~10 days for live ticks to accumulate
+    it. Delegates to simulator.generate_backfill(), the same function
+    generate_snapshot.py uses to write the static files this app's
+    endpoints otherwise duplicate - see that function's docstring."""
+    temp_readings, geo_readings = simulator.generate_backfill(CONFIG, now)
+    STATE["temperature"] = temp_readings
+    STATE["location"] = geo_readings
+    STATE["next_temp_id"] = len(temp_readings) + 1
+    STATE["next_geo_id"] = len(geo_readings) + 1
 
 
 def live_tick(now: datetime) -> None:
@@ -155,24 +151,7 @@ async def get_sim_config():
     clients/<slug>.json's sensor_location rather than from the API
     itself (temperature readings carry a bare location *label*, not
     coordinates - see data/verdantis-sensor-infra-reference.md section 4)."""
-    thresholds = {k: v for k, v in CONFIG["crop_seasonal_critical_soil_moisture"].items() if k != "_comment"}
-    crop, season = CONFIG["active_crop"], CONFIG["active_season"]
-    return {
-        "bbox": CONFIG["bbox"],
-        "update_interval_seconds": CONFIG["update_interval_seconds"],
-        "static_sensors": [
-            {"sensor_id": s["sensor_id"], "location": s["location"], "lat": s["lat"], "lon": s["lon"]}
-            for s in CONFIG["static_sensors"]
-        ],
-        "moving_sensor": {
-            "sensor_id": CONFIG["moving_sensor"]["sensor_id"],
-            "location": CONFIG["moving_sensor"]["location"],
-        },
-        "active_crop": crop,
-        "active_season": season,
-        "critical_soil_moisture": thresholds[crop][season],
-        "crop_seasonal_critical_soil_moisture": thresholds,
-    }
+    return simulator.sim_config_payload(CONFIG)
 
 
 @app.get("/health")

@@ -20,7 +20,7 @@ change to point at the real one once it's live again.
 import hashlib
 import math
 import random
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 # Fixed reference instant the moving sensor's triangle-wave path is phased
 # against, so its position is a pure function of absolute time (not "time
@@ -84,6 +84,55 @@ def make_temp_reading(sensor_cfg: dict, t: datetime, reading_id: int) -> dict:
         "temperature": temp_reading_value(sensor_cfg, t),
         "soil_moisture": soil_moisture_value(sensor_cfg, t),
         "date_time": t.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
+def generate_backfill(config: dict, now: datetime) -> tuple[list[dict], list[dict]]:
+    """config["backfill_days"] of history at config["backfill_interval_seconds"]
+    resolution, oldest first, ids assigned in chronological order starting
+    at 1. Shared by app.py (seeds STATE at server startup, then keeps
+    appending live ticks past `now`) and generate_snapshot.py (writes the
+    result straight to static JSON, no server) - one generation path, not
+    two implementations to keep in sync."""
+    temp_readings: list[dict] = []
+    geo_readings: list[dict] = []
+    next_temp_id = 1
+    next_geo_id = 1
+    start = now - timedelta(days=config["backfill_days"])
+    interval = config["backfill_interval_seconds"]
+    t = start
+    while t <= now:
+        for cfg in config["static_sensors"]:
+            temp_readings.append(make_temp_reading(cfg, t, next_temp_id))
+            next_temp_id += 1
+        geo_readings.append(make_geo_reading(config["moving_sensor"], t, next_geo_id))
+        next_geo_id += 1
+        t += timedelta(seconds=interval)
+    return temp_readings, geo_readings
+
+
+def sim_config_payload(config: dict) -> dict:
+    """The bbox/sensor-registry/threshold payload consumed by the
+    dashboard - NOT part of the real API's contract (see app.py's
+    /api/v1/sim/config docstring for why). Shared so the live endpoint and
+    the static snapshot file (generate_snapshot.py) always agree."""
+    thresholds = {k: v for k, v in config["crop_seasonal_critical_soil_moisture"].items() if k != "_comment"}
+    crop, season = config["active_crop"], config["active_season"]
+    return {
+        "bbox": config["bbox"],
+        "update_interval_seconds": config["update_interval_seconds"],
+        "static_sensors": [
+            {"sensor_id": s["sensor_id"], "location": s["location"], "lat": s["lat"], "lon": s["lon"]}
+            for s in config["static_sensors"]
+        ],
+        "moving_sensor": {
+            "sensor_id": config["moving_sensor"]["sensor_id"],
+            "location": config["moving_sensor"]["location"],
+        },
+        "active_crop": crop,
+        "active_season": season,
+        "critical_soil_moisture": thresholds[crop][season],
+        "crop_seasonal_critical_soil_moisture": thresholds,
     }
 
 

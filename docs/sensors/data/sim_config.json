@@ -1,0 +1,76 @@
+{
+  "bbox": {
+    "west": 16.976556,
+    "south": 48.218328,
+    "east": 16.991429,
+    "north": 48.227495
+  },
+  "update_interval_seconds": 30,
+  "static_sensors": [
+    {
+      "sensor_id": "sensor01",
+      "location": "dnv-a",
+      "lat": 48.22062,
+      "lon": 16.978787
+    },
+    {
+      "sensor_id": "sensor02",
+      "location": "dnv-b",
+      "lat": 48.22062,
+      "lon": 16.983992
+    },
+    {
+      "sensor_id": "sensor03",
+      "location": "dnv-c",
+      "lat": 48.22062,
+      "lon": 16.989198
+    },
+    {
+      "sensor_id": "sensor04",
+      "location": "dnv-d",
+      "lat": 48.225203,
+      "lon": 16.978787
+    },
+    {
+      "sensor_id": "sensor05",
+      "location": "dnv-e",
+      "lat": 48.225203,
+      "lon": 16.983992
+    },
+    {
+      "sensor_id": "sensor06",
+      "location": "dnv-f",
+      "lat": 48.225203,
+      "lon": 16.989198
+    }
+  ],
+  "moving_sensor": {
+    "sensor_id": "tractor01",
+    "location": "dnv-mobile"
+  },
+  "active_crop": "urban_greenery",
+  "active_season": "autumn",
+  "critical_soil_moisture": 2250,
+  "crop_seasonal_critical_soil_moisture": {
+    "urban_greenery": {
+      "spring": 2300,
+      "summer": 2400,
+      "autumn": 2250,
+      "winter": 2100
+    },
+    "orchard": {
+      "spring": 2350,
+      "summer": 2450,
+      "autumn": 2300,
+      "winter": 2150
+    },
+    "maize": {
+      "spring": 2150,
+      "summer": 2500,
+      "autumn": 2200,
+      "winter": 1950
+    }
+  },
+  "generated_at": "2026-10-14T19:51:57Z",
+  "is_snapshot": true
+}

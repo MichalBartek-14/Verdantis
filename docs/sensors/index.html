@@ -135,9 +135,11 @@
     <h2>Try it: a 7-sensor network simulation</h2>
     <p>The real field-sensor API is temporarily offline, so this is built against a fake API
       (<code>sensor_fake_api/</code> in the repo) matching its exact shape - 6 fixed sensors plus 1 moving
-      sensor simulating a tractor crossing the plot, a live map, a 10-day soil-moisture chart, and a
-      crop/season-aware "critically low" status readout. Run it locally to see it update in real time.</p>
-    <p><a class="btn btn-primary" href="simulation.html">Open the live simulation &rarr;</a></p>
+      sensor simulating a tractor crossing the plot, a map, a 10-day soil-moisture chart, and a
+      crop/season-aware "critically low" status readout. Shown here as a periodically-regenerated
+      snapshot (this site has no backend to poll); run <code>sensor_fake_api/app.py</code> yourself
+      locally for a genuinely live, polling version.</p>
+    <p><a class="btn btn-primary" href="simulation.html">Open the simulation &rarr;</a></p>
   </section>
 
   <section class="sensors-section">
