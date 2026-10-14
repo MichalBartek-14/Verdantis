@@ -14,6 +14,16 @@
   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<!-- Lightweight Charts (TradingView), for the live-dashboard demo chart
+     further down this page (see #demoChart) - same "one deliberate
+     external dependency, loaded via CDN + SRI hash" treatment as Leaflet
+     above. Picked for this specific job (time-series, built-in live
+     .update() support, canvas-rendered) over something heavier like
+     Chart.js/ECharts: ~50KB gzipped, zero dependencies, no build step
+     needed - a plain <script> tag fits this project's no-bundler
+     convention the same way Leaflet already does. -->
+<script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"
+  integrity="sha384-JZigAjwiaZtkUbA44CWkPaT3iBb/mU5pO6QOANp+OqHd4q+1+7MG1kzp2OOP9ZfP" crossorigin="anonymous"></script>
 <style>
   /* Hand-written placeholder page, like docs/briefing/ - deliberately NOT
      wired through _template/assets/client.js (that script's whole
@@ -32,6 +42,40 @@
   .sensors-body .eyebrow { display: block; margin-bottom: 10px; }
   .sensors-body h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin: 0 0 14px; }
   .sensors-body > p.lede { color: var(--text-muted); max-width: 68ch; font-size: 1.05rem; margin: 0 0 30px; }
+
+  /* c.1/c.2/c.3 intro content - plain prose + a small card grid, same
+     visual language (--card-bg/--border/--radius) as the rest of the
+     site rather than a forked component system for this one page. */
+  .sensors-section { margin: 0 0 44px; }
+  .sensors-section h2 { font-size: var(--text-lg); margin: 0 0 12px; }
+  .sensors-section p { color: var(--text-muted); max-width: 72ch; margin: 0 0 14px; }
+  .sensors-section p:last-child { margin-bottom: 0; }
+
+  .sensor-type-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+  }
+  .sensor-type-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: var(--space-5);
+  }
+  .sensor-type-card h3 { margin: 0 0 6px; font-size: var(--text-base); color: var(--green-dark); }
+  .sensor-type-card p { margin: 0; font-size: var(--text-sm); color: var(--text-muted); }
+
+  .demo-badge {
+    display: inline-block; font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.06em;
+    text-transform: uppercase; color: #fff; background: var(--teal);
+    padding: 3px 10px; border-radius: 999px; margin-bottom: var(--space-4);
+  }
+  .demo-chart-card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: var(--space-5);
+  }
+  .demo-chart-wrap { width: 100%; height: 320px; }
+  .demo-chart-legend { display: flex; gap: var(--space-5); margin-top: var(--space-3); font-size: var(--text-sm); color: var(--text-muted); flex-wrap: wrap; }
+  .demo-chart-legend .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
 </style>
 </head>
 <body>
@@ -46,8 +90,79 @@
   <p class="lede">A live field-sensor reading from the Devinska Nova Ves pilot plot, shown
     here as a public demo of the capability - more services for this section are planned.</p>
 
-  <div id="plotMap" class="plot-map" style="display:none;"></div>
-  <p class="note" id="plotMapFallback">The live sensor map isn't available right now.</p>
+  <section class="sensors-section">
+    <h2>Two datasources, one picture</h2>
+    <p>Verdantis combines two fundamental data sources: (A) satellite intelligence and (B) sensor
+      ground-truth data. The two work in symbiosis, because of how differently each one scales.
+      Satellite intelligence identifies the general pattern within a plot and helps you understand
+      roughly where a problem sits - but it can't pin down an exact position, or an exact value.</p>
+    <p>This is where sensors come in. Sensors are purpose-built, metrologically calibrated devices
+      capable of measuring the variables that actually drive canopy health on your plot - soil
+      moisture, salinity, temperature, air conditions, and more. True values, in real time, with no
+      delay.</p>
+    <p>Sensors become even more powerful combined with Sentinel-2 imagery. Sentinel-2 uncovers the
+      general shape of a problem - drought, or one side of a plot losing moisture earlier than the
+      rest. Once that pattern is identified, sensors can be deployed exactly where it's unfolding,
+      pointing to the concrete crops or trees sitting on dry soil - no need to blanket-deploy across
+      hectares of fields, just the specific locations that matter. That saves money, computing time,
+      and work.</p>
+  </section>
+
+  <section class="sensors-section">
+    <h2>Which sensors</h2>
+    <div class="sensor-type-grid">
+      <div class="sensor-type-card">
+        <h3>Soil moisture</h3>
+        <p>Understand and navigate new drought periods with ease.</p>
+      </div>
+      <div class="sensor-type-card">
+        <h3>Soil components</h3>
+        <p>Is your soil healthy, and can fertilization patterns be improved?</p>
+      </div>
+      <div class="sensor-type-card">
+        <h3>Temperature</h3>
+        <p>Fight frost effectively, and understand exactly when it happens.</p>
+      </div>
+      <div class="sensor-type-card">
+        <h3>Location sensors</h3>
+        <p>For machinery on your plot - see the patterns of routine operations and use those
+          insights to improve harvest.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sensors-section">
+    <h2>Where this sensor sits</h2>
+    <div id="plotMap" class="plot-map" style="display:none;"></div>
+    <p class="note" id="plotMapFallback">The live sensor map isn't available right now.</p>
+  </section>
+
+  <section class="sensors-section">
+    <h2>Live dashboard demonstration</h2>
+    <p>A preview of what a live-updating dashboard looks like, built with a lightweight
+      (~50KB), canvas-rendered charting library rather than a heavy framework - chosen so the
+      chart stays fast on this plain, no-build-step site. The data below is <strong>real</strong>:
+      every point is an actual historical reading from the Devinska pilot's temperature/soil-moisture
+      sensor, not simulated.</p>
+    <div class="demo-chart-card">
+      <span class="demo-badge">Demo &middot; historical readings, not a live feed yet</span>
+      <div class="demo-chart-wrap" id="demoChart"></div>
+      <div class="demo-chart-legend">
+        <span><span class="swatch" style="background:#c07a20"></span>Temperature (&deg;C)</span>
+        <span><span class="swatch" style="background:#1f7a8c"></span>Soil moisture (raw units)</span>
+      </div>
+      <p class="note" id="demoChartFallback" style="display:none;">No sensor history available to demo right now.</p>
+    </div>
+    <p class="note">
+      <strong>What it would take to make this genuinely live</strong> (updating on its own, with no
+      redeploy of this site): one small addition on the sensor service's side - a public,
+      unauthenticated, read-only endpoint that this page can poll directly every minute or so. The
+      service already has the two pieces that make this a config change rather than a rebuild: an
+      "only what's new since I last checked" query parameter, and a planned switch from a 30-day-delayed
+      view to a live one. The homepage's weather cards already work exactly this way (polling a public
+      API straight from the browser) - the same pattern just needs a sensor-side endpoint to point
+      at.</p>
+  </section>
 </div>
 
 <script>
@@ -109,6 +224,75 @@
       }).bindPopup('<strong>Temperature sensor</strong><br>' + recent).addTo(map);
     })
     .catch(function () {}); // no temperature feed published - map still shows the plot outline
+})();
+</script>
+
+<script>
+(function () {
+  // Live-dashboard demo chart (see "Live dashboard demonstration" above) -
+  // same public data/sensor_temperature.json the plot-map script above
+  // already reads, fetched again here rather than sharing state across
+  // the two IIFEs (keeps each block independently readable/removable).
+  //
+  // Lightweight Charts requires setData() points sorted ascending with
+  // STRICTLY UNIQUE time values - the raw feed has occasional duplicate
+  // timestamps (same reading logged twice), so this collapses to one
+  // point per second (last value wins) rather than erroring.
+  function toSeriesPoints(readings, key) {
+    var byTime = {};
+    readings.forEach(function (r) {
+      if (typeof r[key] !== "number" || !r.time) return;
+      var seconds = Math.floor(new Date(r.time).getTime() / 1000);
+      if (isNaN(seconds)) return;
+      byTime[seconds] = r[key];
+    });
+    return Object.keys(byTime).map(Number).sort(function (a, b) { return a - b; })
+      .map(function (t) { return { time: t, value: byTime[t] }; });
+  }
+
+  fetch("data/sensor_temperature.json", { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error("no sensor_temperature.json"); return r.json(); })
+    .then(function (readings) {
+      var tempPoints = toSeriesPoints(readings || [], "temperature_c");
+      var moisturePoints = toSeriesPoints(readings || [], "soil_moisture");
+      if (!tempPoints.length) throw new Error("no usable readings to chart");
+
+      var container = document.getElementById("demoChart");
+      var chart = LightweightCharts.createChart(container, {
+        width: container.clientWidth,
+        height: 320,
+        layout: { background: { type: "solid", color: "#ffffff" }, textColor: "#182420" },
+        grid: { vertLines: { color: "#edf0e6" }, horzLines: { color: "#edf0e6" } },
+        rightPriceScale: { borderColor: "#dde3d6" },
+        leftPriceScale: { visible: true, borderColor: "#dde3d6" },
+        timeScale: { borderColor: "#dde3d6", timeVisible: true },
+      });
+
+      var tempSeries = chart.addLineSeries({
+        color: "#c07a20", lineWidth: 2, priceScaleId: "right",
+        title: "Temperature (°C)",
+      });
+      tempSeries.setData(tempPoints);
+
+      if (moisturePoints.length) {
+        var moistureSeries = chart.addAreaSeries({
+          priceScaleId: "left", lineWidth: 2,
+          lineColor: "#1f7a8c", topColor: "rgba(31,122,140,0.22)", bottomColor: "rgba(31,122,140,0.02)",
+          title: "Soil moisture",
+        });
+        moistureSeries.setData(moisturePoints);
+      }
+
+      chart.timeScale().fitContent();
+      window.addEventListener("resize", function () {
+        chart.applyOptions({ width: container.clientWidth });
+      });
+    })
+    .catch(function (err) {
+      document.getElementById("demoChart").style.display = "none";
+      document.getElementById("demoChartFallback").style.display = "";
+      console.warn("Live-dashboard demo chart: could not load sample data.", err);
+    });
 })();
 </script>
 
