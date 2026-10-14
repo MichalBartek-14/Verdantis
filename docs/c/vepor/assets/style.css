@@ -407,6 +407,18 @@ table.data-table tr:last-child td { border-bottom: none; }
   .hero-image { max-width: 380px; }
 }
 
+/* Below ~640px, .hero's desktop min-height: min(86vh, 720px) (set above)
+   forces the section to near-full-viewport-tall even once it's stacked
+   to one column and its content is much shorter than that - on a phone
+   that reads as "the header/hero dashboard eats the whole screen" with
+   mostly empty space, not an intentional full-bleed moment. Let it size
+   to content instead, with trimmed padding so what's left is still a
+   deliberate hero, just not a forced wall of it. */
+@media (max-width: 640px) {
+  .hero { min-height: 0; padding: var(--space-7) clamp(16px, 5vw, 28px); }
+  .hero .plot-tag { margin-top: 24px; }
+}
+
 .hero .eyebrow {
   color: #bfe6c9;
   background: rgba(255,255,255,0.08);
@@ -603,4 +615,33 @@ table.data-table tr:last-child td { border-bottom: none; }
   .back-link { min-height: 44px; display: inline-flex; align-items: center; }
   .site-footer, .empty-note, .error-note { font-size: var(--text-base); }
   .imagery-controls button { width: 44px; height: 44px; }
+}
+
+/* --- Sticky header, phones (<=640px) -----------------------------------
+   .site-nav's 5 links (4 tabs + the briefing pill) wrap onto their own
+   line(s) under .brand-group once they don't fit the row (base .site-nav
+   rule above is flex-wrap: wrap) - each wrapped line is now 44px tall per
+   the tap-target pass just above, so on a narrow phone this sticky header
+   alone was stacking up to 3 rows of nav under the brand row, pinned at
+   the top of every page. Traded for a single fixed-height row: brand
+   stays put, nav becomes a horizontally swipeable strip (no wrapping) -
+   same links, same order, just scroll sideways instead of growing down. */
+@media (max-width: 640px) {
+  .site-header { flex-wrap: nowrap; padding: 10px clamp(14px, 4vw, 20px); gap: 10px; }
+  .brand-group { gap: 6px; flex-shrink: 0; }
+  .brand { font-size: 1rem; gap: 6px; }
+  .brand .mark, .brand-logo { height: 22px; width: 22px; }
+  .client-badge { padding: 2px 8px; font-size: 0.65rem; }
+  .site-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 18px;
+    justify-content: flex-start;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav a { white-space: nowrap; min-height: 32px; }
+  .site-nav a.nav-briefing { padding: 6px 12px; }
+  .page-hero { padding: 28px clamp(16px, 5vw, 28px) 20px; }
 }
