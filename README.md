@@ -283,6 +283,21 @@ The credentials are never committed to the repo - if `protect-clients.js` can't 
 client's env vars, it fails **closed** (blocks that client's path with a 503) rather than
 silently letting anyone through.
 
+> **This only protects the Netlify-served URL - it does NOT protect the repo.**
+> `protect-clients.js` runs in front of `https://<your-site>.netlify.app/c/<slug>/*`, but
+> every file under `docs/c/<slug>/` (plus `clients/<slug>.json`, which carries real
+> `client_name`/location/plot-boundary data) is committed straight into this repo. If the
+> GitHub repo is **public**, anyone can read that same data directly from GitHub
+> (`github.com/.../blob/main/docs/c/<slug>/...` or `raw.githubusercontent.com/...`),
+> Basic Auth or not - there is no per-file ACL on a git repo any more than there is on
+> static hosting. **Keep this repo private** (GitHub -> repo -> Settings -> Danger Zone ->
+> Change visibility) for client dashboards to actually be access-restricted; Netlify keeps
+> deploying from a private repo exactly the same way via its GitHub integration. If the
+> repo was ever public with real client data committed, treat that data as already seen -
+> making the repo private stops *further* exposure, it doesn't undo a past view/clone, and
+> anything genuinely sensitive that leaked that way should be rotated/reconsidered (a
+> client's name, not just the access credentials) rather than assumed safe once hidden.
+
 **What to send each client**: the URL, the username, and the password - nothing else to
 install or configure on their end. They'll see the browser's native login prompt
 ("Verdantis - Valice" / "Verdantis - Vepor") the first time they visit, then their browser

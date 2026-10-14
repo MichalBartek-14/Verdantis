@@ -9,3 +9,15 @@ secrets/*
 !secrets/README.md
 !secrets/.gitkeep
 .idea/
+
+# Defense-in-depth beyond secrets/*: catches a key/credential dropped
+# anywhere else in the tree by mistake (wrong working directory, a copy-
+# paste into the repo root, ...) rather than relying solely on it landing
+# in the one folder we remember to gitignore. See secrets/README.md for
+# where real credentials are actually supposed to live.
+.env
+.env.*
+*.pem
+*.key
+*_api_key.txt
+*_sensor_api_key.txt

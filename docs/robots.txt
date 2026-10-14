@@ -1,0 +1,8 @@
+# Defense-in-depth only - this discourages well-behaved crawlers from
+# indexing/linking client dashboards, it does NOT restrict access (search
+# engines ignore this for a determined/malicious fetch, and Basic Auth on
+# /c/* already blocks any crawler that doesn't have a client's credentials
+# anyway). The actual access control is netlify/edge-functions/protect-clients.js
+# + keeping this repo private - see README.md's "Client access control" section.
+User-agent: *
+Disallow: /c/
