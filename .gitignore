@@ -10,6 +10,15 @@ secrets/*
 !secrets/.gitkeep
 .idea/
 
+# Per-client config: display name, precise plot/alert-bbox lat-lon,
+# threshold overrides. Backend-only input to publish_site.py - the
+# frontend never reads these directly, only the filtered subset
+# publish_site.py derives into docs/c/<slug>/data/client_meta.json.
+# Keep only the schema template tracked.
+clients/*
+!clients/_example.json.template
+!clients/.gitkeep
+
 # Defense-in-depth beyond secrets/*: catches a key/credential dropped
 # anywhere else in the tree by mistake (wrong working directory, a copy-
 # paste into the repo root, ...) rather than relying solely on it landing
