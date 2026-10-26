@@ -172,6 +172,39 @@ def plot_bfast_breaks(raw_series, trend_index, trend_values, break_dates, out_pa
     plt.close(fig)
 
 
+def _percentile_stretch(band, low=2.0, high=98.0):
+    """Per-band percentile contrast stretch for a true-color RGB quicklook -
+    same rationale as render_true_color.py's own copy of this (duplicated
+    rather than shared: that one works straight off a just-opened rasterio
+    dataset, this one off plain in-memory arrays already clipped to the
+    plot). Satellite reflectance rarely spans its theoretical full range in
+    a single scene, so a naive min/max stretch tends to look washed out."""
+    valid = band[np.isfinite(band)]
+    if valid.size == 0:
+        return np.zeros_like(band, dtype="float32")
+    lo, hi = np.percentile(valid, [low, high])
+    if hi <= lo:
+        return np.zeros_like(band, dtype="float32")
+    return np.clip((band - lo) / (hi - lo), 0, 1)
+
+
+def plot_true_color_quicklook(red, green, blue, out_path, title=None):
+    """RGB quicklook for one true-color (B04/B03/B02) composite - same
+    per-date quicklook convention as plot_index_quicklook() below, but a
+    stretched RGB image instead of a colorized single-band index (no
+    colormap/colorbar, since there's no single scalar being mapped)."""
+    rgb = np.dstack([_percentile_stretch(red), _percentile_stretch(green), _percentile_stretch(blue)])
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.imshow(rgb)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    if title:
+        ax.set_title(title)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=130)
+    plt.close(fig)
+
+
 def plot_index_quicklook(array, out_path, cmap, vmin, vmax, title, cbar_label):
     """Single-band colorized PNG quicklook for one index composite -
     lets a per-date output folder be browsed/previewed directly in a

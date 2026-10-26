@@ -19,6 +19,13 @@ Backbone script for the pilot deliverable shown to the client:
          other closely enough that a second near-identical chart
          wouldn't add much)
 
+The downloaded cube is cached (outputs/<slug>/monthly_ndvi_ndwi_ndmi.nc) and
+reused across runs, but freshness isn't just "does the file exist": every
+run checks whether the cache's last month is already the most recent
+calendar month that should be available, and re-pulls automatically if
+not - so every redeploy picks up the latest Sentinel-2 composite without
+anyone having to remember to delete the cache by hand.
+
 Run:    python pilot_historical_analysis.py
 Setup:  edit config.py first (shapefile path, date range, thresholds).
 """
@@ -79,15 +86,22 @@ def run_pilot():
     end = date.today().replace(day=1)
     start = end - relativedelta(years=config.HISTORY_YEARS)
     temporal_extent = [start.isoformat(), end.isoformat()]
+    # `end` is exclusive (1st of the current month), so this is the most
+    # recent calendar month that should actually be downloadable by now.
+    expected_last_month = (end - relativedelta(months=1)).strftime("%Y-%m")
 
     out_netcdf = config.OUTPUT_DIR / "monthly_ndvi_ndwi_ndmi.nc"
+    stale = True
     if out_netcdf.exists():
-        # Re-running just to retune a downstream threshold/plot shouldn't
-        # cost another multi-minute batch job against an unchanged
-        # plot/date-range - delete this file to force a fresh pull (e.g.
-        # once new months have become available).
-        print(f"Reusing already-downloaded {out_netcdf} (delete it to force a fresh pull).")
-    else:
+        cached_last_month = str(open_cube(out_netcdf)[TIME_DIM].values[-1])[:7]
+        stale = cached_last_month < expected_last_month
+        if stale:
+            print(f"Cached {out_netcdf} only reaches {cached_last_month}, but {expected_last_month} should "
+                  f"now be available - re-pulling so every redeploy ships the most recent Sentinel-2 month.")
+        else:
+            print(f"Reusing already-downloaded {out_netcdf} (already current through {cached_last_month}).")
+
+    if stale:
         print(f"Connecting to {config.OPENEO_BACKEND_URL} ...")
         connection = connect(config.OPENEO_BACKEND_URL)
 

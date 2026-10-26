@@ -255,6 +255,15 @@ def publish_client_site(slug: str) -> None:
         )
         print(f"    copied {copied}/3 latest quicklook(s) for {latest_date}")
 
+        # Most recent cloud-free RGB observation - feeds historical.html's
+        # viewer next to the monthly-imagery slider (see drought_monitor_recent.py).
+        if _copy(outputs_dir, "recent_rgb.png", img):
+            print("    copied: recent_rgb.png (most recent cloud-free RGB observation)")
+        else:
+            print(f"    MISSING (run drought_monitor_recent.py --client {slug}): recent_rgb.png")
+        if _copy(outputs_dir, "recent_rgb_date.json", data):
+            print("    copied: recent_rgb_date.json")
+
     # 7. Sector explorer + monthly imagery data - imagery split off since
     #    it's ~80% of the payload's size and the sector map itself never
     #    reads it (see docs/_template/monitoring.html for the slider that does).

@@ -34,7 +34,10 @@ from utils.plotting import plot_index_quicklook
 from utils.raster_analysis import open_cube, clip_to_geometry, TIME_DIM
 
 BLOCK = 5  # sector size in pixels (5x5); edge sectors are smaller, covering the full bbox
-LAST_YEAR_MONTHS = 12  # window size for the "last year" option, in months
+LAST_YEAR_MONTHS = 12  # window size for the Sector Explorer's "last year" option, in months
+IMAGERY_MONTHS = 24    # window size for historical.html's monthly-imagery slider, in months -
+                        # deliberately decoupled from LAST_YEAR_MONTHS above so the slider can
+                        # show 2 years of history without changing that unrelated sector toggle
 
 
 def _num_or_none(v, digits):
@@ -186,18 +189,21 @@ def build():
         for variable, threshold in index_thresholds.items()
     }
 
-    # Whole-plot NDVI/NDWI/NDMI quicklook images for the last-year window, for
-    # the "Monthly Imagery" tab - same 12 months as the sector explorer's
-    # "Last year" option, same colormap conventions as the recent-monitor
-    # script's per-date quicklooks (utils/plotting.py).
-    print("Rendering monthly imagery (NDVI + NDWI + NDMI quicklooks, last-year window) ...")
-    imagery_months = months[-LAST_YEAR_MONTHS:]
-    imagery = {"months": imagery_months, "ndvi": [], "ndwi": [], "ndmi": []}
-    for i in range(n_t - LAST_YEAR_MONTHS, n_t):
+    # Whole-plot NDVI/NDWI quicklook images for the historical.html slider's
+    # own IMAGERY_MONTHS window (2 years - independent of the sector
+    # explorer's 1-year LAST_YEAR_MONTHS above), same colormap conventions
+    # as the recent-monitor script's per-date quicklooks (utils/plotting.py).
+    # NDMI dropped here deliberately - historical.html treats it as redundant
+    # with NDWI (same family, highly correlated); NDMI stays available on the
+    # Sector Explorer page above, which still offers both.
+    imagery_window = min(IMAGERY_MONTHS, n_t)
+    print(f"Rendering monthly imagery (NDVI + NDWI quicklooks, last {imagery_window}-month window) ...")
+    imagery_months = months[-imagery_window:]
+    imagery = {"months": imagery_months, "ndvi": [], "ndwi": []}
+    for i in range(n_t - imagery_window, n_t):
         m = months[i]
         imagery["ndvi"].append(png_data_uri(ds_clipped["NDVI"].values[i], "RdYlGn", -0.1, 1.0, f"NDVI - {m}", "NDVI"))
         imagery["ndwi"].append(png_data_uri(ds_clipped["NDWI"].values[i], "BrBG", -0.3, 0.3, f"NDWI - {m}", "NDWI"))
-        imagery["ndmi"].append(png_data_uri(ds_clipped["NDMI"].values[i], "BrBG", -0.3, 0.3, f"NDMI - {m}", "NDMI"))
 
     payload = {
         "grid": {
@@ -221,7 +227,7 @@ def build():
     for key, idx_payload in indices_payload.items():
         print(f"{key.upper()} sectors with data: {len(idx_payload['sectors'])} / {n_rows * n_cols} grid cells")
     print(f"Months: {len(months)} ({months[0]} to {months[-1]})")
-    print(f"Imagery: {len(imagery['ndvi'])} NDVI + {len(imagery['ndwi'])} NDWI + {len(imagery['ndmi'])} NDMI "
+    print(f"Imagery: {len(imagery['ndvi'])} NDVI + {len(imagery['ndwi'])} NDWI "
           f"quicklooks ({imagery_months[0]} to {imagery_months[-1]})")
     print(f"Saved: {out_path} ({out_path.stat().st_size / 1024:.1f} KB)")
 

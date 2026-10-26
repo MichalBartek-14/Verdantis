@@ -10,6 +10,13 @@ alerting/thresholding layer can be built on top of (e.g. watch
 pct_pixels_below_dry_threshold across runs and notify when it crosses a
 limit), not a finished alert product.
 
+Also pulls B02/B03 alongside the usual B04/B08/B8A/B11 so the latest
+cloud-masked composite can be rendered as a true-color RGB quicklook
+(recent_rgb.png + recent_rgb_date.json) - this feeds the "most recent
+cloud-free observation" viewer next to historical.html's monthly-imagery
+slider, distinct from render_true_color.py's hero photo (that one renders
+a separately-sourced GeoTIFF, not a fresh openEO pull).
+
 Run:    python drought_monitor_recent.py
 Setup:  edit config.py first (shapefile path, RECENT_MONTHS, thresholds).
 """
@@ -24,7 +31,7 @@ from utils.openeo_client import connect
 from utils.cloud_masking import build_cloud_mask, apply_cloud_mask
 from utils.indices import ndvi_band, ndwi_band, ndmi_band, combine_as_bands
 from utils.raster_analysis import open_cube, clip_to_geometry, TIME_DIM
-from utils.plotting import plot_index_quicklook
+from utils.plotting import plot_index_quicklook, plot_true_color_quicklook
 from utils.downloads import download_to_path
 
 
@@ -38,14 +45,20 @@ def build_recent_index_cube(connection, bbox, temporal_extent):
         config.COLLECTION_ID,
         spatial_extent=spatial_extent,
         temporal_extent=temporal_extent,
-        bands=["B04", "B08", "B8A", "B11"],
+        bands=["B02", "B03", "B04", "B08", "B8A", "B11"],
         max_cloud_cover=config.MAX_CLOUD_COVER,
     )
 
     cloud_mask = build_cloud_mask(connection, bbox, temporal_extent)
     masked = apply_cloud_mask(raw, cloud_mask)
 
-    indices = combine_as_bands(NDVI=ndvi_band(masked), NDWI=ndwi_band(masked), NDMI=ndmi_band(masked))
+    # RED/GREEN/BLUE ride along with the indices (same cloud mask, no extra
+    # download) purely so the latest composite can also be rendered as a
+    # true-color quicklook - see run_monitor()'s recent_rgb.png export.
+    indices = combine_as_bands(
+        NDVI=ndvi_band(masked), NDWI=ndwi_band(masked), NDMI=ndmi_band(masked),
+        RED=masked.band("B04"), GREEN=masked.band("B03"), BLUE=masked.band("B02"),
+    )
     composite = indices.aggregate_temporal_period(period=config.RECENT_PERIOD, reducer=config.MONTHLY_REDUCER)
     return composite
 
@@ -152,6 +165,22 @@ def run_monitor():
     download_to_path(lambda tmp: latest["NDVI"].rio.to_raster(tmp), config.OUTPUT_DIR / f"ndvi_latest_{latest_date}.tif")
     download_to_path(lambda tmp: latest["NDWI"].rio.to_raster(tmp), config.OUTPUT_DIR / f"ndwi_latest_{latest_date}.tif")
     download_to_path(lambda tmp: latest["NDMI"].rio.to_raster(tmp), config.OUTPUT_DIR / f"ndmi_latest_{latest_date}.tif")
+
+    # Most recent cloud-free RGB observation - feeds historical.html's
+    # viewer next to the monthly-imagery slider. Skipped (not an error) if
+    # this particular composite happens to have no valid RGB pixels in the
+    # plot - the next run (next week's composite) will likely have some.
+    if bool(latest["RED"].notnull().any()) and bool(latest["GREEN"].notnull().any()) and bool(latest["BLUE"].notnull().any()):
+        plot_true_color_quicklook(
+            latest["RED"].values, latest["GREEN"].values, latest["BLUE"].values,
+            config.OUTPUT_DIR / "recent_rgb.png",
+            title=f"Most recent cloud-free observation - {latest_date}",
+        )
+        with open(config.OUTPUT_DIR / "recent_rgb_date.json", "w") as f:
+            json.dump({"date": latest_date, "compositing_period": config.RECENT_PERIOD}, f, indent=2)
+        print(f"Most recent cloud-free RGB quicklook saved: {config.OUTPUT_DIR / 'recent_rgb.png'} ({latest_date})")
+    else:
+        print(f"Latest composite ({latest_date}) has no valid RGB pixels in the plot - skipping recent_rgb.png.")
 
     summary = {
         "plot_shapefile": str(config.PLOT_SHAPEFILE),
