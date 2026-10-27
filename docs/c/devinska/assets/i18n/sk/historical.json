@@ -2,7 +2,7 @@
   "title": "Historický prehľad - Verdantis",
   "hero": {
     "h1": "Výstup pilotného projektu pre klienta",
-    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, posúvateľný mesačný pohľad na posledné dva roky spolu s najnovším bezoblačným záberom, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
+    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, posúvateľný mesačný pohľad na posledné dva roky, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
   },
   "timeseries": {
     "title": "Časové rady (priemer za parcelu, mesačne)",
@@ -15,10 +15,7 @@
   "imagery": {
     "title": "Mesačné snímky, posledné 2 roky",
     "lede": "Kompozity NDVI/NDWI za celú parcelu, posúvanie mesiac po mesiaci v 2-ročnom okne - dostatočne dlhom na porovnanie rovnakého obdobia (napr. septembra) medzi po sebe idúcimi rokmi, nielen zobrazenie posledného. NDMI je tu vynechané ako nadbytočné voči NDWI (oba vedľa seba nájdete v Prieskumníkovi sektorov).",
-    "loading": "Načítavam mesačné snímky&hellip;",
-    "rgb_title": "Najnovší bezoblačný záber",
-    "rgb_loading": "Načítavam najnovší záber&hellip;",
-    "rgb_desc": "Skutočnofarebný (RGB) kompozit Sentinel-2, obnovovaný skriptom drought_monitor_recent.py."
+    "loading": "Načítavam mesačné snímky&hellip;"
   },
   "weather": {
     "title": "Vlhkosť vs. počasie",
@@ -32,8 +29,6 @@
   "js": {
     "imagery_status": "{count} mesiacov, {first} až {last}",
     "imagery_error": "Nepodarilo sa načítať data/monthly_imagery.json - spustite build_sector_explorer_data.py a následne publish_site.py.",
-    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"],
-    "rgb_alt": "Najnovší bezoblačný RGB záber, {date}",
-    "rgb_error": "Zatiaľ nepublikované - spustite drought_monitor_recent.py a následne publish_site.py."
+    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"]
   }
 }

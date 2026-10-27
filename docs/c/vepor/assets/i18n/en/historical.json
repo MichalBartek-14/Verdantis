@@ -2,21 +2,19 @@
   "title": "Historical Pilot - Verdantis",
   "hero": {
     "h1": "The client-facing pilot deliverable",
-    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a scrubbable month-by-month imagery view of the last year, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
+    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a scrubbable month-by-month imagery view of the last two years, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
   },
   "timeseries": {
     "title": "Time series (plot-average, monthly)",
-    "lede": "NDVI tracks vegetation vigour; NDWI and NDMI are two moisture-proxy formulations of the same underlying signal (broad vs. narrow NIR band) - shown side by side rather than picked between, since they're correlated but not identical.",
+    "lede": "NDVI tracks vegetation vigour; NDWI tracks canopy/soil moisture. A second moisture formulation, NDMI, is computed too (see the Sector Explorer) but dropped here as redundant with NDWI - the two are highly correlated.",
     "ndvi_title": "NDVI",
     "ndvi_desc": "Vegetation vigour, (NIR&minus;Red)/(NIR+Red).",
     "ndwi_title": "NDWI",
-    "ndwi_desc": "Canopy/soil moisture, broad-NIR (Gao-family) formulation.",
-    "ndmi_title": "NDMI",
-    "ndmi_desc": "Moisture proxy, narrow-NIR (Sentinel Hub standard) formulation."
+    "ndwi_desc": "Canopy/soil moisture, broad-NIR (Gao-family) formulation."
   },
   "imagery": {
-    "title": "Monthly imagery, last year",
-    "lede": "Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same 12-month window as the Sector Explorer's \"Last year\" option, shown here since it's a single time series rather than a per-sector breakdown.",
+    "title": "Monthly imagery, last 2 years",
+    "lede": "Whole-plot NDVI/NDWI composites, scrub month by month over a 2-year window - long enough to compare the same season (e.g. September) across consecutive years, not just see the latest one. NDMI is left out here as redundant with NDWI (see the Sector Explorer for both side by side).",
     "loading": "Loading monthly imagery&hellip;"
   },
   "weather": {

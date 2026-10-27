@@ -2,7 +2,7 @@
   "title": "Historical Pilot - Verdantis",
   "hero": {
     "h1": "The client-facing pilot deliverable",
-    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a scrubbable month-by-month imagery view of the last two years alongside the most recent cloud-free observation, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
+    "intro": "Up to five years of monthly Sentinel-2 median composites over the plot, reduced to three spectral indices server-side, then analysed locally: plot-average time series, a scrubbable month-by-month imagery view of the last two years, and ERA5 temperature + precipitation overlays to sanity-check whether moisture drops track warm, dry spells."
   },
   "timeseries": {
     "title": "Time series (plot-average, monthly)",
@@ -15,10 +15,7 @@
   "imagery": {
     "title": "Monthly imagery, last 2 years",
     "lede": "Whole-plot NDVI/NDWI composites, scrub month by month over a 2-year window - long enough to compare the same season (e.g. September) across consecutive years, not just see the latest one. NDMI is left out here as redundant with NDWI (see the Sector Explorer for both side by side).",
-    "loading": "Loading monthly imagery&hellip;",
-    "rgb_title": "Most recent cloud-free observation",
-    "rgb_loading": "Loading most recent observation&hellip;",
-    "rgb_desc": "True-colour (RGB) Sentinel-2 composite, refreshed by drought_monitor_recent.py."
+    "loading": "Loading monthly imagery&hellip;"
   },
   "weather": {
     "title": "Moisture vs. weather",
@@ -32,8 +29,6 @@
   "js": {
     "imagery_status": "{count} months, {first} to {last}",
     "imagery_error": "Could not load data/monthly_imagery.json - run build_sector_explorer_data.py then publish_site.py.",
-    "month_names": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    "rgb_alt": "Most recent cloud-free RGB observation, {date}",
-    "rgb_error": "Not published yet - run drought_monitor_recent.py then publish_site.py."
+    "month_names": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   }
 }

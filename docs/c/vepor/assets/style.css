@@ -510,7 +510,10 @@ table.data-table tr:last-child td { border-bottom: none; }
 /* --- Monthly imagery slider (docs/historical.html) -----------------------
    Ported from the sector explorer's former "Monthly Imagery" tab, restyled
    to the site palette. Data: data/monthly_imagery.json (published by
-   publish_site.py from outputs/sector_explorer_data.json's "imagery" key). */
+   publish_site.py from outputs/sector_explorer_data.json's "imagery" key) -
+   NDVI/NDWI only (NDMI dropped as redundant with NDWI), 2-year window
+   (build_sector_explorer_data.py's IMAGERY_MONTHS). The month timeline
+   under it is further below. */
 .imagery-viewer {
   background: var(--bg-alt);
   border: 1px solid var(--border);
@@ -539,6 +542,28 @@ table.data-table tr:last-child td { border-bottom: none; }
 .imagery-controls button:hover { background: var(--bg-alt); }
 #imagerySlider { flex: 1; accent-color: var(--green); }
 .imagery-month { font-size: var(--text-sm); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; color: var(--text); }
+
+/* Tick-mark strip under the slider/controls - one tick per month in the
+   fetched window, spaced evenly to match the <input type="range">'s own
+   linear step spacing. January ticks are taller and carry a year label so
+   it reads at a glance how far back 2 years of history reaches; the tick
+   matching the slider's current position is highlighted to show exactly
+   where in the timeline the visible composite sits. */
+.imagery-timeline {
+  display: flex;
+  align-items: flex-end;
+  max-width: 640px;
+  margin-top: 10px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  height: 28px;
+}
+.imagery-tick { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.imagery-tick-mark { display: block; width: 1px; height: 6px; background: var(--border); }
+.imagery-tick-year .imagery-tick-mark { width: 2px; height: 11px; background: var(--text-muted); }
+.imagery-tick-label { font-size: 10px; line-height: 1.4; color: var(--text-muted); white-space: nowrap; }
+.imagery-tick.active .imagery-tick-mark { width: 2px; height: 14px; background: var(--green); }
+.imagery-tick.active .imagery-tick-label { color: var(--green-dark); font-weight: 700; }
 
 /* --- Trust strip + pilot enquiry form (docs/index.html) --------------- */
 .trust-section p { color: var(--text-muted); max-width: 70ch; }

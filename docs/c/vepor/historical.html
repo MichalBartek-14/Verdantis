@@ -30,16 +30,16 @@
   <h1 data-i18n="hero.h1">The client-facing pilot deliverable</h1>
   <p data-i18n="hero.intro">Up to five years of monthly Sentinel-2 median composites over the plot, reduced
     to three spectral indices server-side, then analysed locally: plot-average time
-    series, a scrubbable month-by-month imagery view of the last year, and ERA5
-    temperature + precipitation overlays to sanity-check whether moisture drops
-    track warm, dry spells.</p>
+    series, a scrubbable month-by-month imagery view of the last two years, and
+    ERA5 temperature + precipitation overlays to sanity-check whether moisture
+    drops track warm, dry spells.</p>
 </div>
 
 <section class="section">
   <h2 data-i18n="timeseries.title">Time series (plot-average, monthly)</h2>
-  <p class="lede" data-i18n="timeseries.lede">NDVI tracks vegetation vigour; NDWI and NDMI are two moisture-proxy
-    formulations of the same underlying signal (broad vs. narrow NIR band) - shown
-    side by side rather than picked between, since they're correlated but not identical.</p>
+  <p class="lede" data-i18n="timeseries.lede">NDVI tracks vegetation vigour; NDWI tracks canopy/soil moisture. A second
+    moisture formulation, NDMI, is computed too (see the Sector Explorer) but
+    dropped here as redundant with NDWI - the two are highly correlated.</p>
   <div class="figure-grid">
     <figure class="card">
       <img src="assets/img/ndvi_timeseries.png" alt="Plot-average NDVI monthly time series" loading="lazy">
@@ -49,18 +49,15 @@
       <img src="assets/img/ndwi_timeseries.png" alt="Plot-average NDWI monthly time series" loading="lazy">
       <figcaption><h3 data-i18n="timeseries.ndwi_title">NDWI</h3><p data-i18n="timeseries.ndwi_desc">Canopy/soil moisture, broad-NIR (Gao-family) formulation.</p></figcaption>
     </figure>
-    <figure class="card">
-      <img src="assets/img/ndmi_timeseries.png" alt="Plot-average NDMI monthly time series" loading="lazy">
-      <figcaption><h3 data-i18n="timeseries.ndmi_title">NDMI</h3><p data-i18n="timeseries.ndmi_desc">Moisture proxy, narrow-NIR (Sentinel Hub standard) formulation.</p></figcaption>
-    </figure>
   </div>
 </section>
 
 <section class="section">
-  <h2 data-i18n="imagery.title">Monthly imagery, last year</h2>
-  <p class="lede" data-i18n="imagery.lede">Whole-plot NDVI/NDWI/NDMI composites, scrub month by month - the same
-    12-month window as the Sector Explorer's "Last year" option, shown here since it's a
-    single time series rather than a per-sector breakdown.</p>
+  <h2 data-i18n="imagery.title">Monthly imagery, last 2 years</h2>
+  <p class="lede" data-i18n="imagery.lede">Whole-plot NDVI/NDWI composites, scrub month by month over a 2-year
+    window - long enough to compare the same season (e.g. September) across
+    consecutive years, not just see the latest one. NDMI is left out here as
+    redundant with NDWI (see the Sector Explorer for both side by side).</p>
 
   <p class="status-line" id="imagery-status"><span class="dot"></span><span data-i18n="imagery.loading">Loading monthly imagery&hellip;</span></p>
 
@@ -68,7 +65,6 @@
     <div class="segmented" role="group" aria-label="Imagery index" id="imagery-index-group">
       <button type="button" data-index="ndvi" aria-pressed="true">NDVI</button>
       <button type="button" data-index="ndwi" aria-pressed="false">NDWI</button>
-      <button type="button" data-index="ndmi" aria-pressed="false">NDMI</button>
     </div>
   </div>
   <div class="imagery-viewer">
@@ -80,6 +76,7 @@
     <button type="button" id="imageryNext" aria-label="Next month">&rarr;</button>
     <span id="imageryMonthLabel" class="imagery-month"></span>
   </div>
+  <div class="imagery-timeline" id="imageryTimeline" role="img" aria-label="Month timeline"></div>
 </section>
 
 <section class="section">
@@ -130,10 +127,41 @@ async function loadImagery(t) {
   const slider = document.getElementById('imagerySlider');
   const img = document.getElementById('imageryImg');
   const monthLabelEl = document.getElementById('imageryMonthLabel');
+  const timelineEl = document.getElementById('imageryTimeline');
   const MONTH_NAMES = t('js.month_names');
   function monthLabel(m) {
     const parts = m.split('-');
     return MONTH_NAMES[parseInt(parts[1], 10) - 1] + ' ' + parts[0];
+  }
+
+  // Below the slider: one tick per month so it's visually obvious how far
+  // back the 2-year window reaches and where the current frame sits in it -
+  // January of each year gets a taller tick + a year label, every other
+  // month just a short dash.
+  function buildTimeline(months) {
+    timelineEl.innerHTML = '';
+    months.forEach((m, i) => {
+      const monthNum = parseInt(m.split('-')[1], 10);
+      const tick = document.createElement('div');
+      tick.className = 'imagery-tick' + (monthNum === 1 ? ' imagery-tick-year' : '');
+      tick.dataset.index = String(i);
+      tick.title = monthLabel(m);
+      const mark = document.createElement('span');
+      mark.className = 'imagery-tick-mark';
+      tick.appendChild(mark);
+      if (monthNum === 1) {
+        const label = document.createElement('span');
+        label.className = 'imagery-tick-label';
+        label.textContent = m.split('-')[0];
+        tick.appendChild(label);
+      }
+      timelineEl.appendChild(tick);
+    });
+  }
+  function highlightTimeline(i) {
+    timelineEl.querySelectorAll('.imagery-tick').forEach((el) => {
+      el.classList.toggle('active', parseInt(el.dataset.index, 10) === i);
+    });
   }
 
   try {
@@ -145,12 +173,14 @@ async function loadImagery(t) {
 
     slider.max = months.length - 1;
     slider.value = months.length - 1;
+    buildTimeline(months);
 
     function update() {
       const i = parseInt(slider.value, 10);
       img.src = imagery[index][i];
       img.alt = index.toUpperCase() + ' composite for ' + monthLabel(months[i]);
       monthLabelEl.textContent = monthLabel(months[i]);
+      highlightTimeline(i);
     }
 
     slider.addEventListener('input', update);

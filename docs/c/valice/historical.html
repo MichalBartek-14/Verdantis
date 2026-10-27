@@ -26,13 +26,13 @@
 </header>
 
 <div class="page-hero">
-  <span class="eyebrow">pilot_historical_analysis.py &middot; build_sector_explorer_data.py &middot; drought_monitor_recent.py</span>
+  <span class="eyebrow">pilot_historical_analysis.py &middot; build_sector_explorer_data.py</span>
   <h1 data-i18n="hero.h1">The client-facing pilot deliverable</h1>
   <p data-i18n="hero.intro">Up to five years of monthly Sentinel-2 median composites over the plot, reduced
     to three spectral indices server-side, then analysed locally: plot-average time
-    series, a scrubbable month-by-month imagery view of the last two years alongside
-    the most recent cloud-free observation, and ERA5 temperature + precipitation
-    overlays to sanity-check whether moisture drops track warm, dry spells.</p>
+    series, a scrubbable month-by-month imagery view of the last two years, and
+    ERA5 temperature + precipitation overlays to sanity-check whether moisture
+    drops track warm, dry spells.</p>
 </div>
 
 <section class="section">
@@ -61,38 +61,22 @@
 
   <p class="status-line" id="imagery-status"><span class="dot"></span><span data-i18n="imagery.loading">Loading monthly imagery&hellip;</span></p>
 
-  <div class="imagery-row">
-    <div class="imagery-main">
-      <div class="control-row" style="margin-bottom:14px;">
-        <div class="segmented" role="group" aria-label="Imagery index" id="imagery-index-group">
-          <button type="button" data-index="ndvi" aria-pressed="true">NDVI</button>
-          <button type="button" data-index="ndwi" aria-pressed="false">NDWI</button>
-        </div>
-      </div>
-      <div class="imagery-viewer">
-        <img id="imageryImg" alt="Monthly index composite">
-      </div>
-      <div class="imagery-controls">
-        <button type="button" id="imageryPrev" aria-label="Previous month">&larr;</button>
-        <input type="range" id="imagerySlider" min="0" max="11" step="1" value="11" aria-label="Month">
-        <button type="button" id="imageryNext" aria-label="Next month">&rarr;</button>
-        <span id="imageryMonthLabel" class="imagery-month"></span>
-      </div>
-      <div class="imagery-timeline" id="imageryTimeline" role="img" aria-label="Month timeline"></div>
+  <div class="control-row" style="margin-bottom:14px;">
+    <div class="segmented" role="group" aria-label="Imagery index" id="imagery-index-group">
+      <button type="button" data-index="ndvi" aria-pressed="true">NDVI</button>
+      <button type="button" data-index="ndwi" aria-pressed="false">NDWI</button>
     </div>
-
-    <figure class="card rgb-viewer">
-      <div class="rgb-viewer-frame">
-        <img id="rgbImg" alt="" loading="lazy">
-        <div class="rgb-placeholder" id="rgbPlaceholder" data-i18n="imagery.rgb_loading">Loading most recent observation&hellip;</div>
-      </div>
-      <figcaption>
-        <h3 data-i18n="imagery.rgb_title">Most recent cloud-free observation</h3>
-        <p class="imagery-month" id="rgbDateLabel"></p>
-        <p data-i18n="imagery.rgb_desc">True-colour (RGB) Sentinel-2 composite, refreshed by drought_monitor_recent.py.</p>
-      </figcaption>
-    </figure>
   </div>
+  <div class="imagery-viewer">
+    <img id="imageryImg" alt="Monthly index composite">
+  </div>
+  <div class="imagery-controls">
+    <button type="button" id="imageryPrev" aria-label="Previous month">&larr;</button>
+    <input type="range" id="imagerySlider" min="0" max="11" step="1" value="11" aria-label="Month">
+    <button type="button" id="imageryNext" aria-label="Next month">&rarr;</button>
+    <span id="imageryMonthLabel" class="imagery-month"></span>
+  </div>
+  <div class="imagery-timeline" id="imageryTimeline" role="img" aria-label="Month timeline"></div>
 </section>
 
 <section class="section">
@@ -225,31 +209,8 @@ async function loadImagery(t) {
   }
 }
 
-// Most recent cloud-free RGB observation, next to the slider - written by
-// drought_monitor_recent.py, copy-if-present like the other optional
-// per-client assets (sensor feed, true-color hero, ...).
-async function loadRgbViewer(t) {
-  const frame = document.querySelector('.rgb-viewer-frame');
-  const img = document.getElementById('rgbImg');
-  const placeholder = document.getElementById('rgbPlaceholder');
-  const dateLabel = document.getElementById('rgbDateLabel');
-  try {
-    const res = await fetch('data/recent_rgb_date.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const info = await res.json();
-    img.src = 'assets/img/recent_rgb.png?' + encodeURIComponent(info.date);
-    img.alt = t('js.rgb_alt', { date: info.date });
-    dateLabel.textContent = info.date;
-    frame.classList.add('has-photo');
-  } catch (err) {
-    placeholder.textContent = t('js.rgb_error');
-    console.error(err);
-  }
-}
-
 window.VerdantisReady.then(({ t }) => {
   loadImagery(t);
-  loadRgbViewer(t);
 });
 </script>
 

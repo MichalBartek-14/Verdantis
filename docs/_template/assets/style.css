@@ -512,8 +512,8 @@ table.data-table tr:last-child td { border-bottom: none; }
    to the site palette. Data: data/monthly_imagery.json (published by
    publish_site.py from outputs/sector_explorer_data.json's "imagery" key) -
    NDVI/NDWI only (NDMI dropped as redundant with NDWI), 2-year window
-   (build_sector_explorer_data.py's IMAGERY_MONTHS). The RGB viewer and
-   month timeline next to/under it are further below. */
+   (build_sector_explorer_data.py's IMAGERY_MONTHS). The month timeline
+   under it is further below. */
 .imagery-viewer {
   background: var(--bg-alt);
   border: 1px solid var(--border);
@@ -543,10 +543,6 @@ table.data-table tr:last-child td { border-bottom: none; }
 #imagerySlider { flex: 1; accent-color: var(--green); }
 .imagery-month { font-size: var(--text-sm); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; color: var(--text); }
 
-/* Slider + RGB viewer side by side; wraps to a stack on narrow screens. */
-.imagery-row { display: flex; align-items: flex-start; gap: var(--space-6); }
-.imagery-main { flex: 1 1 420px; min-width: 0; }
-
 /* Tick-mark strip under the slider/controls - one tick per month in the
    fetched window, spaced evenly to match the <input type="range">'s own
    linear step spacing. January ticks are taller and carry a year label so
@@ -568,29 +564,6 @@ table.data-table tr:last-child td { border-bottom: none; }
 .imagery-tick-label { font-size: 10px; line-height: 1.4; color: var(--text-muted); white-space: nowrap; }
 .imagery-tick.active .imagery-tick-mark { width: 2px; height: 14px; background: var(--green); }
 .imagery-tick.active .imagery-tick-label { color: var(--green-dark); font-weight: 700; }
-
-/* Most recent cloud-free RGB observation, next to the slider - same
-   probe-then-swap "has-photo" pattern as the title-page hero photo
-   (.hero-image), since drought_monitor_recent.py's recent_rgb.png may not
-   exist yet for a brand-new client. */
-.rgb-viewer { flex: 0 1 300px; min-width: 220px; }
-.rgb-viewer-frame { position: relative; aspect-ratio: 4 / 3; background: #0b1a12; }
-.rgb-viewer-frame img { display: none; width: 100%; height: 100%; object-fit: cover; }
-.rgb-viewer-frame.has-photo img { display: block; }
-.rgb-viewer-frame.has-photo .rgb-placeholder { display: none; }
-.rgb-placeholder {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  padding: 14px; text-align: center;
-  font-size: var(--text-sm); color: var(--text-muted);
-}
-.rgb-viewer figcaption h3 { margin-bottom: 2px; }
-.rgb-viewer .imagery-month { text-align: left; min-width: 0; margin: 0 0 6px; color: var(--text-muted); font-weight: 600; }
-
-@media (max-width: 860px) {
-  .imagery-row { flex-direction: column; }
-  .rgb-viewer { flex-basis: auto; max-width: 420px; }
-}
 
 /* --- Trust strip + pilot enquiry form (docs/index.html) --------------- */
 .trust-section p { color: var(--text-muted); max-width: 70ch; }

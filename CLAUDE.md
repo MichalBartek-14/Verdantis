@@ -120,14 +120,13 @@ still offers both), over a 2-year window -
 that same script's `LAST_YEAR_MONTHS` (which still drives the *Sector Explorer's* own
 1-year toggle, unaffected by this). 2 years is wide enough that the slider always spans
 the same calendar month (e.g. September) across two consecutive years, not just the
-latest one. Next to the slider, a true-color RGB quicklook of the most recent cloud-free
-composite (`outputs/<slug>/recent_rgb.png` + `recent_rgb_date.json`) is produced by
-`drought_monitor_recent.py` (which already pulls a fresh weekly composite every run) and
-copied by `publish_site.py` alongside its usual outputs - distinct from
-`render_true_color.py`'s hero photo, which renders a separately-sourced GeoTIFF rather
-than a fresh openEO pull. Below the slider, a tick-mark timeline (one tick per month,
-taller + year-labelled at each January) makes it visually obvious where the currently
-displayed month sits in the 2-year window.
+latest one. Below the slider, a tick-mark timeline (one tick per month, taller +
+year-labelled at each January) makes it visually obvious where the currently displayed
+month sits in the 2-year window. (A separate, most-recent-observation RGB quicklook used
+to sit next to the slider - `drought_monitor_recent.py` still writes
+`outputs/<slug>/recent_rgb.png` + `recent_rgb_date.json` as a byproduct of its own weekly
+pull, but `publish_site.py` no longer copies them and the template no longer displays
+them.)
 
 **Historical pipeline auto-refreshes on every redeploy**: `pilot_historical_analysis.py`
 caches its downloaded cube (`outputs/<slug>/monthly_ndvi_ndwi_ndmi.nc`) but no longer
