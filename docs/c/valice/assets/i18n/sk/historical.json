@@ -2,22 +2,23 @@
   "title": "Historický prehľad - Verdantis",
   "hero": {
     "h1": "Výstup pilotného projektu pre klienta",
-    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, posúvateľný mesačný pohľad na posledný rok, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
+    "intro": "Až päť rokov mesačných mediánových kompozitov Sentinel-2 nad parcelou, zredukovaných na tri spektrálne indexy priamo na serveri a následne analyzovaných lokálne: časové rady priemeru za parcelu, posúvateľný mesačný pohľad na posledné dva roky spolu s najnovším bezoblačným záberom, a prekrytia s ERA5 teplotou + zrážkami na overenie, či poklesy vlhkosti sledujú teplé a suché obdobia."
   },
   "timeseries": {
     "title": "Časové rady (priemer za parcelu, mesačne)",
-    "lede": "NDVI sleduje vitalitu vegetácie; NDWI a NDMI sú dve formulácie toho istého podkladového signálu vlhkosti (široké vs. úzke NIR pásmo) - zobrazené vedľa seba, nie vybrané jedno z dvoch, keďže sú korelované, no nie identické.",
+    "lede": "NDVI sleduje vitalitu vegetácie; NDWI sleduje vlhkosť korún/pôdy. Druhá formulácia vlhkosti, NDMI, sa tiež počíta (pozri Prieskumníka sektorov), tu je však vynechaná ako nadbytočná voči NDWI - oba ukazovatele sú silne korelované.",
     "ndvi_title": "NDVI",
     "ndvi_desc": "Vitalita vegetácie, (NIR&minus;Red)/(NIR+Red).",
     "ndwi_title": "NDWI",
-    "ndwi_desc": "Vlhkosť korún/pôdy, formulácia so širokým NIR pásmom (Gao).",
-    "ndmi_title": "NDMI",
-    "ndmi_desc": "Ukazovateľ vlhkosti, formulácia s úzkym NIR pásmom (štandard Sentinel Hub)."
+    "ndwi_desc": "Vlhkosť korún/pôdy, formulácia so širokým NIR pásmom (Gao)."
   },
   "imagery": {
-    "title": "Mesačné snímky, posledný rok",
-    "lede": "Kompozity NDVI/NDWI/NDMI za celú parcelu, posúvanie mesiac po mesiaci - rovnaké 12-mesačné okno ako možnosť \"Posledný rok\" v Prieskumníkovi sektorov, zobrazené tu, keďže ide o jeden časový rad, nie rozpad po sektoroch.",
-    "loading": "Načítavam mesačné snímky&hellip;"
+    "title": "Mesačné snímky, posledné 2 roky",
+    "lede": "Kompozity NDVI/NDWI za celú parcelu, posúvanie mesiac po mesiaci v 2-ročnom okne - dostatočne dlhom na porovnanie rovnakého obdobia (napr. septembra) medzi po sebe idúcimi rokmi, nielen zobrazenie posledného. NDMI je tu vynechané ako nadbytočné voči NDWI (oba vedľa seba nájdete v Prieskumníkovi sektorov).",
+    "loading": "Načítavam mesačné snímky&hellip;",
+    "rgb_title": "Najnovší bezoblačný záber",
+    "rgb_loading": "Načítavam najnovší záber&hellip;",
+    "rgb_desc": "Skutočnofarebný (RGB) kompozit Sentinel-2, obnovovaný skriptom drought_monitor_recent.py."
   },
   "weather": {
     "title": "Vlhkosť vs. počasie",
@@ -31,6 +32,8 @@
   "js": {
     "imagery_status": "{count} mesiacov, {first} až {last}",
     "imagery_error": "Nepodarilo sa načítať data/monthly_imagery.json - spustite build_sector_explorer_data.py a následne publish_site.py.",
-    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"]
+    "month_names": ["jan", "feb", "mar", "apr", "máj", "jún", "júl", "aug", "sep", "okt", "nov", "dec"],
+    "rgb_alt": "Najnovší bezoblačný RGB záber, {date}",
+    "rgb_error": "Zatiaľ nepublikované - spustite drought_monitor_recent.py a následne publish_site.py."
   }
 }
